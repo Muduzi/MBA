@@ -1,0 +1,139 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/subscriber.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type = 'button' onclick="window.location.href='http://127.0.0.1:8000/subscriptions/';">
+       <i class="material-icons" style="font-size:18px; border:hidden;">arrow_forward</i>
+    </button>
+</div>
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="profile">
+    <div class="profile_photo">
+        {%if bus.photo.url != None%}
+            <img src="{{bus.photo.url}}" id="profile-pic">
+        {%else%}
+            <img src="{%static '/appdefaults/add-photo4.png'%}">
+        {%endif%}
+    </div>
+    <div class="details">
+        <text><i class="material-icons" style="font-size:20px;">person</i>{{bus.Owner.get_full_name}}</text>
+        <text><i class="material-icons" style="font-size:20px;">store</i>{{bus.Name}}</text>
+        <text><i class="material-icons" style="font-size:20px;">label_outline</i>{{bus.Type}}</text>
+        <a href="mailto:{{bus.Email}}"><i class="material-icons" style="font-size:21px;">mail</i>{{bus.Email}}</a>
+        <text><i class="material-icons" style="font-size:20px;">call</i>{{bus.Contact1}}</text>
+        {%if bus.Contact1%}
+            <a href="https://wa.me/{{bus.Contact1}}/" class="fa fa-whatsapp">{{bus.Contact1}}</a>
+        {%endif%}
+        <text><span style="font-size:16px;">City:</span>{{bus.City}}</text>
+        <text><span style="font-size:16px;">Country:</span>{{bus.Country}}</text>
+    </div>
+    <form method="post" class="new_renew">
+        {%csrf_token%}
+        <button type='submit' name="Renew">
+            Renew
+        </button>
+        <button type='button' onclick="openForm()">
+            New
+        </button>
+    </form>
+</div>
+<table>
+    <caption>Subscription History</caption>
+    <thead>
+        <tr>
+            <th>Plan</th>
+            <th>Paid on</th>
+            <th>Amount</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for h in history%}
+        <tr>
+            <td onclick="window.location.href='http://127.0.0.1:8000/subscription/{{h.id}}/';" style="color:#2B3856; cursor:pointer;">{{h.Plan.Name}}</td>
+            <td>{{h.DatePaid.date}}</td>
+            <td>{{h.Plan.Price}}</td>
+            <td>{{h.Start.date}}</td>
+            <td>{{h.End.date}}</td>
+            <td>{{h.Status}}</td>
+        </tr>
+    {%endfor%}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>==========</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+
+
+<form method="post" class="planForm" id="planForm">
+    {%csrf_token%}
+    <button type="button" name="newPlan" class="close2" onclick="closeForm()">
+        <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+    </button>
+    <select name="Plan">
+        {%for p in plans%}
+            <option value="{{p.Name}}">{{p.Name}}:{{p.Price}}</option>
+        {%endfor%}
+    </select>
+    <button type="submit" name="newPlan" class="save">
+        Save
+    </button>
+</form>
+
+<script>
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "http://127.0.0.1:8000/addsubscription/{{bus.id}}/";
+    }
+
+    <!--new plan-->
+    let planForm = document.getElementById("planForm");
+
+    function openForm(){
+        planForm.classList.add("openPlanForm");
+    }
+    function closeForm(){
+        planForm.classList.remove("openPlanForm");
+    }
+</script>

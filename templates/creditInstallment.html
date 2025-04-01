@@ -1,0 +1,105 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/creditInstallment.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" onclick="openForm()">
+        <i class="material-icons" style="font-size:18px">add</i>
+    </button>
+    <button type="button" onclick="window.location.href='/credit/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="debtor">
+    <text> <i class="material-icons" style="font-size:20px; color:#2B3856;">person</i> {{credit.Supplier.Name}}</text>
+    <text> <i class="material-icons" style="font-size:20px; color:#2B3856;">email</i> {{credit.Supplier.Email}}</text>
+    <text> <i class="material-icons" style="font-size:20px; color:#2B3856;">phone</i> {{credit.Supplier.Contact}}</text>
+    <text style="display:flex; flex-direction:column;"><span style="color:#2B3856; width:100%;">Note:</span> {{credit.Supplier.Notes}}</text>
+    <text>Remaining: {{remaining}}</text>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Name</th>
+            <th class="sth2">Type</th>
+            <th class="sth3">Quant</th>
+            <th class="sth2">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for i in data%}
+        <tr>
+            <td class="sth1">{{i.Name}}</td>
+            <td class="sth2">{{i.Type}}</td>
+            <td class="sth3">{{i.Quantity}}</td>
+            <td class="sth2">{{i.Price}}</td>
+        </tr>
+    {%endfor%}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="sth1"></td>
+            <td class="sth2"></td>
+            <td class="sth3"></td>
+            <td class="sth2">{{credit.Amount}}</td>
+        </tr>
+    </tfoot>
+</table>
+
+<form method="post" id="InstallmentForm">
+    {%csrf_token%}
+    <label for="amount">Amount</label>
+    <input type="number" id="amount" name="send" value="0" required placeholder="Amount">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="save">Save</button>
+    </div>
+</form>
+
+<script>
+    <!-- form -->
+    let form = document.getElementById("InstallmentForm");
+
+    function openForm(){
+        form.classList.add("openForm");
+    }
+    function closeForm(){
+        form.classList.remove("openForm");
+    }
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>

@@ -1,0 +1,95 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/departments.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+
+<div class="Navigation">
+    <button type = 'button' onclick="openForm()">
+       <i class="material-icons" style="font-size:20px; border:hidden;">add</i>
+    </button>
+    <button type = 'button' onclick="window.location.href='/management/';">
+       <i class="material-icons" style="font-size:20px; border:hidden;">arrow_forward</i>
+    </button>
+</div>
+<div class="section">
+    <text>Departments</text>
+</div>
+<table class="departments">
+    <thead>
+        <tr>
+            <th class="dth1">Department</th>
+            <th class="dth2">Head</th>
+            <th class="dth3">Description</th>
+            <th class="dth4">
+                <i class="material-icons" style="font-size:20px; border:hidden;">person</i>
+                :{{employees_count}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for key, value in departments.items%}
+        <tr>
+            <td class="dth1">
+                <button type="submit" name="department" onclick="window.location.href='/department/{{key}}/';">
+                    {{value.Name}}
+                </button>
+            </td>
+            <td class="dth2">{{value.Head}}</td>
+            <td class="dth3">{{value.Description}}</td>
+            <td class="dth4">{{value.count}}</td>
+        </tr>
+    {%endfor%}
+    </tbody>
+</table>
+<form method="post" id="addDepartment">
+    {%csrf_token%}
+    <p>New Department</p>
+    <label for="name">Department Name</label>
+    <input type="text" id="name" name="name" required maxlength="40" placeholder="">
+    <label for="description">Description</label>
+    <textarea id="description" name="description" required maxlength="390" placeholder=""></textarea>
+    <div class="but">
+        <button type = 'submit' class = 'save' name="save">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeForm()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let addDepartment = document.getElementById("addDepartment");
+
+    function openForm(){
+        addDepartment.classList.add("open_form");
+    }
+    function closeForm(){
+        addDepartment.classList.remove("open_form");
+    }
+
+</script>

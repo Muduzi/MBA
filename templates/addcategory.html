@@ -1,0 +1,87 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/addcategory.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+     <button type="button" onclick="window.location.href='/catalogue/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<div class="container" id="container">
+    <p class="title">Setup a Category</p>
+    <div class="instructions">
+        <text class="instruction">Press 'import' to import an existing category from inventory</text>
+        <text class="instruction">Or</text>
+        <text class="instruction">Press 'create' to create a new category from scratch</text>
+    </div>
+    <div class="import_create">
+        <button type="submit" name="import" onclick="openImport()" class="import">Import</button>
+        <button type="submit" name="create" onclick="openCreate()" class="create">Create</button>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" id="importForm">
+    {%csrf_token%}
+    <label for="inputImage1" class="imageLabel">
+        <img src="{% static '/appdefaults/add-product.png' %}" alt="add image" id="productImage1">
+    </label>
+    <input type="file" id="inputImage1" name="category image" required multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+    <label for="inputName">Select Category</label>
+    <select name="selected_id" required>
+        {%for i in categories%}
+            <option value="{{i.id}}">{{i.Name}}</option>
+        {%endfor%}
+    </select>
+    <div class="but">
+        <button type = 'submit' class = 'save' name="selected">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeImport()">Cancel</button>
+    </div>
+</form>
+
+<form method="post" enctype="multipart/form-data" id="createForm">
+    {%csrf_token%}
+    <label for="inputImage" class="imageLabel">
+        <img src="{% static '/appdefaults/add-product.png' %}" alt="add image" id="productImage">
+    </label>
+    <input type="file" id="inputImage" name="category image" required multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+    <label for="inputName">Category</label>
+    <input type="text" id="inputName" name="category name" required placeholder="Category Name">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="create">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeCreate()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let importForm = document.getElementById("importForm");
+    let createForm = document.getElementById("createForm");
+    let container = document.getElementById("container");
+
+    function openImport(){
+        importForm.classList.add("openForm");
+        container.classList.add("hide");
+    }
+    function closeImport(){
+        importForm.classList.remove("openForm");
+        container.classList.remove("hide");
+    }
+
+    function openCreate(){
+        createForm.classList.add("openForm");
+        container.classList.add("hide");
+    }
+    function closeCreate(){
+        createForm.classList.remove("openForm");
+        container.classList.remove("hide");
+    }
+</script>

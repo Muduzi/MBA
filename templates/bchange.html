@@ -1,0 +1,51 @@
+{%load widget_tweaks%}
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/change.css'%}" xmlns="http://www.w3.org/1999/html">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div class="main">
+    <div class="sub">
+        <div class="exit">
+        <button type = 'button' class = 'exitbutton' onclick="window.location.href='/income/';">Exit</button>
+    </div>
+    <div class="container">
+        <table>
+            <thead>
+                <th>Item</th>
+                <th>Size</th>
+                <th>Quantity</th>
+                <th>C-Cost</th>
+            </thead>
+            <tbody>
+                <tr>
+                    {%for a,i in info.items%}
+                    <td class="title">{{a}}</td>
+                    <td>{{i.size}}</td>
+                    <td>{{i.quantity}}</td>
+                    <td>{{i.amount}}</td>
+                    {%endfor%}
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Paid</td>
+                    <td>{{amount}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Required</td>
+                    <td>{{required}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Excess</td>
+                    <td>{{change}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>

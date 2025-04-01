@@ -1,0 +1,102 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/addproduct.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<form method="post" enctype="multipart/form-data" class="product">
+    {%csrf_token%}
+    <label>Product</label>
+    <input type="text" name="product name" maxlength="20" required {%if buffer_prod%} {%for i in buffer_prod%} value="{{i.name}}" {%endfor%} {%else%} placeholder="product name"{%endif%}>
+    <label>Price</label>
+    <input type="number" name="product price" maxlength="20" required {%if buffer_prod%} {%for i in buffer_prod%} value="{{i.price}}" {%endfor%} {%else%} placeholder="product price" {%endif%}>
+
+    <label>Category</label>
+    <select name="product category">
+        {%if buffer_prod%}
+            {%for i in buffer_prod%}
+                <option value="{{i.Category}}" selected>{{i.Category.name}}</option>
+                {%for c in cat_obj%}
+                    <option value="{{c.id}}">{{c.name}}</option>
+                {%endfor%}
+            {%endfor%}
+        {%else%}
+            {%if selected_cat%}
+                <option selected value="{{selected_cat.id}}">{{selected_cat.name}}</option>
+            {%else%}
+            {%endif%}
+            {%for c in cat_obj%}
+                <option value="{{c.id}}">{{c.name}}</option>
+            {%endfor%}
+        {%endif%}
+    </select>
+    <div class="productImage_input">
+        {%if buffer_prod_phot%}
+            {%for i in buffer_prod_phot%}
+                <div class="saved_images">
+                    <img src="{{i.photo.url}}" alt="images">
+                </div>
+            {%endfor%}
+        {%else%}
+            <label for="productImage">
+                <img src="{% static '/appdefaults/add-photo1.png' %}" alt="add image">
+            </label>
+            <input type="file" id="productImage" name="product images" required multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+    {%endif%}
+    </div>
+    <textarea name="product description" placeholder="Description" required maxlength="159">{%if buffer_prod%} {%for i in buffer_prod%}{{i.Description}} {%endfor%}{%else%}Description {%endif%}</textarea>
+    <button type="submit" name="product">
+       save
+    </button>
+</form>
+
+<div class="features">
+    <table>
+        <thead>
+            <tr>
+                <th class="th1">Feature</th>
+                <th class="th2">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for i in buffer_prod_feat%}
+            <tr>
+                <td class="th1">{{i.name}}</td>
+                <td class="th2">{{i.Description}}</td>
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+    <form method="post">
+        {%csrf_token%}
+        <div class="product_features">
+            <input type="text" name="feature name" maxlength="20" required placeholder="specification name">
+            <textarea name="feature description" required  maxlength="98" placeholder="detail"></textarea>
+        </div>
+        <button type="submit" name="feature" class="add_feature">
+            <i class="material-icons" style="font-size:23px;">add</i>feature
+        </button>
+    </form>
+</div>
+
+
+<form method="post" class="Navigation">
+    {%csrf_token%}
+    <button type="button" class="reset" onclick="window.location.href='http://127.0.0.1:8000/addproduct/';">
+        <i class="material-icons" style="font-size:23px;">refresh</i>
+    </button>
+    <button type="submit" name="save_product" class="commit">
+        commit
+    </button>
+    <button type="button" class="back" onclick="window.location.href='http://127.0.0.1:8000/catalogue/';">
+        <i class="material-icons" style="font-size:23px;">arrow_forward</i>
+    </button>
+</form>

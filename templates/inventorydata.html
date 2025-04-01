@@ -1,0 +1,58 @@
+<div class="Dchart">
+    <canvas id="myDChart" width="258%" height="150%"></canvas>
+</div>
+<div class="Lchart">
+    <canvas id="myLChart" width="470%" height="160%"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myLChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: [{%for i in data%} '{{i.Item}}', {%endfor%}],
+        datasets: [{
+            label: 'Initial Stock',
+            data: [{%for a in data%} {{a.Initial_stock}}, {%endfor%}],
+            borderWidth: 1
+        },
+        {
+            label: 'Current Stock',
+            data: [{%for a in data%} {{a.Current_stock}}, {%endfor%}],
+            borderWidth: 1,
+        }
+        ]
+        },
+        options: {
+            scales: {
+            y: {
+            beginAtZero: true
+            }
+        }
+        }
+    });
+
+    const ctxx = document.getElementById('myDChart');
+
+    new Chart(ctxx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Initial Stock', 'Current Stock'],
+            datasets: [{
+            label: 'Total Amount in Cash(Mkw)',
+            data: [{{initial}}, {{current}}],
+            borderWidth: 1,
+            backgroundColor: [
+            'rgb(54, 162, 235)',
+            ' rgb(255, 0, 0)',
+        ],
+        },
+        ]
+        },
+        options: {
+
+        }
+    });
+
+</script>

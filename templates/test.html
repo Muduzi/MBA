@@ -1,0 +1,36 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/test.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<h1>Barcode Scanner</h1>
+    <img src="{% url 'camera_feed' %}" height="480" width="640">
+    <div id="scanned-barcodes">
+        <h2>Scanned Barcodes:</h2>
+        <ul>
+            {% for barcode in barcodes %}
+                <li>{{ barcode.code }} (scanned at {{ barcode.scanned_at }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        // Update scanned barcodes list every 5 seconds
+        setInterval(function() {
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'http://127.0.0.1:8000/buffer/' %}',
+                success: function(data) {
+                    $('buffer').html(data);
+                }
+            });
+        }, 5000);
+    </script>

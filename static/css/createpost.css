@@ -1,0 +1,166 @@
+.main{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:space-around;
+position:relative;
+width:100%;
+height:100%;
+background:#EDEADE;
+border-radius:15px;
+}
+.Navigation{
+display:flex;
+flex-direction:row;
+align-items:center;
+justify-content:flex-end;
+position:relative;
+position:center;
+width:98%;
+height:6%;
+color:white;
+border:hidden;
+border-radius:15px;
+}
+.Navigation button{
+display:flex;
+flex-direction:row;
+align-items:center;
+justify-content:center;
+position:relative;
+position:center;
+width:4%;
+height:55%;
+color:white;
+font-size:18px;
+border-radius:15px;
+background:#2B3856;
+border:hidden;
+}
+.Navigation button:hover{
+width:5%;
+height:65%;
+opacity:60%;
+}
+
+.formcont{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:space-around;
+position:relative;
+width:50%;
+height:90%;
+background:#F9F6EE;
+border-radius:15px;
+}
+form{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:space-around;
+position:relative;
+width:98%;
+height:100%;
+}
+
+.inputs1{
+display:flex;
+flex-direction:row;
+align-items:center;
+justify-content:flex-start;
+position:relative;
+width:80%;
+height:5%;
+}
+.inputs1 input{
+width:50%;
+height:98%;
+border:1px solid #EDEADE;
+border-radius:10px;
+}
+.inputs1 input:hover{
+width:53%;
+height:100%;
+border:1px solid #E0FFFF;
+border-radius:10px;
+}
+.inputs2{
+display:flex;
+flex-direction:row;
+align-items:center;
+justify-content:center;
+position:relative;
+width:80%;
+height:60%;
+border:hidden;
+border-radius:10px;
+}
+.inputs2 input{
+display:none;
+}
+.inputs2 label{
+width:99%;
+height:99%;
+cursor:pointer;
+background:white;
+border-radius:10px;
+}
+.inputs2 label:hover{
+width:105%;
+height:105%;
+border:1px solid #E0FFFF;
+border-radius:10px;
+}
+img{
+width:100%;
+height:100%;
+border:hidden;
+border-radius:10px;
+}
+.inputs3{
+display:flex;
+flex-direction:row;
+align-items:center;
+justify-content:center;
+position:relative;
+width:80%;
+height:20%;
+border:hidden;
+border-radius:10px;
+}
+.inputs3 textarea{
+width:99%;
+height:99%;
+font-size:15;
+font-weight:500;
+color:#2B3856;
+background:white;
+border:1px solid #EDEADE;
+border-radius:10px;
+}
+.inputs3 textarea:hover{
+width:105%;
+height:105%;
+border:1px solid #E0FFFF;
+border-radius:10px;
+}
+form button{
+display:flex;
+flex-direction:row;
+align-items:center;
+justify-content:center;
+position:relative;
+width:15%;
+height:5%;
+color:white;
+font-size:16;
+background:Teal;
+border:hidden;
+border-radius:10px;
+}
+form button:hover{
+width:16%;
+height:6%;
+opacity:50%;
+}

@@ -1,0 +1,359 @@
+body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    row-gap:10px;
+    width:100vw;
+    height:auto;
+    background:#EDEADE;
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+
+/*messages*/
+.messages{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    align-self:flex-start;
+    justify-content:flex-start;
+    position:fixed;
+    z-index:5;
+    row-gap:15px;
+    width:45%;
+    height:15%;
+    padding:10px;
+    background:rgb(230, 230, 250, 0.95);
+    border-radius:10px;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.message{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:95%;
+    height:20%;
+    color:#2B3856;
+    font-size:16px;;
+}
+.close{
+    align-self:flex-end;
+    background:transparent;
+    border:hidden;
+}
+.close:hover{
+    cursor:pointer;
+    color:white;
+    background:#2B3856;
+}
+
+
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:50%;
+    height:32px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+    border:hidden;
+    border-radius:10px;
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.header_frame{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:40%;
+    height:35%;
+}
+h1{
+    font-size:25px;
+
+}
+h2{
+    font-size:17px;
+    font-weight:400;
+}
+
+h3{
+    font-size:15px;
+    font-weight:400;
+}
+h4{
+    text-align:center;
+    font-size:13px;
+    font-weight:300;
+
+}
+
+p{
+    font-size:17px;
+    font-weight:500;
+    margin-top:50pt;
+}
+.receiver{
+    margin-top:30px;
+    padding-bottom:20px;
+}
+text{
+    text-align:center;
+    font-size:15px;
+    font-weight:400;
+}
+
+
+table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:50%;
+    min-height:auto;
+    max-height:50%
+    overflow-y:scroll;
+}
+thead{
+    position:sticky;
+    top:0;
+    z-index:2;
+    width:100%;
+    height:35px;
+    font-size:15px;
+    background:#EDEADE;
+}
+tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:35px;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    width:25%;
+    height:100%;
+    font-size:15px;
+    font-weight:500;
+    padding-left:5px;
+    border:1px solid black;
+}
+
+tbody{
+    width:100%;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    width:25%;
+    height:100%;
+    color:rgb(54, 69, 79);
+    font-size:14px;
+    padding-left:3px;
+    border:1px solid black;
+    border-top:hidden;
+}
+
+tfoot{
+    width:100%;
+}
+.titles{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    width:76%;
+    height:100%;
+    color:black
+    padding-left:0px;
+    margin-right:2px;
+    border:hidden;
+}
+
+.invoice_form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:absolute;
+    z-index:3;
+    top:8%;
+    width:360px;
+    height:750px;
+    font-size:15px;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10;
+    padding-bottom:10px;
+    background:#EDEADE;
+    border-radius:10px;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+}
+form text{
+    color:rgb(54, 69, 79);
+    font-size:18px;
+}
+.openForm{
+    display:flex;
+    visibility:visible;
+}
+form label{
+    color:rgb(54, 69, 79);
+    font-size:15px;
+}
+
+form input{
+    width:100%;
+    height:35px;
+    font-size:14px;
+    color:#5D6166;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+
+form textarea{
+    color:#5D6166;
+    font-size:14px;
+    padding:5px;
+    width:100%;
+    height:100px;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+
+form button{
+    align-self:center;
+    width:100px;
+    height:30px;
+    color:#5D6166;
+    font-weight:550;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+form button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.signature{
+    padding-top:10px;
+    margin-top:10px;
+}
+.signature text{
+    font-size:15px;
+}
+
+.footer_frame{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:relative;
+    width:50%;
+    height:15%;
+}
+
+@media(max-width:1000px){
+
+    .Navigation{
+        width:85%;
+    }
+    .header_frame{
+        width:60%;
+        height:60%;
+    }
+
+    table{
+        width:85%;
+    }
+    .footer_frame{
+        width:85%;
+    }
+}
+
+@media(max-width:430px){
+
+    .Navigation{
+        width:95%;
+    }
+    .header_frame{
+        width:95%;
+        height:30%;
+    }
+
+    h2{
+        font-size:14px;
+    }
+    h3{
+        font-size:13px;
+    }
+    h4{
+        font-size:13px;
+    }
+
+
+
+    .invoice_form{
+        top:10%;
+        height:900px;
+    }
+    .input_category1{
+        width:100%;
+        height:45%;
+    }
+    .input_category2{
+        width:100%;
+        height:45%;
+    }
+
+
+    table{
+        width:95%;
+    }
+    th{
+        font-size:14px;
+    }
+    td{
+        font-size:13px;
+    }
+
+    .footer_frame{
+        width:95%;
+    }
+    .signature text{
+        font-size:14px;
+    }
+}

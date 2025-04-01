@@ -1,0 +1,233 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/invoices.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>&nbsp;{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>&nbsp;{{message}}</text>
+                <div class="message_options">
+                     <button type="button" onclick="closeMssg()">
+                        No
+                    </button>
+                     <button type="submit" name="confirm_delete" value="{{invoice_id}}">
+                        Yes
+                    </button>
+                </div>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>&nbsp;{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>&nbsp;{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+
+<div class="Navigation">
+    <button type="button" class="nav3" onclick="window.history.back()">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
+<div class="container">
+    <div class="information">
+        <text class="card_title">Pending Invoices</text>
+        <div class="info">
+            <text class="value">{{pending_invoices_stats.count}}</text>
+            <text class="title">Invoice</text>
+        </div>
+        <div class="info">
+            <text class="value">{{pending_invoices_stats.items}}</text>
+            <text class="title">Items</text>
+        </div>
+        <div class="info">
+            <text class="value" style="color:green;">{{pending_invoices_stats.total}}</text>
+            <text class="title">Total</text>
+        </div>
+    </div>
+    <div class="bar_graph">
+        <canvas id="barGraph"></canvas>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="ith1">Invoice no</th>
+            <th class="pth1">Date</th>
+            <th class="ith2">Receiver</th>
+            <th class="ith1">Total</th>
+            <th class="ith1">VAT</th>
+            <th class="pth2">Validity Until</th>
+            <th class="ith1"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for v in pending_invoices%}
+            <tr>
+                <td class="ith1" onclick="window.location.href='/invoice/{{v.id}}/';">{{v.id}}</td>
+                <td class="pth1">{{v.Date.date}}</td>
+                <td class="ith2">{{v.Receiver.Name}}</td>
+                <td class="ith1">{{v.GrandTotal}}</td>
+                <td class="ith1">{{v.VAT}}</td>
+                <td class="pth2">{{v.ValidityLimit.date}}</td>
+                <td class="ith1">
+                    <form method="post">
+                        {%csrf_token%}
+                        <button type="submit"  name="delete_invoice" value="{{v.id}}" style="color:rgb(54, 69, 79);">
+                            <i class="material-icons" style="font-size:19px;">delete</i>
+                        </button>
+                        <button type="submit" name="process_invoice" value="{{v.id}}" {%if v.Status %} style="color:green;"  disabled {%else%} style="color:gray;" {%endif%}>
+                            <i class="material-icons" style="font-size:19px;">check</i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+        {%for v in overdue_invoices%}
+            <tr>
+                <td class="ith1" onclick="window.location.href='/invoice/{{v.id}}/';">{{v.id}}</td>
+                <td class="pth1">{{v.Date.date}}</td>
+                <td class="ith2">{{v.Receiver.Name}}</td>
+                <td class="ith1">{{v.GrandTotal}}</td>
+                <td class="ith1">{{v.VAT}}</td>
+                <td class="pth1">{{v.ValidityLimit.date}}</td>
+                <td class="ith1">
+                    <form method="post">
+                        {%csrf_token%}
+                        <button type="submit"  name="delete_invoice" value="{{v.id}}" style="color:rgb(54, 69, 79) ">
+                            <i class="material-icons" style="font-size:19px;">delete</i>
+                        </button>
+                        <button type="submit"  name="process_invoice" value="{{v.id}}" style="color:black;">
+                            <i class="material-icons" style="font-size:19px;">check</i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+        {%for v in processed_invoices%}
+            <tr>
+                <td class="ith1" onclick="window.location.href='/invoice/{{v.id}}/';">{{v.id}}</td>
+                <td class="pth1">{{v.Date.date}}</td>
+                <td class="ith2">{{v.Receiver.Name}}</td>
+                <td class="ith1">{{v.GrandTotal}}</td>
+                <td class="ith1">{{v.VAT}}</td>
+                <td class="pth2">{{v.ValidityLimit.date}}</td>
+                <td class="ith1">
+                    <form method="post">
+                        {%csrf_token%}
+                        <button type="submit" disabled name="delete_invoice" value="{{v.id}}" style="color:rgb(54, 69, 79, 0.2);">
+                            <i class="material-icons" style="font-size:19px;">delete</i>
+                        </button>
+                        <button type="button" name="process_invoice" value="{{v.id}}" {%if v.Status %} style="color:green;" disabled {%else%} style="color:gray;" {%endif%}>
+                            <i class="material-icons" style="font-size:19px;">check</i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<script>
+    const barGraph = document.getElementById('barGraph');
+
+    new Chart(barGraph, {
+        type: 'bar',
+        data: {
+            labels:['Pending', 'Processed', 'Overdue'],
+            datasets: [{
+                label: 'Invoices',
+                data: [{{pending_invoices_stats.total}}, {{processed_invoices_stats.total}}, {{overdue_invoices_stats.total}}],
+                borderWidth: 0,
+                borderColor: '#8A2BE2',
+                backgroundColor: [
+                    '#908f8f',
+                    'green',
+                    'black',
+                    ],
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            },
+            plugins: {
+                datalabels: {
+                    formatter: (value, context) =>{
+                        if (value>1000,000,000){
+                            return(value/1000,000,0000) + 'B';
+                        }if (value>1000,000){
+                            return(value/1000,000) + 'M';
+                        }if (value>1000){
+                            return(value/1000) + 'k';
+                        }return value;
+
+                        console.log(value);
+
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>
+
+<form method="post">
+    {%csrf_token%}
+    <P>Press Okay to confirm to process invoice</P>
+    <text>Note&nbsp;:&nbsp;this process is irreversible</text>
+    <div class="but">
+        <button type="submit" name="confirm_process_invoice" value="{{process_this_invoice}}">
+            Okay
+        </button>
+        <button type="submit" name="don't_process_invoice">
+            Cancel
+        </button>
+    </div>
+</form>

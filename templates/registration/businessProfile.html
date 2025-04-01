@@ -1,0 +1,74 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/businessProfile.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    {%if request.user == ini.Owner%}
+        <button type="button" onclick="window.location.href='/edit_business_profile/';">
+            <i class="material-icons" style="font-size:20px;">edit</i>
+        </button>
+    {%else%}
+    {%endif%}
+    <button type="button" onclick="window.location.href='/business/';">
+        <i class="material-icons" style="font-size:20px;">arrow_forward</i>
+    </button>
+</div>
+
+<div class="profile">
+    <div class="key_details">
+        <div class="profile_photo">
+            {%if ini.Photo.url != None%}
+                <img src="{{ini.Photo.url}}" id="profile-pic" onclick="window.location.href='/business_profile/';">
+            {%else%}
+                <img src="{%static '/appdefaults/add-photo4.png'%}" onclick="window.location.href='/business_profile/';">
+            {%endif%}
+        </div>
+        <text><i class="material-icons" style="font-size:18px;">store</i>{{ini.Name}}</text>
+        <text><i class="material-icons" style="font-size:18px;">label_outline</i>{{ini.Type}}</text>
+        <text><i class="material-icons" style="font-size:18px;">email</i>{{ini.Email}}</text>
+        <text><i class="material-icons" style="font-size:18px;">call</i>{{ini.Contact1}}</text>
+        <text><i class="material-icons" style="font-size:20px;">call</i>{{ini.Contact2}}</text>
+    </div>
+    <div class="extra_details">
+        <article><span><u>About</u>&nbsp;:&nbsp;</span>{{ini.About}}</article>
+        <table>
+            <tbody>
+                <tr>
+                    <td class="td1">City</td>
+                    <td class="td2">:&nbsp;{{ini.City}}</td>
+                </tr>
+                <tr>
+                    <td class="td1">Country</td>
+                    <td class="td2">:&nbsp;{{ini.Country}}</td>
+                </tr>
+                <tr>
+                    <td class="td1">Postcode</td>
+                    <td class="td2">:&nbsp;{{ini.PostBox}}</td>
+                </tr>
+                <tr>
+                    <td class="td1">Zipcode</td>
+                    <td class="td2">:&nbsp;{{ini.ZipCode}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <article><span><u>Physical Address</u>&nbsp;:&nbsp;</span>{{ini.Address}}</article>
+        <div class="social_media">
+            <a href="http://{{ini.Instagram}}" class="fa fa-instagram"></a>
+            <a href="http://{{ini.Facebook}}}" class="fa fa-facebook"></a>
+            <a href="http://{{ini.Linkedin}}" class="fa fa-linkedin"></a>
+        </div>
+    </div>
+</div>
+
+
+<script>
+</script>

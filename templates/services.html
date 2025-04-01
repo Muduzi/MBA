@@ -1,0 +1,194 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/services.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="openService()">
+        <i class="material-icons" style="font-size:18px">add</i>service
+    </button>
+    <button type="button" onclick="openPackage()">
+        <i class="material-icons" style="font-size:18px">add</i>package
+    </button>
+    <button type="button" onclick="openCategory()">
+        <i class="material-icons" style="font-size:18px">add</i>
+        Category
+    </button>
+     <button type="button" onclick="window.location.href='/service_income/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<text class="section">Packages</text>
+<div class="packages">
+    {%for key, value in packages.items%}
+        <div class="package" onclick="window.location.href='/package/{{key}}/';">
+            <text class="package_name">{{value.Name|slice:":25"}}
+                {%if value.Name|length > 25 %}
+                    <span>...</span>
+                {%endif%}
+            </text>
+            <text style="font-size:16px;">
+                K&nbsp;{{value.Price}}
+            </text>
+            <text class="service_count">{{value.Count}} services</text>
+        </div>
+    {%endfor%}
+
+</div>
+
+<text class="section">Services</text>
+
+<table class="services">
+    <thead>
+        <tr>
+            <th class="sth1">Service</th>
+            <th class="sth1">Category</th>
+            <th class="sth2">Description</th>
+            <th class="sth3">Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for s in services%}
+            <tr>
+                <td class="sth1" style="color:#2B3856; cursor:hand;" onclick="window.location.href='/service/{{s.id}}/';">{{s.Name}}</td>
+                <td class="sth1">{{s.Category.Name}}</td>
+                <td class="sth2">{{s.Description}}</td>
+                <td class="sth3">{{s.Price}}</td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<form method="post" id="createCategory">
+    {%csrf_token%}
+    <text>Create Category</text>
+    <label for="categoryName">Amount</label>
+    <input type="text" id="categoryName" name="categoryName" placeholder="Name of the category" required>
+    <label for="categoryNotes">Notes</label>
+    <textarea id="categoryNotes" name="categoryNotes" placeholder="1-200" maxlength="200" required></textarea>
+    <div class="but">
+        <button type = 'submit' name="createCategory">Save</button>
+        <button type = 'button' onclick="closeCategory()">Cancel</button>
+    </div>
+</form>
+
+<form method="post" id="createService">
+    {%csrf_token%}
+    <label for="name">Name</label>
+    <input id="name" name="name" required maxlength="41">
+    <label for="selectCategory">Category</label>
+    <select id="selectCategory" name="category" required>
+        {%for c in categories%}
+            <option value="{{c.id}}">{{c.Name}}</option>
+        {%endfor%}
+    </select>
+    <label for="chargingCriteria">ChargingCriteria</label>
+    <select id="chargingCriteria" name="chargingCriteria" required>
+        <option value="per specified duration">Per hour</option>
+        <option value="Per service">Per service</option>
+        <option value="agreed condition">Agreed condition</option>
+    </select>
+    <label for="servicePrice">Price</label>
+    <input type="number" id="servicePrice" name="price" required>
+    <label for="description">Description</label>
+    <textarea id="description" name="description" required maxlength="148" placeholder="1-148"></textarea>
+    <div class="but">
+        <button type = 'submit'  name="createService">Save</button>
+        <button type = 'button'  onclick="closeService()">Cancel</button>
+    </div>
+</form>
+
+<form method="post" id="createPackage">
+    {%csrf_token%}
+    <text>Create Service Package</text>
+    <label for="packageName">Package name</label>
+    <input type="text" id="packageName" name="packageName" required maxlength="48">
+    <label for="selectCategory1">Category</label>
+    <select id="selectCategory1" name="category" required>
+        {%for c in categories%}
+            <option value="{{c.id}}">{{c.Name}}</option>
+        {%endfor%}
+    </select>
+    <label for="services">Select services:</label>
+    <select id="services" name="choices" multiple size="5" class="packageSelect">
+        {%for s in services%}
+            {%if s.Package%}
+                <option value="{{s.Name}}" disabled style="opacity:30%;">{{s.Name}}</option>
+            {%else%}
+                <option value="{{s.Name}}">{{s.Name}}</option>
+            {%endif%}
+        {%endfor%}
+    </select>
+    <label for="packagePrice">Price</label>
+    <input type="number" id="packagePrice" name="price" required>
+    <div class="but">
+        <button type = 'submit' name="createPackage">Save</button>
+        <button type = 'button' onclick="closePackage()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let sc = document.getElementById("createCategory");
+    let cs = document.getElementById("createService");
+    let cp = document.getElementById("createPackage");
+
+    <!--open category-->
+    function openCategory(){
+        sc.classList.add("createCategory");
+    }
+    function closeCategory(){
+        sc.classList.remove("createCategory");
+    }
+
+    <!--open service-->
+    function openService(){
+        cs.classList.add("createService");
+    }
+    function closeService(){
+        cs.classList.remove("createService");
+    }
+
+    <!--open package-->
+    function openPackage(){
+        cp.classList.add("createPackage");
+    }
+    function closePackage(){
+        cp.classList.remove("createPackage");
+    }
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "/services/";
+    }
+</script>

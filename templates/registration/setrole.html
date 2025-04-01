@@ -1,0 +1,39 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/setrole.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" class="navb" onclick="window.location.href='/profilef/';">
+        <i class="material-icons">arrow_forward</i>
+    </button>
+</div>
+<p>How do you want to use the app?</p>
+<form method="post">
+    {%csrf_token%}
+    <div class="inputs">
+        <label for="Buyer">1. Buying</label>
+        <input type="radio" id="Buyer" value="Buyer" name="role">
+    </div>
+     <div class="inputs">
+        <label for="Seller">2. Selling</label>
+         <input type="radio" id="Seller" value="Seller" name="role">
+    </div>
+     <div class="inputs">
+        <label for="Both(B&S)">3. Both(B&S)</label>
+         <input type="radio" id="Both(B&S)" value="Both(B&S)" name="role">
+    </div>
+     <div class="inputs">
+        <label for="Work">4. Work</label>
+         <input type="radio" id="Work" value="Work" name="role">
+    </div>
+    <button type="submit">Save</button>
+</form>

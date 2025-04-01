@@ -1,0 +1,209 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/employeeForm.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick=" closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type = 'button' onclick="window.location.href='/department/{{ID}}/';">
+       <i class="material-icons" style="font-size:20px; border:hidden;">arrow_forward</i>
+    </button>
+</div>
+
+<div class="profile">
+    {%if employee%}
+        <div class="profilePicture">
+            {%if employee.User.profile.Photo%}
+             <img src="{{employee.User.profile.Photo.url}}" alt="add image" width=100 height=100 class="rounded-circle">
+            {%else%}
+            <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+            {%endif%}
+        </div>
+        <table>
+            <tr>
+                <td class="title">Name</td>
+                <td class="value">: &nbsp;{{employee.User}}</td>
+            </tr>
+            <tr>
+                <td class="title">Gender</td>
+                <td  class="value">: &nbsp;{{employee.User.profile.Gender}}</td>
+            </tr>
+            <tr>
+                <td class="title">D.O.B</td>
+                <td class="value">: &nbsp;{{employee.User.profile.DOB}}</td>
+            </tr>
+            <tr>
+                <td class="title">About</td>
+                <td class="value">: &nbsp;{{employee.User.profile.About}}</td>
+            </tr>
+            <tr>
+                <td class="title">Contact 1</td>
+                <td class="value">: &nbsp;{{employee.User.profile.Contact1}}</td>
+            </tr>
+            {%if employee.User.profile.Contact2%}
+            <tr>
+                <td class="title">Contact 2</td>
+                <td class="value">: &nbsp;{{employee.User.profile.Contact2}}</td>
+            </tr>
+            {%endif%}
+            <tr>
+                <td class="title">From</td>
+                <td class="value">: &nbsp;{{employee.User.profile.City}},  &nbsp;{{employee.User.profile.Country}}</td>
+            </tr>
+        </table>
+    {%else%}
+        <div class="profilePicture">
+            {%if profile.photo%}
+             <img src="{{candidate.profile.photo.url}}" alt="add image" width=100 height=100 class="rounded-circle">
+            {%else%}
+            <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+            {%endif%}
+        </div>
+        <table>
+            <tr>
+                <td class="title">Name</td>
+                <td class="value">: &nbsp;{{candidate}}</td>
+            </tr>
+            <tr>
+                <td class="title">Gender</td>
+                <td  class="value">: &nbsp;{{profile.Gender}}</td>
+            </tr>
+            <tr>
+                <td class="title">D.O.B</td>
+                <td class="value">: &nbsp;{{profile.DOB}}</td>
+            </tr>
+            <tr>
+                <td class="title">About</td>
+                <td class="value">: &nbsp;{{profile.About}}</td>
+            </tr>
+            <tr>
+                <td class="title">Contact 1</td>
+                <td class="value">: &nbsp;{{profile.Contact1}}</td>
+            </tr>
+            {%if profile.Contact2%}
+            <tr>
+                <td class="title">Contact 2</td>
+                <td class="value">: &nbsp;{{profile.Contact2}}</td>
+            </tr>
+            {%endif%}
+            <tr>
+                <td class="title">From</td>
+                <td class="value">: &nbsp;{{profile.City}},  &nbsp;{{profile.Country}}</td>
+            </tr>
+        </table>
+    {%endif%}
+</div>
+
+<form method="post" id="addEmployee">
+    {%csrf_token%}
+    <text class="stage">Employee Record</text>
+    <label for="position">Position</label>
+    <input type="text" id="position" name="position" value="{{employee.Position}}" required maxlength="50" placeholder="position">
+
+    <label for="Access_level">Access Level</label>
+    <select id="Access_level" name="access_level">
+        {%if employee.Access_level%}
+            <option value="{{employee.Access_level}}" selected>{{employee.Access_level}}</option>
+        {%endif%}
+        {%for i in groups%}
+            <option value="{{i.name}}">{{i.name}}</option>
+        {%endfor%}
+    </select>
+
+    <label for="salary">Salaries:</label>
+    <input type="number" id="salary" name="salary" value="{{employee.Salary}}" required placeholder="Salary">
+
+    <label for="salary_intervals">Salary Interval</label>
+    <select id="salary_intervals" name="salary_interval">
+        {%if employee.Interval%}
+            <option value="{{employee.Interval}}" selected>{{employee.Interval}}</option>
+        {%endif%}
+        {%for i in salary_intervals%}
+            <option value="{{i}}">{{i}}</option>
+        {%endfor%}
+    </select>
+
+    <label for="duty">Duty</label>
+    <textarea id="duty" name="duty" required placeholder="Duties" maxlength="190">{{employee.Duty}}</textarea>
+
+    <div class="but">
+        <button type = 'submit' class = 'save_employee' name="save">Save</button>
+    </div>
+</form>
+
+<form method="post">
+    {%csrf_token%}
+    <text class="stage">Add Allowances</text>
+    <table>
+        <thead>
+            <tr>
+                <th class="sth1">Name</th>
+                <th class="sth2">Interval</th>
+                <th class="sth3">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for allowance in employee_allowance%}
+                 <tr>
+                    <td class="sth1">{{allowance.Name}}</td>
+                    <td class="sth2">{{allowance.Interval}}</td>
+                    <td class="sth3">{{allowance.Amount}}</td>
+                </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+    <div class="input_container">
+        <label for="name">Name &nbsp; : &nbsp;</label>
+        <input type="text" id="name" name="name" maxlength="30" placeholder="name of the allowance">
+    </div>
+
+    <div class="input_container">
+        <label for="interval">Interval &nbsp; : &nbsp;</label>
+        <select id="interval" name="interval">
+            {%for i in allowance_intervals%}
+                <option value="{{i}}">{{i}}</option>
+            {%endfor%}
+        </select>
+    </div>
+
+    <div class="input_container">
+        <label for="Amount">Amount &nbsp; : &nbsp;</label>
+        <input type="number" id="Amount" name="amount" placeholder="allowance of the amount">
+    </div>
+
+    <div class="but">
+        <button type = 'submit' class = 'add_allowance' name="add_allowance">Add</button>
+    </div>
+</form>
+
+<script>
+    function closeMssg(){
+        window.location.href='/employee_form/edit/{{employee.id}}/{{ID}}/';
+    }
+</script>

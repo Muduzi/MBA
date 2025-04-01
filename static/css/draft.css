@@ -1,0 +1,446 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    row-gap:2%;
+    column-gap:10%;
+    width:100vw;
+    height:100vh;
+    background-image: linear-gradient(to bottom, rgb(63, 0, 255), RGB(0, 0, 137), RGB(0, 0, 92), RGB(0, 0, 28));
+    overflow:hidden;
+}
+
+.product{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    top:4%;
+    width:35%;
+    height:85%;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background:rgba(10,10,10, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius:10px;
+}
+
+label{
+    color:white;
+}
+input{
+    color:#EDEADE;
+    font-size:14px;
+    border-radius:10px;
+    border:hidden;
+}
+.product input{
+    width:50%;
+    height:6%;
+    background:transparent;
+    border:1px solid white;
+}
+.product select{
+    width:auto;
+    height:6%;
+    color:#EDEADE;
+    border-radius:10px;
+    background:transparent;
+    border:1px solid white;
+}
+textarea{
+    color:#EDEADE;
+    font-size:14px;
+    border-radius:10px;
+    background:transparent;
+    border:1px solid white;
+}
+.product textarea{
+    width:80%;
+    height:10%;
+}
+.productImage_input{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-evenly;
+    width:98%;
+    height:40%;
+    border-radius:10px;
+    overflow-y:scroll;
+}
+.productImage_input label{
+    width:60%;
+    height:80%;
+}
+img{
+    width:100%;
+    height:100%;
+}
+.saved_images{
+    width:50%;
+    height:50%;
+}
+.productImage_input input{
+    display:none;
+    visibility:hidden;
+}
+
+button{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-evenly;
+    position:relative;
+    font-size:15px;
+    border-radius:10px;
+}
+.product button{
+    width:15%;
+    height:5%;
+    color:white;
+    background:transparent;
+    border:1px solid white;
+}
+.product button:hover{
+    color:RGB(0, 0, 28);
+    background:white;
+}
+
+.features{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    position:relative;
+    top:2.5%;
+    width:40%;
+    height:85%;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background:rgba(10,10,10, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius:10px;
+}
+table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:100%;
+    height:75%;
+    border-radius:10px 10px 0px 0px;
+    overflow-y:scroll;
+}
+
+thead{
+    position:sticky;
+    top:0;
+    z-index:2;
+    width:100%;
+    height:30px;
+    color:white;
+    font-size:15px;
+    background:rgba(10,10,10, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius:10px 10px 0px 0px;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+}
+
+.th1{
+     text-align:left;
+     width:30%;
+}
+.th2{
+     text-align:left;
+     width:65%;
+}
+
+tbody{
+    width:100%;
+}
+tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30px;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    color:#F9F6EE;
+    font-size:14px;
+}
+.features form{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:15%;
+}
+.product_features{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:40%;
+}
+.product_features input{
+    width:30%;
+    height:100%;
+    border-radius:10px;
+    background:transparent;
+    border:1px solid white;
+}
+.product_features textarea{
+    width:68%;
+    height:100%;
+    font-size:14px;
+    background:transparent;
+    border:1px solid white;
+}
+.add_feature{
+    width:auto;
+    height:37%;
+    color:white;
+    background:transparent;
+    border:1px solid white;
+
+}
+.add_feature:hover{
+    color:RGB(0, 0, 28);
+    background:white;
+}
+
+.Navigation{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:25%;
+    height:6%;
+    background:rgba(10,10,10, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius:10px;
+}
+
+.Navigation button{
+    width:23%;
+    height:80%;
+    border:hidden;
+}
+
+.reset{
+    color:white;
+    background:transparent;
+}
+.reset:hover{
+    color:white;
+    border:1px solid white;
+}
+.commit{
+    color:#009900;
+    background:transparent;
+    border:1px solid #009900;
+}
+.commit:hover{
+    color:white;
+    background:#009900;
+
+}
+.back{
+    color:white;
+    background:transparent;
+}
+.back:hover{
+    color:white;
+    border:1px solid white;
+}
+
+@media(max-width:768px){
+    body{
+        flex-direction:column;
+        flex-wrap:nowrap;
+        justify-content:space-between;
+        row-gap:0;
+        height:350%;
+        overflow-y:scroll;
+    }
+
+    .product{
+        top:0%;
+        width:90%;
+        height:48%;
+        padding-left:5%;
+        padding-right:5%;
+    }
+
+    input{
+        font-size:13px;
+    }
+    .product input{
+        width:50%;
+    }
+
+    textarea{
+        font-size:13px;
+    }
+    .product textarea{
+        width:80%;
+        font-size:13px;
+    }
+
+    button{
+        font-size:13px;
+    }
+    .product button{
+        width:16%;
+        height:6%;
+    }
+    .product button:hover{
+        width:17%;
+        height:7%;
+    }
+
+    .features{
+        width:90%;
+        height:48%;
+    }
+    .features table{
+        height:70%;
+    }
+    .features form{
+        width:100%;
+        height:28%;
+    }
+    .product_features{
+        flex-direction:column;
+        align-items:flex-start;
+        width:100%;
+        height:80%;
+    }
+    .product_features input{
+        width:40%;
+        height:28%;
+    }
+    .product_features textarea{
+        width:80%;
+        height:50%;
+    }
+    .add_feature{
+        align-self:center;
+        width:18%;
+        height:20%;
+    }
+    .add_feature:hover{
+        width:26%;
+        height:21%;
+    }
+
+    .Navigation{
+        width:60%;
+        height:4%;
+    }
+
+}
+
+@media(max-width:430px){
+    body{
+        height:200%;
+        overflow-y:scroll;
+    }
+
+    .product{
+        top:0%;
+        width:100%;
+        height:48%;
+    }
+
+    .product input{
+        width:70%;
+    }
+
+    .product textarea{
+        width:100%;
+    }
+
+    .product button{
+        width:20%;
+        height:5%;
+    }
+    .product button:hover{
+        width:21%;
+        height:6%;
+    }
+
+    .features{
+        width:100%;
+        height:48%;
+    }
+    .features table{
+        height:70%;
+    }
+
+    .product_features input{
+        width:50%;
+    }
+    .product_features textarea{
+        width:100%;
+    }
+    .add_feature{
+        align-self:center;
+        width:25%;
+        height:20%;
+    }
+    .add_feature:hover{
+        width:26%;
+        height:21%;
+    }
+
+    .Navigation{
+        width:98%;
+        height:4%;
+    }
+
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(10, 0, 66, 0.1);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: gray;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

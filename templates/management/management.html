@@ -1,0 +1,380 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/management.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type = 'button' onclick="window.location.href='http://127.0.0.1:8000/subscriptions/';">
+        subscriptions
+    </button>
+</div>
+
+<text class="sp">Subscription Plans</text>
+
+<table class="subscriptions">
+    <thead>
+        <tr>
+            {%for i in plans%}
+                {%if i.Name == "Bronze"%}
+                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:#432c17;">{{i.Name}}</th>
+                {%elif i.Name == "Silver"%}
+                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(192,192,192);">{{i.Name}}</th>
+                {%elif i.Name == "Gold"%}
+                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(255,215,0);">{{i.Name}}</th>
+                {%elif i.Name == "Diamond"%}
+                <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(184,216,231);">{{i.Name}}</th>
+                {%elif i.Name == "Platinum"%}
+                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(229,228,226);">{{i.Name}}</th>
+                {%endif%}
+            {%endfor%}
+        </tr>
+    </thead>
+    <tbody>
+        {%for f in features%}
+            <tr>
+                {%for pf in  pf_container.values%}
+                    {%if f in pf%}
+                        <td class="yes_no">{{f.Name}}</td>
+                    {%else%}
+                        <td class="yes_no">-----</td>
+                    {%endif%}
+                {%endfor%}
+            </tr>
+        {%endfor%}
+    </tbody>
+    <tfoot>
+        <tr>
+            {%for i in plans%}
+                {%if i.Name == "Bronze"%}
+                    <td class="plan" style="color:#432c17;">
+                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
+                        {{i.Price}}
+                    </td>
+                {%elif i.Name == "Silver"%}
+                    <td class="plan"  style="color:rgb(192,192,192);">
+                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
+                        {{i.Price}}
+                    </td>
+                {%elif i.Name == "Gold"%}
+                    <td class="plan" style="color:rgb(255,215,0);">
+                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
+                        {{i.Price}}
+                    </td>
+                {%elif i.Name == "Diamond"%}
+                    <td class="plan" style="color:rgb(184,216,231);">
+                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
+                        {{i.Price}}
+                    </td>
+                {%elif i.Name == "Platinum"%}
+                    <td class="plan" style="color:rgb(229,228,226);">
+                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
+                        {{i.Price}}
+                    </td>
+                {%endif%}
+            {%endfor%}
+        </tr>
+    </tfoot>
+</table>
+<div class="section">
+    <p>Monthly Performance This Year</p>
+</div>
+<div class="graph1">
+    <canvas id="myLChartA"></canvas>
+</div>
+<div class="information">
+    <div class="info">
+        <text class="title">Upgrades</text>
+        <text class="content1">
+            {{upgrades}}
+        </text>
+        {%if upgrades_perc > downgrades_perc%}
+            <text class="content2" style="color:green">
+                %{{upgrades_perc}}
+            </text>
+        {%elif upgrades_perc < downgrades_perc%}
+            <text class="content2" style="color:red">
+                %{{upgrades_perc}}
+            </text>
+        {%else%}
+            <text class="content2">
+                %{{upgrades_perc}}
+            </text>
+        {%endif%}
+    </div>
+    <div class="info">
+        <text class="title">Downgrades</text>
+        <text class="content1">
+            {{downgrades}}
+        </text>
+        {%if downgrades_perc > upgrades_perc%}
+            <text class="content2" style="color:red;">
+                %{{downgrades_perc}}
+            </text>
+        {%else%}
+            <text class="content2" style="color:green">
+                %{{downgrades_perc}}
+            </text>
+        {%endif%}
+    </div>
+    <div class="info">
+        <text class="title">Maintaining</text>
+        <text class="content1">
+            {{maintaining}}
+        </text>
+        <text class="content2">
+            %{{maintaining_perc}}
+        </text>
+    </div>
+    <div class="info">
+        <text class="title">Non-renewal</text>
+        <text class="content1">
+            {{non_renewal}}
+        </text>
+        <text class="content2">
+            %{{non_renewal_perc}}
+        </text>
+    </div>
+</div>
+<div class="total_average">
+    <canvas id="doughnut"></canvas>
+</div>
+
+<div class="section">
+    <p>Monthly Performance Per Package</p>
+</div>
+<div class="graph2">
+    <canvas id="myLChartB"></canvas>
+</div>
+<table class="active_customers">
+    <thead>
+        <tr>
+            <th class="name">Active Customers</th>
+            <th class="package">Package</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for a in active_customers%}
+            <tr>
+                <td class="name" onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{a.Business.id}}/';">
+                    <img src="{{a.Business.photo.url}}" alt="!">
+                    {{a.Business.Name}}
+                </td>
+                <td class="package" onclick="window.location.href='http://127.0.0.1:8000/subscription/{{a.id}}/';">{{a.Plan.Name}}</td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+<div class="section">
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+    const doughnut = document.getElementById('doughnut');
+
+    new Chart(doughnut, {
+        type: 'doughnut',
+        data: {
+            labels: ['total count', 'active'],
+            datasets: [
+                {
+                    label: 'active subscribers',
+                    data: [{%for i in average_perc.values%} {{i}}, {%endfor%}],
+                    borderWidth: 0,
+                    borderColor: 'gray',
+                    backgroundColor:['gray', 'green'],
+                    radius: 90,
+                },
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+
+        }
+    });
+
+    const lChartA = document.getElementById('myLChartA');
+
+    new Chart(lChartA, {
+        type: 'bar',
+        data: {
+            labels: [{%for i in overall_monthly_record.keys%} '{{i}}', {%endfor%}],
+            datasets: [{
+                label: 'Sales this year',
+                data: [{%for i in overall_monthly_record.values%} '{{i.total}}', {%endfor%}],
+                borderWidth: 1,
+                borderColor: '#0039a6',
+                backgroundColor: '#0039a6',
+                 fill: {
+                    target: 'origin',
+                    above: '#E0FFFF',   // Area will be red above the origin
+                    below: '#AFDBF5'    // And blue below the origin
+                    }
+                },
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                },
+                x: {
+                    beginAtZero: true
+                }
+
+            },
+            plugins: {
+                datalabels: {
+                    formatter: (value, context) =>{
+                        if (value>1000,000,000){
+                            return(value/1000,000,0000) + 'B';
+                        }if (value>1000,000){
+                            return(value/1000,000) + 'M';
+                        }if (value>1000){
+                            return(value/1000) + 'k';
+                        }return value;
+
+                        console.log(value);
+
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    const lChartB = document.getElementById('myLChartB');
+
+    new Chart(lChartB, {
+        type: 'bar',
+        data: {
+            labels: [{%for i in monthly_package_record.keys%} '{{i}}', {%endfor%}],
+            datasets: [{
+                            label: 'Bronze',
+                            data: [
+                                   {%for i in monthly_package_record.values%}
+                                        {%for a,b in i.items%}
+                                            {%if a == 'Bronze'%}
+                                                {%for x, y in b.items%}
+                                                {%if x == 'total'%}
+                                                    {{y}},
+                                                {%endif%}
+
+                                                {%endfor%}
+                                            {%endif%}
+                                        {%endfor%}
+                                    {%endfor%}
+                                   ],
+                            borderWidth: 1,
+                            borderColor: '#432c17',
+                            backgroundColor: '#432c17',
+
+                        },
+                        {
+                            label: 'Silver',
+                            data: [
+                                       {%for i in monthly_package_record.values%}
+                                            {%for a,b in i.items%}
+                                                {%if a == 'Silver'%}
+                                                    {%for x, y in b.items%}
+                                                    {%if x == 'total'%}
+                                                        {{y}},
+                                                    {%endif%}
+
+                                                    {%endfor%}
+                                                {%endif%}
+                                            {%endfor%}
+                                        {%endfor%}
+                                   ],
+                            borderWidth: 2,
+                            borderColor: 'rgb(192,192,192)',
+                            backgroundColor: 'rgb(192,192,192)',
+
+                        },
+                        {
+                            label: 'Gold',
+                            data: [
+                                       {%for i in monthly_package_record.values%}
+                                            {%for a,b in i.items%}
+                                                {%if a == 'Gold'%}
+                                                    {%for x, y in b.items%}
+                                                    {%if x == 'total'%}
+                                                        {{y}},
+                                                    {%endif%}
+
+                                                    {%endfor%}
+                                                {%endif%}
+                                            {%endfor%}
+                                        {%endfor%}
+                                   ],
+                            borderWidth: 2,
+                            borderColor: 'rgb(255,215,0)',
+                            backgroundColor: 'rgb(255,215,0)',
+
+                        },
+                        {
+                            label: 'Diamond',
+                            data: [
+                                       {%for i in monthly_package_record.values%}
+                                            {%for a,b in i.items%}
+                                                {%if a == 'Diamond'%}
+                                                    {%for x, y in b.items%}
+                                                    {%if x == 'total'%}
+                                                        {{y}},
+                                                    {%endif%}
+
+                                                    {%endfor%}
+                                                {%endif%}
+                                            {%endfor%}
+                                        {%endfor%}
+                                   ],
+                            borderWidth: 2,
+                            borderColor: 'rgb(184,216,231)',
+                            backgroundColor: 'rgb(184,216,231)',
+
+                        },
+
+
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                },
+                x: {
+                    beginAtZero: true,
+
+                },
+
+            },
+            plugins: {
+                datalabels: {
+                    formatter: (value, context) =>{
+                        if (value>1000,000,000){
+                            return(value/1000,000,0000) + 'B';
+                        }if (value>1000,000){
+                            return(value/1000,000) + 'M';
+                        }if (value>1000){
+                            return(value/1000) + 'k';
+                        }return value;
+
+                        console.log(value);
+
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+</script>

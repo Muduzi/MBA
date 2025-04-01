@@ -1,0 +1,123 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/Loans.css'%}" xmlns="http://www.w3.org/1999/html">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div class="main">
+    <div class="container">
+
+        <div class="Info">
+            <div class="info1">
+                <div class="title1">
+                   <p>Total</p>
+                </div>
+                <div class="detail1">
+                    <p>{{period}}</p>
+                </div>
+                <div class="title2">
+                   <p>Paid</p>
+                </div>
+                <div class="detail2">
+                    <p>{{rate}}</p>
+                </div>
+            </div>
+            <div class="info0">
+
+            </div>
+            <div class="info1">
+                <div class="title3">
+                    <p>Remaining</p>
+                </div>
+                <div class="detail3">
+                    <p>{{pa_to}}</p>
+                </div>
+                <div class="title4">
+                    <p>Overdue</p>
+                </div>
+                <div class="detail4">
+                    <p>{{pa_from}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="container2">
+            <div class="add">
+                <button type="button" onclick="openPopup()" class="new">
+                    <i class="material-icons" style="font-size:20px; border:hidden;">add</i>
+                    New
+                </button>
+            </div>
+            <div class="tables">
+                <table>
+                    <thead>
+                        <th>Date</th>
+                        <th>Lender</th>
+                        <th>Type</th>
+                        <th>Principle</th>
+                        <th>Rate %</th>
+                        <th>Total</th>
+                        <th>Balance</th>
+                        <th>Time(rem)</th>
+                    </thead>
+                    <tbody>
+                    {%for i in data%}
+                        <tr>
+                            <td>{{i.Date.date}}</td>
+                            <td>{{i.Lender}}</td>
+                            <td>{{i.Type}}</td>
+                            <td>{{i.Loan}}</td>
+                            <td>{{i.Rate}}</td>
+                            <td>{{i.Total}}</td>
+                            <td>{{i.Balance}}</td>
+                            <td>{{i.Term}}</td>
+                        </tr>
+                    {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+            <div class="popup" id="popup">
+                <div class="formcont">
+                    <form method="post" >
+     	            {%csrf_token%}
+                    <ul class="form">
+                        {% for field in form.visible_fields %}
+                            <li>{{ field.label}}:</li>
+                            <li>{{field}}</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="but">
+                        <button type = 'submit' class = 'save' name="save" onclick="closePopup()">Save</button>
+                        <button type = 'button' class = 'cancel' onclick="window.location.href='/loans/';">Cancel</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        <div class="Navigation">
+            <div class="nav">
+                <button type = 'button' class = 'navbut'
+                       onclick="window.location.href='/expenses/';">
+                   <i class="material-icons" style="font-size:20px; border:hidden;">account_balance_wallet</i>xpenses
+                </button>
+                <button type = 'button' class = 'navbut'
+                       onclick="window.location.href='/';">
+                   <i class="material-icons" style="font-size:20px; border:hidden;">home</i>Home
+                </button>
+                <button type = 'button' class = 'navbut'
+                       onclick="window.location.href='/management/';">
+                   <i class="material-icons" style="font-size:20px; border:hidden;">arrow_back</i>back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        let popup = document.getElementById("popup");
+
+        function openPopup(){
+        popup.classList.add("open-popup");
+        }
+
+        function closePopup(){
+        popup.classList.remove("open-popup");
+        }
+</script>

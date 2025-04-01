@@ -1,0 +1,494 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    row-gap:5px;
+    position:relative;
+    width:100wh;
+    height:auto;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:90%;
+    height:30px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    border:hidden;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.4);
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+
+.container{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+    row-gap:5px;
+    position:relative;
+    width:90%;
+    height:30%;
+    padding-left:5px;
+    padding-right:5px;
+    padding-top:5px;
+    padding-bottom:5px;
+    background:linear-gradient(to right, #908f8f, #6e6d6c, #5D6166);
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.4);
+}
+.information{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:40%;
+    height:98%;
+    border-radius:10px;
+}
+.info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:relative;
+    width:42%;
+    height:35%;
+    background:rgba(10, 10, 10, 0.3);
+    backdrop-filter:blur(5px);
+    padding:5px;
+    border-radius:10px;
+}
+text{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+}
+.title{
+    color:white;
+    font-size:16px;
+    font-weight:550;
+}
+.content1{
+    color:white;
+    font-size:15px;
+}
+.content2{
+    color:white;
+    font-size:14px;
+}
+.doughnut{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:30%;
+    height:98%;
+    border-radius:10px;
+}
+table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:90%;
+    height:55%;
+    background:#F9F6EE;
+    border-radius:10px;
+    overflow-y:scroll;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.4);
+}
+
+thead{
+    position:sticky;
+    top:0;
+    z-index:1;
+    width:100%;
+    height:30px;
+    color:white;
+    font-size:15px;
+    background:linear-gradient(to left, #908f8f, #6e6d6c, #5D6166);
+    border-radius:10px 10px 0px 0px;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    margin-left:5px;
+}
+.sth1{
+    width:15%;
+    height:100%;
+}
+.sth11{
+    width:15%;
+    height:100%;
+}
+.sth2{
+    width:25%;
+    height:100%;
+}
+.sth3{
+    width:10%;
+    height:100%;
+}
+.sth4{
+    width:15%;
+    height:100%;
+}
+.sth5{
+    width:5%;
+    height:100%;
+}
+
+tbody{
+    width:100%;
+}
+
+tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30px;
+}
+tr button{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    width:100%;
+    height:100%;
+    background:transparent;
+    border:hidden;
+    padding:0px;
+}
+.action1{
+    color:#2B3856;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    font-size:14px;
+    color:rgb(54, 69, 79);
+    margin-left:5px;
+}
+
+
+form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:absolute;
+    top:15%;
+    z-index:2;
+    width:30%;
+    height:70%;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background:#EDEADE;
+    border-radius:10px;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+}
+.open-popup{
+    display:flex;
+    visibility:visible;
+
+}
+form label{
+    display:flex;
+    align-item:center;
+    justify-content:center;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+}
+form input{
+    width:100%;
+    height:35px;
+    color:gray;
+    font-size:14px;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+form textarea{
+    width:100%;
+    height:100px;
+    color:gray;
+    font-size:14px;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:30px;
+    border-radius:10px;
+}
+.but button{
+    width:20%;
+    height:100%;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+    padding:2px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.but button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+
+.cancel{
+    background:red;
+}
+.cancel:hover{
+    background-image: linear-gradient(to right, white, #E44D2E, red)
+}
+
+@media(max-width:1000px){
+    body{
+        row-gap:13px;
+        overflow-y:scroll;
+    }
+
+    .Navigation{
+        width:95%;
+    }
+
+    .container{
+        width:95%;
+        height:170px;
+    }
+
+    .title{
+        font-size:14px;
+    }
+
+    .content1{
+        font-size:13px;
+    }
+    .content2{
+        font-size:13px;
+    }
+
+    table{
+        width:96%;
+        height:350px;
+    }
+    th{
+        font-size:14px;
+    }
+    td{
+        font-size:13px;
+    }
+    .action1{
+        font-size:13px;
+    }
+
+    form{
+        width:330px;
+        height:450px;
+    }
+    form label{
+        font-size:13px;
+    }
+    form input{
+        font-size:13px;
+    }
+}
+
+@media(max-width:768px){
+    body{
+        row-gap:10px;
+        overflow-y:scroll;
+    }
+
+    .container{
+        flex-direction:column;
+        align-items:center;
+        justify-content:fle-start;
+        width:98%;
+        height:300px;
+        background:linear-gradient(to bottom, #908f8f, #6e6d6c, #5D6166);
+    }
+    .information{
+        justify-content:space-around;
+        width:100%;
+        height:48%;
+    }
+    .info{
+        width:46%;
+        height:40%;
+    }
+    .title{
+        color:white;
+        font-size:13px;
+    }
+    .content1{
+        color:white;
+        font-size:12px;
+    }
+    .content2{
+        color:white;
+        font-size:11px;
+    }
+    .doughnut{
+        width:60%;
+        height:48%;
+    }
+    table{
+        width:100%;
+        height:300px;
+    }
+    tr button{
+        font-size:11px;
+    }
+    th{
+        font-size:12px;
+    }
+
+    td{
+        font-size:11px;
+    }
+    .open-popup{
+        width:50%;
+        height:60%;
+    }
+}
+
+@media(max-width:430px){
+    body{
+        height:auto;
+    }
+    .container{
+        flex-direction:column;
+        row-gap:5px;
+        height:420px;
+    }
+    .information{
+        width:97%;
+        height:48%;
+    }
+    .info{
+        width:45%;
+        height:38%;
+    }
+    .title{
+        color:white;
+        font-size:13px;
+    }
+
+    .doughnut{
+        width:97%;
+        height:48%;
+    }
+    table{
+        width:100%;
+        height:420px;
+    }
+    tr button{
+        font-size:11px;
+    }
+    th{
+        font-size:12px;
+    }
+    .sth1{
+        display:none;
+        flex-direction:hidden;
+    }
+    .sth11{
+        width:25%;
+        height:100%;
+    }
+
+    .sth2{
+        width:30%;
+        height:100%;
+    }
+    .sth3{
+        display:none;
+        flex-direction:hidden;
+    }
+    .sth4{
+        width:20%;
+        height:100%;
+    }
+    .sth5{
+        width:5%;
+        height:100%;
+    }
+    td{
+        font-size:11px;
+    }
+
+    .open-popup{
+        width:90%
+    }
+    form label{
+        font-size:14px;
+    }
+    form input{
+        font-size:13px;
+    }
+    form textarea{
+        font-size:13px;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

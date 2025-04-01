@@ -1,0 +1,321 @@
+ {%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/balanceSheet.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type = 'button' onclick="window.location.href='/business/';">
+       <i class="material-icons" style="font-size:20px; border:hidden;">arrow_forward</i>
+    </button>
+</div>
+
+<!-- Assets -->
+<table class="mainTable">
+    <thead>
+        <tr>
+            <th class="account_th">Current Assets</th>
+            <th class="amount_th"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="account_subTitle">Cash</td>
+            <td class="amount_subTitle">{{cash}}</td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Inventory</td>
+            <td class="amount_subTitle" >{{inventory_value}}</td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Prepaid Taxes</td>
+            <td class="amount_subTitle" >
+                {%if prepaid_taxes%}
+                    {{prepaid_taxes}}
+                {%else%}
+                    0
+                {%endif%}
+            </td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!--Accounts Receivable-->
+        <tr>
+            <td class="button_td">
+                <button type="button" id="AccountsReceivableDropDown" onclick="showAccountsReceivableDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Accounts Receivable
+                </button>
+                <button type="button" id="AccountsReceivableDropUp" onclick="hideAccountsReceivableDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Accounts Receivable
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="AccountsReceivableDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Customer</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%for key, value in accounts_receivable.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{value.Customer}}</td>
+                                <td class="amount">{{value.total}}</td>
+                            </tr>
+                        {%endfor%}
+                        <tr>
+                            <td class="separator"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <!--Total Receivable-->
+        <tr>
+            <td class="account_subTitle">Accounts Receivable</td>
+            <td class="amount_subTitle" >{{receivable_ty}}</td>
+        </tr>
+        <tr>
+            <td class="account_section_total">Total Receivable</td>
+            <td class="amount_section_total">{{receivable}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="stage_account">
+            <td class="account_subTitle">Total Current Assets</td>
+            <td class="amount_subTitle" >{{current_assets}}</td>
+        </tr>
+        <!--Non-Current Assets-->
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr>
+            <th class="account_th"> Non-Current Assets</th>
+            <th class="amount_th"></th>
+        </tr>
+        <!--Accounts Receivable-->
+        <tr>
+            <td class="button_td">
+                <button type="button" id="PropertyAndEquipmentDropDown" onclick="showPropertyAndEquipmentDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Property and Equipment
+                </button>
+                <button type="button" id="PropertyAndEquipmentDropUp" onclick="hidePropertyAndEquipmentDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Property and Equipment
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="PropertyAndEquipmentDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Name</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%for key, value in property_and_equipment.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                <td class="amount">{{value.Amount}}</td>
+                            </tr>
+                        {%endfor%}
+                        <tr>
+                            <td class="separator"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Property and Equipment</td>
+            <td class="amount_subTitle" >{{non_current_assets}}</td>
+        </tr>
+        <!--Total Current Assets-->
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="stage_account">
+            <td class="account_subTitle">Total Non-Current Assets</td>
+            <td class="amount_subTitle">{{non_current_liabilities}}</td>
+        </tr>
+        <!--Total Assets-->
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="stage_account">
+            <td class="account_subTitle">Total (CA & N-CA)</td>
+            <td class="amount_subTitle">{{total_assets}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- liabilities -->
+<table class="mainTable">
+    <thead>
+        <tr>
+            <th class="account_th">Liabilities</th>
+            <th class="amount_th"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Accrued expense</td>
+            <td class="amount_subTitle" >{{total_accrued_expenses}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+
+        <tr>
+            <td class="account_subTitle">Taxes Owing</td>
+            <td class="amount_subTitle">
+                {%if taxes_owing%}
+                    {{taxes_owing}}
+                {%else%}
+                    0
+                {%endif%}
+            </td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!--Accounts Payable-->
+        <tr>
+            <td class="button_td">
+                <button type="button" id="AccountsPayableDropDown" onclick="showAccountsPayableDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Accounts Payable
+                </button>
+                <button type="button" id="AccountsPayableDropUp" onclick="hideAccountsPayableDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Accounts Payable
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="AccountsPayableDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Customer</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%for key, value in accounts_payable.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{value.Supplier}}</td>
+                                <td class="amount">{{value.total}}</td>
+                            </tr>
+                        {%endfor%}
+                        <tr>
+                            <td class="separator"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Accounts Payable</td>
+            <td class="amount_subTitle">{{payable_ty}}</td>
+        </tr>
+        <tr>
+            <td class="account_section_total">Accounts Payable</td>
+            <td class="amount_section_total">{{payable}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="stage_account">
+            <td class="account_subTitle">Total Current Liabilities</td>
+            <td class="amount_subTitle">{{current_liabilities}}</td>
+        </tr>
+        <!--Non Current Liabilities-->
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="stage_account">
+            <td class="account_subTitle">Total Non-Current Liabilities</td>
+            <td class="amount_subTitle">{{non_current_liabilities}}</td>
+        </tr>
+
+        <!--Shareholders Equity-->
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr>
+            <th class="account_th">Equity</th>
+            <th class="amount_th"></th>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Shareholders Equity</td>
+            <td class="amount_subTitle">{{equity}}</td>
+        </tr>
+        <!-- totals -->
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="stage_account">
+            <td class="account_subTitle">Total (Cl & N-CL)</td>
+            <td class="amount_subTitle">{{equity_liabilities}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+     <!-- Accounts Receivable -->
+    let AccountsReceivableDetail = document.getElementById("AccountsReceivableDetail");
+    let AccountsReceivableDropDown = document.getElementById("AccountsReceivableDropDown");
+    let AccountsReceivableDropUp = document.getElementById("AccountsReceivableDropUp");
+
+    function showAccountsReceivableDetail(){
+        AccountsReceivableDetail.classList.add("showDetail");
+        AccountsReceivableDropDown.classList.add("hide");
+        AccountsReceivableDropUp.classList.add("show");
+    }
+    function hideAccountsReceivableDetail(){
+        AccountsReceivableDetail.classList.remove("showDetail");
+        AccountsReceivableDropDown.classList.remove("hide");
+        AccountsReceivableDropUp.classList.remove("show");
+    }
+
+     <!-- Accounts Payable -->
+    let AccountsPayableDetail = document.getElementById("AccountsPayableDetail");
+    let AccountsPayableDropDown = document.getElementById("AccountsPayableDropDown");
+    let AccountsPayableDropUp = document.getElementById("AccountsPayableDropUp");
+
+    function showAccountsPayableDetail(){
+        AccountsPayableDetail.classList.add("showDetail");
+        AccountsPayableDropDown.classList.add("hide");
+        AccountsPayableDropUp.classList.add("show");
+    }
+    function hideAccountsPayableDetail(){
+        AccountsPayableDetail.classList.remove("showDetail");
+        AccountsPayableDropDown.classList.remove("hide");
+        AccountsPayableDropUp.classList.remove("show");
+    }
+
+     <!-- Property And Equipment -->
+    let PropertyAndEquipmentDetail = document.getElementById("PropertyAndEquipmentDetail");
+    let PropertyAndEquipmentDropDown = document.getElementById("PropertyAndEquipmentDropDown");
+    let PropertyAndEquipmentDropUp = document.getElementById("PropertyAndEquipmentDropUp");
+
+    function showPropertyAndEquipmentDetail(){
+        PropertyAndEquipmentDetail.classList.add("showDetail");
+        PropertyAndEquipmentDropDown.classList.add("hide");
+        PropertyAndEquipmentDropUp.classList.add("show");
+    }
+    function hidePropertyAndEquipmentDetail(){
+        PropertyAndEquipmentDetail.classList.remove("showDetail");
+        PropertyAndEquipmentDropDown.classList.remove("hide");
+        PropertyAndEquipmentDropUp.classList.remove("show");
+    }
+</script>

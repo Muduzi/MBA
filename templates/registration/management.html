@@ -1,0 +1,73 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/home.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="logo">
+    <text onclick="window.location.href='/';">MAT</text>
+</div>
+
+<div class="container1">
+    <div class="card">
+        <i class="material-icons" style="font-size:25; font-size:70px;">people</i>
+        <text>View business monthly income statement and get a statement for a specified date range</text>
+        <button type = 'button' onclick="window.location.href='/departments/';">
+           Departments
+        </button>
+    </div>
+    <div class="card">
+        <i class="material-icons" style="font-size:25; font-size:70px;">folder_open</i>
+        <text>View business monthly income statement and get a statement
+            for a specified date range</text>
+        <button type = 'button' onclick="window.location.href='/assets/';">
+           Assets
+        </button>
+    </div>
+    <div class="card">
+        <i class="material-icons" style="font-size:25; font-size:70px;">store</i>
+        <text>Add new product in inventory. Look through existing items, edit and delete.</text>
+        <button type="submit" onclick="window.location.href='/inventory/';">
+            Inventory
+        </button>
+    </div>
+
+    <div class="card">
+        <i class="material-icons" style="font-size:25; font-size:70px;">account_balance_wallet</i>
+        <text>View business monthly income statement and get a statement for a specified date range</text>
+        <button type="submit" onclick="window.location.href='/profit_and_loss/';">
+            Statement
+        </button>
+    </div>
+    <div class="card">
+        <i class="material-icons" style="font-size:25; font-size:70px;">business_center</i>
+        <comment>Business information</comment>
+        <button type="submit" onclick="window.location.href='/business/';">
+             Business
+        </button>
+    </div>
+</div>
+<div class="container2">
+    <button type="submit" class="cont3but" name="save" onclick="window.location.href='/';">
+        <i class="material-icons" style="font-size:25; font-size:20px;">home</i>
+        Home
+    </button>
+    <button type="submit" class="cont3but" name="save" onclick="window.location.href='/profile_form/';">
+        <i class="material-icons" style="font-size:25; font-size:20px;">person</i>
+        Profile
+    </button>
+    <button type="submit" class="cont3but" name="save" onclick="window.location.href='/logout/';">
+        <i class="material-icons" style="font-size:25; font-size:20px;">logout</i>
+        Logout
+    </button>
+</div>
+
+
+

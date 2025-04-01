@@ -1,0 +1,127 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/replenish.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/inventory/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post">
+    {%csrf_token%}
+    <div class="product">
+        <text style="color:rgb(54, 69, 79); border:hidden;">1</text>
+        <label for="category">Category</label>
+        <select name="category" id="category" disabled>
+            <option value="{{product.Name}}" selected>{{product.Category.Name}}</option>
+            {%for i in categories%}
+                <option value="{{i.id}}">{{i.Name}}</option>
+            {%endfor%}
+        </select>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" value="{{product.Name}}" disabled maxlength="30">
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" name="brand" value="{{product.Brand}}" disabled maxlength="30">
+        <label for="size">Size</label>
+        <input type="text" id="size" name="size" value="{{product.Size}}" disabled maxlength="15">
+        <label for="expiryDate">ExpiryDate</label>
+        <input type="date" id="expiryDate" name="expiry_date" value="{{date}}">
+    </div>
+
+    <div class="product_info">
+        <text style="color:rgb(54, 69, 79); border:hidden;">2</text>
+        <div class="input_cont">
+            <div class="input">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" maxlength="30" placeholder="shelf,aisle">
+            </div>
+            <div class="input">
+                <label for="barcode">Bar Code</label>
+                <input type="text" id="barcode" name="barcode" value="{{product_info.Code}}" maxlength="50">
+            </div>
+        </div>
+        <div class="input_cont">
+            <div class="input">
+                <label for="BPrice">Purchase Price/Unit</label>
+                <input type="number" id="BPrice" name="b_price" value="{{product_info.BPrice}}">
+            </div>
+            <div class="input">
+                <label for="SPrice">Selling Price/Unit</label>
+                <input type="number" id="SPrice" name="s_price" value="{{product_info.SPrice}}">
+            </div>
+        </div>
+        <div class="input_cont">
+            <div class="input">
+                <label for="Quantity">Quantity</label>
+                <input type="number" id="Quantity" name="quantity" value="{{product_info.InitialQuantity}}" required>
+            </div>
+            <div class="input">
+                <label for="PMode">PMode</label>
+                <select id="PMode" name="p_mode">
+                    <option value="Cash" selected>Cash</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Credit">Credit</option>
+                </select>
+            </div>
+        </div>
+        <label for="slider">Reorder: <span id="reorder"></span>%</label>
+        <input type="range" id="slider" name="reorder" value="50" placeholder="select reorder percentage">
+    </div>
+
+    <div class="but">
+        <button type="submit" name="save" class="save3">
+            Save
+        </button>
+    </div>
+
+</form>
+<script>
+    let slider = document.getElementById("slider");
+    let reorder = document.getElementById("reorder");
+
+
+    reorder.innerHTML = slider.value;
+
+    slider.oninput = function(){
+        reorder.innerHTML = this.value;
+    }
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>

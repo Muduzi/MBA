@@ -1,0 +1,175 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/debt.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<div class="Navigation">
+    <button type="button" onclick="openPopup()">
+        <i class="material-icons" style="font-size:18px">add</i>
+    </button>
+    <button type="button" onclick="window.location.href='/';">
+        <i class="material-icons" style="font-size:18; font-size:20px;">home</i>
+    </button>
+    <button type="button" onclick="window.location.href='/profit_and_loss/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<div class="container">
+    <div class="information">
+        <div class="info">
+            <text class="title">Total Debt</text>
+            <text class="content1">
+                <i class="material-icons" style="font-size:14px">attach_money</i>{{total}}
+            </text>
+        </div>
+        <div class="info">
+            <text class="title">Amount remaining</text>
+            <text class="content1">
+                <i class="material-icons" style="font-size:14px">attach_money</i>{{expected}}
+            </text>
+            <text class="content2" style="color:#FFEF00;">
+                 {{exp_perc}}<i class="material-icons" style="font-size:12px">percent</i>
+            </text>
+        </div>
+        <div class="info">
+            <text class="title">Amount Received</text>
+            <text class="content1">
+                <i class="material-icons" style="font-size:14px">attach_money</i>{{received}}
+            </text>
+            <text class="content2" style=" color:#39FF14;">
+                  {{rec_perc}}<i class="material-icons" style="font-size:12px;">percent</i>
+            </text>
+        </div>
+        <div class="info">
+            <text class="title">Amount overdue</text>
+            <text class="content1">
+                <i class="material-icons" style="font-size:14px">attach_money</i>{{overdue}}
+            </text>
+            <text class="content2" style="color:#FF0000;">
+                 {{over_perc}}<i class="material-icons" style="font-size:12px">percent</i>
+            </text>
+        </div>
+    </div>
+    <div class="doughnut">
+        <canvas id="doughnut"></canvas>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Date</th>
+            <th class="sth2">Name</th>
+            <th class="sth3">Status</th>
+            <th class="sth4">Total</th>
+            <th class="sth4">Paid</th>
+            <th class="sth11">Due</th>
+            <th class="sth5"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in data%}
+            <tr>
+                <td class="sth1">{{i.Date.date}}</td>
+                <td class="sth2">
+                    <button type="submit" name="credit" class="action1" onclick="window.location.href='/debt_form/{{i.id}}';">
+                        {{i.Customer.Name}}
+                    </button>
+                </td>
+                <td class="sth3">{{i.Status}}</td>
+                <td class="sth4">K{{i.Amount}}</td>
+                <td class="sth4">K{{i.Received}}</td>
+                {%if tod.date >= i.Due.date%}
+                    {%if i.Amount != 0%}
+                        {%if i.Status == 'Paid'%}
+                            <td class="sth11">{{i.Due.date}}</td>
+                        {%elif i.Status == 'Paying'%}
+                            <td class="sth11" style="background:#FFEF00; color:white;">{{i.Due.date}}</td>
+                        {%elif i.Status == 'Not Paid'%}
+                            <td class="sth11" style="background:#FF0000; color:white;">{{i.Due.date}}</td>
+                        {%endif%}
+                    {%else%}
+                        <td class="sth11">{{i.Due.date}}</td>
+                    {%endif%}
+                {%else%}
+                    <td class="sth11">{{i.Due.date}}</td>
+                {%endif%}
+                <td class="sth5">
+                    <button type="submit" name="settle" class="action2" onclick="window.location.href='/debt_installment/{{i.id}}/';">
+                        <i class="material-icons" style="font-size:12px">send</i>
+                    </button>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<form method="post" id="popup">
+    {%csrf_token%}
+    <label for="vendor">
+        <i class="material-icons" style="font-size:18px;">person</i>Customer
+    </label>
+    <input type="text" id="vendor" name="debtor" required maxlength="250" >
+    <label for="email">
+        <i class="material-icons" style="font-size:18px;">mail</i>Email
+    </label>
+    <input type="email" id="email" name="email">
+    <label for="contact">
+        <i class="material-icons" style="font-size:18px;">phone</i>Contact
+    </label>
+    <input type="number" id="contact" name="contact" required maxlength="14">
+    <label for="info">
+        <i class="material-icons" style="font-size:18px;">info</i>Information
+    </label>
+    <textarea id="info" name="info" required maxlength="250" placeholder="1-250 characters"></textarea>
+
+    <div class="but">
+        <button type="submit" name="save" class="save">Save</button>
+        <button type="button" onclick="closePopup()" class="cancel">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let popup = document.getElementById("popup");
+
+        function openPopup(){
+        popup.classList.add("open-popup");
+        }
+
+        function closePopup(){
+        popup.classList.remove("open-popup");
+        }
+
+    const doughnut = document.getElementById('doughnut');
+
+    new Chart(doughnut, {
+        type: 'doughnut',
+        data: {
+            labels: ['Paid', 'Rem', 'Over'],
+            datasets: [{
+                label: 'credits stats in %',
+                data: [{{rec_perc}}, {{exp_perc}}, {{over_perc}}],
+                borderWidth: 0,
+                borderColor: 'gray',
+                backgroundColor:['#39FF14', '#FFEF00', '#FF0000'],
+                radius:50,
+                },
+            ]
+        },
+       options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            color: 'white',
+       }
+    });
+</script>

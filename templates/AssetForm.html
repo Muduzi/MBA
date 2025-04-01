@@ -1,0 +1,121 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/AssetForm.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/assets/';">
+        <i class="material-icons" style="font-size:18px;">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post"  enctype="multipart/form-data" id="assetForm">
+    {%csrf_token%}
+
+    <div class="container">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" {%if asset.Name%} value="{{asset.Name}}" disabled {%else%} required {%endif%} maxlength="25" placeholder="Name">
+        <label for="Initial Value">Initial Value(cost)</label>
+        <input type="number" id="Initial Value" name="initial_value" {%if asset.InitialValue%} value="{{asset.InitialValue}}" disabled {%else%} required {%endif%} placeholder="Amount">
+        <label for="UsefulLife">Useful Life(period)</label>
+        <input type="number" id="UsefulLife" name="useful_life" {%if asset.UsefulLife%} value="{{asset.UsefulLife}}" disabled {%else%} required {%endif%} placeholder="Useful life in years">
+        <label for="SalvageValue">Salvage Value</label>
+        <input type="number" id="SalvageValue" name="salvage_value" {%if asset.SalvageValue%} value="{{asset.SalvageValue}}" disabled {%else%} required {%endif%} placeholder="Quantity">
+        <label for="Notes">Notes</label>
+        <textarea id="Notes" name="notes" placeholder="add notes" maxlength="198">{%if asset.Notes%}{{asset.Notes}}{%endif%}</textarea>
+    </div>
+
+    <div class="img_container">
+        <label for="AssetImage">
+            <img src="{% static '/appdefaults/add-photo1.png' %}" alt="add image">
+        </label>
+        <input type="file" id="AssetImage" name="photo" multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+        {%if photos%}
+            {%for p in photos%}
+                <button type="submit" class="saved_images" name="view_image" value="{{p.id}}">
+                    <img src="{{p.Photo.url}}" alt="asset photo">
+                </button>
+            {%endfor%}
+        {%endif%}
+    </div>
+
+    <div class="but">
+        <button type = 'submit' class = 'save' name="asset">Save</button>
+    </div>
+
+</form>
+
+<div class="specifications">
+    <table>
+        <thead>
+            <tr>
+                <th class="th1">Specification</th>
+                <th class="th2">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for i in specifications%}
+            <tr>
+                <td class="th1">{{i.Title}}</td>
+                <td class="th2">{{i.Description}}</td>
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+    <form method="post">
+        {%csrf_token%}
+        <div class="asset_specifications">
+            <input type="text" name="title" maxlength="20" required placeholder="specification">
+            <textarea name="description" required  maxlength="98" placeholder="description"></textarea>
+        </div>
+        <button type="submit" name="asset_specification">
+            <i class="material-icons" style="font-size:23px;">add</i>
+        </button>
+    </form>
+</div>
+
+{%if view_image%}
+    <form method="post" enctype="multipart/form-data" class="view_image">
+        {%csrf_token%}
+        <button type="submit" name="delete" value="{{view_image.id}}">
+            <i class="material-icons" style="font-size:19px;">delete</i>
+        </button>
+        <button type="submit" name="close">
+            <i class="material-icons" style="font-size:19px;">close</i>
+        </button>
+        <img src="{{view_image.Photo.url}}" alt="image not available">
+    </form>
+{%endif%}
+
+<script>
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>

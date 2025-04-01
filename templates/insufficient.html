@@ -1,0 +1,45 @@
+{%load widget_tweaks%}
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/insufficient.css'%}" xmlns="http://www.w3.org/1999/html">
+<!icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<div class="main">
+    <div class="warning">
+        <div class="message">
+             <p><i class="material-icons" style="font-size:24px; color:red;">warning</i>{{Reason}}</p>
+        </div>
+        <div class="required">
+            <p>Required:K{{Required}}</p>
+        </div>
+    </div>
+    <div class="container">
+        <form method="post" >
+            {%csrf_token%}
+            <div class="inputs2">
+                <div class="inputs2_sub">
+                    <label for="Quantity">Quantity</label>
+                    <input type="number" id="Quantity" name="Quantity" value="{{ini.Quantity}}">
+                </div>
+                <div class="inputs2_sub">
+                    <label for="Amount">Amount</label>
+                    <input type="number" id="Amount" name="Amount" value="{{ini.Amount}}">
+                </div>
+            </div>
+            <div class="inputs3">
+                <div class="inputs3_sub">
+                    <label for="credit">Credit</label>
+                    <input type="checkbox" id="credit" name="Credit">
+                </div>
+                <div class="inputs3_sub">
+                    <label for="discount">Discount</label>
+                    <input type="checkbox" id="discount" name="Discount">
+                </div>
+            </div>
+
+                <div class="but">
+                <button type = 'submit' name="save" class = 'save'>Save</button>
+                <button type = 'submit' name="cancel" class = 'cancel'>Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

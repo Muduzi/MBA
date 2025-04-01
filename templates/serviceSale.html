@@ -1,0 +1,218 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/serviceSale.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="yes_no">
+                    <button type="submit" name="set customer" value="{{income_li}}">
+                        Yes
+                    </button>
+                    <button type="submit" name="don't set customer" value="{{income_li}}">
+                        No
+                    </button>
+                </div>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="openService()">
+        <i class="material-icons" style="font-size:18px">list</i>
+        service
+    </button>
+    <button type="button" onclick="openPackage()">
+        <i class="material-icons" style="font-size:18px">list</i>
+        package
+    </button>
+    <button type="button" onclick="openFinish()">
+        finish
+    </button>
+    <button type="button" onclick="openInvoice()">
+        Invoice
+    </button>
+    <button type="button" onclick="window.location.href = '/service_income/'">
+        <i class="material-icons" style="font-size:18px;">arrow_forward</i>
+    </button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Name</th>
+            <th class="sth2">Quant</th>
+            <th class="sth2">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in buffer%}
+        <tr>
+            <td class="sth1">
+                <button type="button" class="edit" onclick="window.location.href='/edit_service_sale/{{i.id}}/';">
+                    {%if i.Package%}
+                        {{i.Package.Name}}
+                    {%elif i.Service%}
+                        {{i.Service.Name}}
+                    {%endif%}
+                </button>
+            </td>
+            <td class="sth2">{{i.Quantity}}</td>
+            <td class="sth2">{{i.Amount}}</td>
+        </tr>
+        {%endfor%}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="sth1"></td>
+            <td class="sth2"></td>
+            <td class="sth2"></td>
+        </tr>
+        {%if paid%}
+            <tr>
+                <td class="sth1"></td>
+                <td class="sth2">Paid</td>
+                <td class="sth2">{{paid}}</td>
+            </tr>
+        {%endif%}
+            <tr>
+                <td class="sth1"></td>
+                <td class="sth2">Total</td>
+                <td class="sth2">{{total}}</td>
+            </tr>
+        {%if excess%}
+            <tr>
+                <td class="sth1"></td>
+                <td class="sth2">Excess</td>
+                <td class="sth2">{{excess}}</td>
+            </tr>
+        {%endif%}
+    </tfoot>
+</table>
+
+<form method="post" id="serviceForm">
+    {%csrf_token%}
+    <text>Select Service</text>
+    <select id="services" name="services" multiple size="20" class="select1">
+        {%for s in services%}
+            <option value="{{s.id}}">~{{s.Name}}&nbsp;&nbsp;&nbsp;@{{s.Price}}&nbsp;&nbsp;&nbsp;{{s.ChargingCriteria}}</option>
+        {%endfor%}
+    </select>
+    <label for="SQuantity">Quantity</label>
+    <input type="number" id="SQuantity" name="quantity" required >
+    <div class="but">
+        <button type = 'submit' name="selectedServices">Save</button>
+        <button type = 'button' onclick="closeService()">Cancel</button>
+    </div>
+</form>
+<form method="post" id="packageForm">
+    {%csrf_token%}
+    <text>Select Package</text>
+    <select id="packages" name="packages" multiple size="20" class="select1">
+        {%for p in packages%}
+            <option value="{{p.id}}">~{{p.Name}}&nbsp;&nbsp;&nbsp;@{{p.Price}}</option>
+        {%endfor%}
+    </select>
+    <label for="PQuantity">Quantity</label>
+    <input type="number" id="PQuantity" name="quantity" required >
+    <div class="but">
+        <button type = 'submit' name="selectedPackages">Save</button>
+        <button type = 'button' onclick="closePackage()">Cancel</button>
+    </div>
+</form>
+<form method="post" id="invoice">
+    {%csrf_token%}
+    <p>Generate Invoice?</p>
+    <div class="but">
+        <button type = 'submit' name="invoice">Yes</button>
+        <button type = 'button' onclick="closeInvoice()">
+            <i class="material-icons" style="font-size:16px;">close</i>
+        </button>
+    </div>
+</form>
+<form method="post" id="finish">
+    {%csrf_token%}
+    <label for="amount">Amount</label>
+    <input type="number" id="amount" name="amount" placeholder="amount paid">
+    <label for="p_mode">PMode</label>
+    <select id="p_mode" name="p_mode" class="select2">
+        <option value="Cash">Cash</option>
+        <option value="Credit">Credit</option>
+    </select>
+    <div class="attach_customer">
+        <label for="attachCustomer">Attach Customer</label>
+        <input  type="checkbox" id="attachCustomer" name="attach customer">
+    </div>
+    <div class="but">
+        <button type = 'submit' class='finalise' name="finalise" onclick="closeFinish()">Finalise</button>
+        <button type = 'button' onclick="closeFinish()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let sf = document.getElementById("serviceForm");
+
+    <!--open service-->
+    function openService(){
+        sf.classList.add("service");
+    }
+    function closeService(){
+        sf.classList.remove("service");
+    }
+
+    let pf = document.getElementById("packageForm");
+
+    <!--open package-->
+    function openPackage(){
+        pf.classList.add("package");
+    }
+    function closePackage(){
+        pf.classList.remove("package");
+    }
+
+    <!--open finish-->
+    let finish = document.getElementById("finish");
+
+    function openFinish(){
+        finish.classList.add("finish");
+    }
+    function closeFinish(){
+        finish.classList.remove("finish");
+    }
+
+
+    <!--open invoice-->
+    let invoice = document.getElementById("invoice");
+
+    function openInvoice(){
+        invoice.classList.add("invoice");
+    }
+    function closeInvoice(){
+        invoice.classList.remove("invoice");
+    }
+
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "/service_sale/";
+    }
+</script>

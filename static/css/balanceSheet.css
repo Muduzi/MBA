@@ -1,0 +1,302 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    row-gap:10px;
+    position:relative;
+    width:100vw;
+    height:auto;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:96%;
+    height:32px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+    border:hidden;
+    border-radius:10px;
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+/*services table*/
+table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    background:#F9F6EE;
+}
+.mainTable{
+    width:40%;
+    min-height:90%;
+    max-height:auto;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10px;
+    padding-bottom:10px;
+    border-radius:10px 10px 0px 0px;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+}
+.Detail{
+    display:none;
+    visibility:hidden;
+    width:100%;
+    height:auto;
+}
+.showDetail{
+    display:flex;
+    visibility:visible;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.show{
+    display:block;
+    visibility:visible;
+}
+thead{
+    width:100%;
+    height:30px;
+    border-radius:10px 10px 0px 0px;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    height:100%;
+    color:rgb(54, 69, 79);
+    font-size:20px;
+    font-weight:800;
+    margin-left:10px;
+}
+.account_th{
+    width:80%;
+}
+.amount_th{
+    width:20%;
+}
+.account_title{
+    width:80%;
+    font-size:18px;
+    font-weight:500;
+}
+.amount_title{
+    width:20%;
+    font-size:18px;
+    font-weight:500;
+}
+
+.account_subTitle{
+    width:80%;
+    height:85%;
+    font-size:15px;
+    margin-left:25px;
+}
+.amount_subTitle{
+    width:20%;
+    height:90%;
+    font-size:15px;
+}
+.separator{
+    width:100%;
+}
+
+.account{
+    width:80%;
+    height:85%;
+    margin-left:50px;
+}
+.amount{
+    width:20%;
+    height:90%;
+}
+.hideIncomeDetail{
+    display:none;
+    visibility:hidden;
+}
+
+tbody{
+    width:100%;
+}
+tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30px;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    color:rgb(54, 69, 79);
+    font-size:14px;
+    margin-left:10px;
+}
+.section{
+    display:flex;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:2;
+    width:100%;
+    height:25px;
+}
+.section td{
+    color:#EDEADE;
+    font-size:14px;
+    font-weight:500;
+}
+
+.account_section{
+    width:80%;
+    height:85%;
+    margin-left:50px;
+    background:#5D6166;
+}
+.amount_section{
+    width:20%;
+    height:90%;
+    background:#5D6166;
+}
+.account_section_total{
+    width:80%;
+    height:85%;
+    color:white;
+    margin-left:25px;
+    background:rgba(54, 69, 79, 0.5);
+}
+.amount_section_total{
+    width:20%;
+    height:90%;
+    color:white;
+    background:rgba(54, 69, 79, 0.5);
+}
+.stage_account{
+    border-top:1px solid rgba(54, 69, 79, 0.5);
+    border-bottom:1px solid rgba(54, 69, 79, 0.5);
+}
+
+.button_td{
+    width:100%;
+    height:85%;
+    font-size:18px;
+    font-weight:500;
+}
+
+td button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:auto;
+    height:auto;
+    color:rgb(54, 69, 79);
+    background:transparent;
+    border:hidden;
+}
+
+@media(max-width:1000px){
+    .mainTable{
+        width:48%;
+        min-height:500px;
+    }
+
+    .account_th{
+        font-size:17px;
+    }
+    .account_subTitle{
+        font-size:14px;
+    }
+    .amount_subTitle{
+        font-size:14px;
+    }
+
+    .account_section{
+        font-size:14px;
+    }
+    .amount_section{
+        font-size:14px;
+    }
+}
+
+@media(max-width:768px){
+    .Navigation{
+        width:80%;
+    }
+
+    .mainTable{
+        width:80%;
+    }
+
+    .account_th{
+        font-size:16px;
+    }
+    .account_subTitle{
+        font-size:13px;
+    }
+    .amount_subTitle{
+        font-size:13px;
+    }
+
+    .account_section{
+        font-size:13px;
+    }
+    .amount_section{
+        font-size:13px;
+    }
+}
+
+@media(max-width:430px){
+    .Navigation{
+        width:95%;
+    }
+
+    .mainTable{
+        width:95%;
+    }
+
+    .account_th{
+        font-size:16px;
+    }
+    .account_subTitle{
+        font-size:13px;
+    }
+    .amount_subTitle{
+        font-size:13px;
+    }
+
+    .account_section{
+        font-size:13px;
+    }
+    .amount_section{
+        font-size:13px;
+    }
+}

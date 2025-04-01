@@ -1,0 +1,38 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/category.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<div class="Navigation" id="Navigation">
+    {%if request.user in s_list%}
+        <button type = 'button' onclick="window.location.href = '/add_product/{{cat_obj.id}}/';">
+            <i class="material-icons" style="font-size:20px;"></i>
+            add Product
+        </button>
+    {%else%}
+    {%endif%}
+    <button type = 'button' onclick="history.go(-1)">
+        <i class="material-icons" style="font-size:20px;">arrow_back</i>
+    </button>
+</div>
+<p class="categories_title">{{cat_obj.Name}}</p>
+<div class="products" id="products">
+    {%for v in products%}
+        <div class="product_card" onclick="window.location.href = '/view_product/{{v.id}}/';">
+            <div class="product_card_image">
+                <img src="{{v.Photo.url}}" alt="failed to load category image">
+            </div>
+            <text class="product_name">{{v.Name}}</text>
+            <text class="price">{{v.Price}}</text>
+        </div>
+    {%endfor%}
+</div>

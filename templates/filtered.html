@@ -1,0 +1,46 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/filtered.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<div class="main">
+<div class="filter">
+    <form action="." method="POST">
+        {%csrf_token%}
+        {{form.as_table}}
+    <input type = 'submit' value = 'Ok' class="button"/>
+    </form>
+</div>
+    {{Start}}
+<table  class="table1" >
+    <thead>
+        <th>Date & Time</th>
+        <th>Investment</th>
+        <th>Type</th>
+        <th>Cash(Mwk)</th>
+        <th>Credit(Mwk)</th>
+    </thead>
+    <tbody>
+      {%for i in result%}
+        <tr>
+
+           <td class="td">{{i.date}}</td>
+            <td class="td">{{i.Investment}}</td>
+            <td class="td">{{i.Type}}</td>
+            <td class="td">
+            {% if 'Cash' in i.PMode %}
+                {{i.Amount}}
+            {% else %}
+                0
+            {% endif %}
+            </td>
+            <td class="td">
+            {%if 'Credit' in i.PMode%}
+                {{i.Amount}}
+            {% else %}
+                0
+            {% endif %}
+            </td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+</div>

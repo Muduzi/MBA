@@ -1,0 +1,468 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    row-gap:10px;
+    position:relative;
+    width:100vw;
+    height:auto;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+/*messages*/
+.messages{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    align-self:center;
+    justify-content:flex-start;
+    position:fixed;
+    top:2%;
+    z-index:7;
+    row-gap:5px;
+    width:45%;
+    height:60px;
+    padding-top:10px;
+    padding-bottom:15px;
+    padding-right:10px;
+    padding-left:10px;
+    background:rgb(230, 230, 250, 0.95);
+    border-radius:10px;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.message{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:90%;
+    height:20%;
+    color:#2B3856;
+    font-size:16px;;
+}
+.close{
+    align-self:flex-end;
+    background:transparent;
+    border:hidden;
+}
+.close:hover{
+    cursor:pointer;
+    color:white;
+    background:#2B3856;
+}
+
+/*navigation*/
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:80%;
+    height:32px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    border:hidden;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+    border-radius:10px;
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+/*packages*/
+.section{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:80%;
+    height:5%;
+    font-size:18px;
+    color:#2B3856;
+    /*filter: drop-shadow(2px 3px 4px rgb(54, 69, 79, 0.3));*/
+}
+.packages{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:flex-start;
+    position:relative;
+    column-gap:15px;
+    row-gap:15px;
+    width:78%;
+    height:30%;
+    padding:10px;
+    background:#F9F6EE;
+    border-radius:10px;
+    overflow-y:scroll;
+}
+
+.package{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:relative;
+    width:190px;
+    height:80px;
+    cursor:hand;
+    padding:5px;
+    background:#F9F6EE;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3)
+}
+.package_name{
+    font-size:15px;
+    color:#5D6166;
+}
+.package_price{
+    font-size:14px;
+    color:#5D6166;
+}
+.service_count{
+    font-size:12px;
+    color:gray;
+}
+
+text{
+    display:flex;
+    align-items:center;
+    margin-left:5px;
+    color:#5D6166;
+}
+
+
+/*services table*/
+.services{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:80%;
+    height:45%;
+    background:#F9F6EE;
+    border-radius:10px;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+    overflow-y:scroll;
+}
+thead{
+    position:sticky;
+    top:0px;
+    z-index:1;
+    width:100%;
+    height:30px;
+    background:#5D6166;
+}
+thead tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30px;
+    border-bottom:1px solid #EDEADE;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    color:#EDEADE;
+    font-size:15px;
+    font-weight:1000;
+    margin-left:3px;
+}
+.sth1{
+    width:20%;
+    height:100%;
+
+}
+.sth2{
+    width:45%;
+    height:100%;
+}
+.sth3{
+    width:10%;
+    height:100%;
+}
+
+tbody{
+    font-size:14px;
+    width:100%;
+}
+tbody tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:40px;
+    border-bottom:1px solid #EDEADE;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    color:#5D6166;
+    font-size:14px;
+    margin-left:3px;
+}
+
+/*forms*/
+form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:absolute;
+    z-index:3;
+    top:10%;
+    width:350px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:15px;
+    padding-bottom:15px;
+    background:#EDEADE;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+    border-radius:10px;
+}
+
+.createCategory{
+    display:flex;
+    visibility:visible;
+    height:290px
+}
+.createService{
+    display:flex;
+    visibility:visible;
+    height:500px
+}
+.createPackage{
+    display:flex;
+    visibility:visible;
+    height:520px;
+}
+
+form text{
+    align-self:center;
+    color:#2B3856;
+    font-size:17px;
+}
+form label{
+    color:rgb(54, 69, 79);
+    font-size:16px;
+}
+form input{
+    width:100%;
+    height:35px;
+    color:#5D6166;
+    font-size:14px;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+form select{
+    width:auto;
+    height:35px;
+    color:#5D6166;
+    font-size:14px;
+    background:#F9F6EE;
+    border:1px solid #F9F6EE;
+    border-radius:10px;
+}
+form select:focus{
+    outline:none;
+}
+.packageSelect{
+    width:100%;
+    height:auto;
+    background:#F9F6EE;
+}
+.createPackage select option{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:30px;
+    margin-top:4px;
+    font-size:14px;
+}
+form textarea{
+    width:100%;
+    height:75px;
+    color:#5D6166;
+    font-size:14px;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:30px;
+    border-radius:10px;
+}
+.but button{
+    width:20%;
+    height:90%;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+    padding:2px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.but button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+@media(max-width:1000px){
+    body{
+        overflow-y:scroll;
+    }
+    .Navigation{
+        width:95%;
+    }
+    .Navigation button{
+        font-size:12px;
+    }
+
+    .section{
+        width:95%;
+        font-size:16px;
+    }
+    .packages{
+        width:92%;
+        height:200px;
+    }
+    .package_name{
+        font-size:13px;
+        color:#5D6166;
+    }
+    .package_price{
+        font-size:12px;
+        color:#5D6166;
+    }
+    .service_count{
+        font-size:11px;
+        color:gray;
+    }
+
+    .services{
+        width:95%;
+        height:320px;
+    }
+
+    th{
+        font-size:14px;
+    }
+    td{
+        font-size:13px;
+    }
+
+    form label{
+        font-size:14px;
+    }
+
+    form input{
+        font-size:13px;
+    }
+
+    form select{
+        font-size:13px;
+    }
+
+    form textarea{
+        font-size:13px;
+    }
+
+}
+@media(max-width:768px){
+    body{
+        height:auto;
+        overflow-y:scroll;
+    }
+
+    th{
+        font-size:13px;
+    }
+    td{
+        font-size:12px;
+    }
+}
+
+@media(max-width:430px){
+    body{
+        height:100vh;
+        overflow-y:hidden;
+    }
+    .messages{
+        width:90%;
+    }
+
+    .Navigation{
+    }
+    .packages{
+        column-gap:15px;
+        row-gap:10px;
+        width:90%;
+    }
+
+    form{
+        width:320px;
+    }
+
+    .sth1{
+        width:37%;
+    }
+    .sth2{
+        display:none;
+        visibility:hidden;
+    }
+    .sth3{
+        width:25%;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

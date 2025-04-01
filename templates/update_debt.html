@@ -1,0 +1,38 @@
+<form action='http://127.0.0.1:8000/debt/'>
+    <input type="submit" value="Back" />
+</form>
+</form><table class="table1" border=" 1px solid black">
+        <caption>Current Debt</caption>
+
+        <thead class="th1">
+            <th>id</th>
+            <th>Debtor</th>
+            <th>Amount</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Info</th>
+            <th>Status</th>
+        </thead>
+        <tbody class="tbody">
+            <tr>
+                <td>{{debtor.id|default_if_none:''}}</td>
+                <td>{{debtor.Debtor|default_if_none:''}}</td>
+                <td>{{debtor.Amount|default_if_none:''}}</td>
+                <td>{{debtor.Email|default_if_none:''}}</td>
+                <td>{{debtor.Contact|default_if_none:''}}</td>
+                <td>{{debtor.Info|default_if_none:''}}</td>
+                <td>{{debtor.Status|default_if_none:''}}</td>
+            </tr>
+        </tbody>
+    </table>
+<form action="." method="POST">
+    {%csrf_token%}
+     <section>
+        <table>
+            <tr>
+                <td>{{form}}</td>
+            </tr>
+        </table>
+    </section>
+    <input type = 'submit' value = 'save'/>
+</form>

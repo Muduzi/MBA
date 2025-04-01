@@ -1,0 +1,245 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/inventory.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+                <button type="submit" name="confirm" value="{{item.id}}" class="confirm">
+                    Confirm
+                </button>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="openPopup()">
+        <i class="material-icons" style="font-size:18px">add</i>Category
+    </button>
+    <button type="button" onclick="window.location.href='/add_inventory/';">
+        <i class="material-icons" style="font-size:18px">add</i>product
+    </button>
+    <button type="button" onclick="window.location.href='/management/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" id="popup">
+    {%csrf_token%}
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required maxlength="30">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" required maxlength="290" placeholder="1-290Chars"></textarea>
+    <div class="but">
+        <button type = 'submit' class = 'save' name="save">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closePopup()">Cancel</button>
+    </div>
+</form>
+<div class="dashboard">
+    <div class="container1">
+        <i class="material-icons" style="font-size:30px; opacity:80%;">content_paste</i>
+        <div class="info">
+            <div class="data">
+                <text class="value4">{{cat_count}}</text>
+                <text class="title">Categories</text>
+            </div>
+            <div class="data">
+                <text class="value3">
+                    {{available_prod}}
+                    <div class="denominator" style="color:red">{{unavailable_prod}}</div></text>
+                <text class="title">Products</text>
+            </div>
+            <div class="data">
+                <text class="value2">{{stock_count}}
+                    {%if stock_count <= 0%}
+                        <div class="denominator" style="color:green">{{stock_delta}}</div>
+                    {%else%}
+                        <div class="denominator" style="color:red">{{stock_delta}}</div>
+                    {%endif%}
+                </text>
+                <text class="title">Stock Count</text>
+            </div>
+            <div class="data1">
+                <text class="value1">
+                    {{stock_value}}
+                </text>
+                <text class="title">Stock Value</text>
+            </div>
+        </div>
+
+    </div>
+    <table class="container2">
+        <thead>
+            <tr>
+                <th class="p_pth1">Name</th>
+                <th class="p_pth2">Size</th>
+                <th class="p_pth2">Days</th>
+                <th class="p_pth2">Flow rate</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for key, value in prod_performance.items%}
+            <tr>
+                <td class="p_pth1">{{value.Name}}</td>
+                <td class="p_pth2">{{value.Size}}</td>
+                <td class="p_pth2">{{value.days}}</td>
+                {%if value.rate <= 10 %}
+                    <td class="p_pth2" style="color:red;font-weight:600;">{{value.rate}}%</td>
+                {%else%}
+                    <td class="p_pth2" style="color:green;font-weight:600;">{{value.rate}}%</td>
+                {%endif%}
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+    <div class="container3">
+        <canvas id="doughnutChart"></canvas>
+    </div>
+</div>
+
+<table class="inventory_list">
+    <thead>
+        <tr>
+            <th class="pth2">Code</th>
+            <th class="sth1">Product</th>
+            <th class="pth1">Brand</th>
+            <th class="pth2">Size</th>
+            <th class="sth2">Unit Price</th>
+            <th class="sth2">Quantity</th>
+            <th class="sth3">Value</th>
+            <th class="pth2">ExpiryDate</th>
+            <th class="sth4"></th>
+            <th class="sth4"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for key, value in data.items%}
+            {%if prod.Close == True%}
+
+                {%else%}
+                    <tr>
+                        <td class="pth2" style="color:gold;">{{value.Code}}</td>
+                        <td class="sth1">
+                            <form method="post">
+                                {%csrf_token%}
+                                <button type="submit" name="show_this_product" value="{{value.id}}">
+                                    {{value.Name}}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="pth1">{{value.Brand}}</td>
+                        <td class="pth2">{{value.Size}}</td>
+                        <td class="sth2">{{value.SPrice}}</td>
+                        <td class="sth2">{{value.Quantity}}</td>
+                        <td class="sth3">{{value.Value}}</td>
+                        <td class="pth2">{{value.ExpiryDate.date}}</td>
+                        {%if value.reorder%}
+                            <td class="sth4">
+                                <button type="button" class="action1" onclick="window.location.href='/replenish/{{value.id}}/';">
+                                    <i class="material-icons" style="font-size:16px;">library_add</i>
+                                </button>
+                            </td>
+                            <td class="sth4">
+                                <form method="post">
+                                    {%csrf_token%}
+                                    <button type="submit" name="delete" class="action2" value="{{value.id}}">
+                                        <i class="material-icons" style="font-size:16px; color:red;">highlight_off</i>
+                                    </button>
+                                </form>
+                            </td>
+                        {%else%}
+                            <td class="sth4"></td>
+                            <td class="sth4"></td>
+                        {%endif%}
+                    </tr>
+
+            {%endif%}
+        {%endfor%}
+    </tbody>
+</table>
+
+<div {%if product and product_info%} class="open_product" {%else%} class="product" {%endif%}>
+    <button type="button"  class="close" onclick="window.location.href = '/inventory/';">
+        <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+    </button>
+    <p class="product_title">Product Details</p>
+    <text><span class="info_title">Date Created &nbsp; : &nbsp; </span>{{product.Date}}</text>
+    <text><span class="info_title">Name &nbsp; : &nbsp; </span>{{product.Name}}</text>
+    <text><span class="info_title">Brand &nbsp; : &nbsp; </span>{{product.Brand}}</text>
+    <text><span class="info_title">Size &nbsp; : &nbsp; </span>{{product.Size}}</text>
+    <text><span class="info_title">Expiry Date &nbsp; : &nbsp; </span>{{product.ExpiryDate}}</text>
+    <text><span class="info_title">Cost &nbsp; : &nbsp; </span>{{product_info.Cost}}</text>
+    {%if product_info.Location%}
+        <text><span class="info_title">Location &nbsp; : &nbsp; </span>{{product_info.Location}}</text>
+    {%endif%}
+    <text><span class="info_title">Initial Quantity &nbsp; : &nbsp; </span>{{product_info.InitialQuantity}}</text>
+    <text><span class="info_title">Current Quantity &nbsp; : &nbsp; </span>{{product_info.CurrentQuantity}}</text>
+    <text><span class="info_title">Initial Quantity &nbsp; : &nbsp; </span>{{product_info.InitialValue}}</text>
+    <text><span class="info_title">Current Quantity &nbsp; : &nbsp; </span>{{product_info.CurrentValue}}</text>
+</div>
+
+<script>
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "/inventory/";
+    }
+
+    let popup = document.getElementById("popup");
+
+    function openPopup(){
+        popup.classList.add("open-popup");
+    }
+
+    function closePopup(){
+        popup.classList.remove("open-popup");
+    }
+
+
+    const doughnutChart = document.getElementById('doughnutChart');
+
+    new Chart(doughnutChart, {
+        type: 'doughnut',
+        data: {
+            labels: ['Current stock%'],
+            datasets: [{
+                label: 'Current stock Percentage%',
+                data: [{{current_percentage}}, {{current_remainder}}],
+                borderWidth: 0,
+                borderColor: 'gray',
+                backgroundColor:['green', '#EDEADE'],
+                radius: 60,
+                },
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+
+        }
+    });
+</script>

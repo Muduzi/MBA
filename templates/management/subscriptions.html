@@ -1,0 +1,215 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/subscriptions.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type = 'button' onclick="openSearch()">
+       <i class="material-icons" style="font-size:18px; border:hidden;">search</i>
+    </button>
+    <button type = 'button' onclick="window.location.href='http://127.0.0.1:8000/manager/';">
+       <i class="material-icons" style="font-size:18px; border:hidden;">arrow_forward</i>
+    </button>
+</div>
+
+
+<div class="information">
+    <div class="info_container">
+        <div class="info">
+            <text class="title">Active Businesses</text>
+            <p class="total">{{active_businesses}}/{{businesses_count}}</p>
+        </div>
+        <div class="info">
+            <text class="title">Revenue</text>
+            <p class="total">
+                <i class="material-icons" style="font-size:14px">attach_money</i>{{total_amount}}
+            </p>
+        </div>
+        <div class="info">
+            <text class="title">Upgrades</text>
+            <text class="content1">
+                {{upgrades}}
+            </text>
+            {%if upgrades_perc > downgrades_perc%}
+                <text class="content2" style="color:green">
+                    %{{upgrades_perc}}
+                </text>
+            {%elif upgrades_perc < downgrades_perc%}
+                <text class="content2" style="color:red">
+                    %{{upgrades_perc}}
+                </text>
+            {%else%}
+                <text class="content2">
+                    %{{upgrades_perc}}
+                </text>
+            {%endif%}
+        </div>
+        <div class="info">
+            <text class="title">Downgrades</text>
+            <text class="content1">
+                {{downgrades}}
+            </text>
+            {%if downgrades_perc > upgrades_perc%}
+                <text class="content2" style="color:red;">
+                    %{{downgrades_perc}}
+                </text>
+            {%else%}
+                <text class="content2" style="color:green">
+                    %{{downgrades_perc}}
+                </text>
+            {%endif%}
+        </div>
+        <div class="info">
+            <text class="title">Maintaining</text>
+            <text class="content1">
+                {{maintaining}}
+            </text>
+            <text class="content2">
+                %{{maintaining_perc}}
+            </text>
+        </div>
+        <div class="info">
+            <text class="title">Non-renewal</text>
+            <text class="content1">
+                {{non_renewal}}
+            </text>
+            <text class="content2">
+                %{{non_renewal_perc}}
+            </text>
+        </div>
+    </div>
+    <div class="doughnut">
+        <canvas id="doughnut"></canvas>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Business</th>
+            <th>PLan</th>
+            <th>Paid on</th>
+            <th>Amount</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in active%}
+            <tr>
+                <td onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{a.Business.id}}/';" style="color:#2B3856; cursor:pointer;">{{a.Business.Name}}</td>
+                <td>{{a.Plan.Name}}</td>
+                <td>{{a.DatePaid.date}}</td>
+                <td>{{a.Plan.Price}}</td>
+                <td>{{a.Start.date}}</td>
+                <td>{{a.End.date}}</td>
+                <td style="color:green;">{{a.Status}}</td>
+            </tr>
+        {%endfor%}
+        {% for a in pending%}
+            <tr>
+                <td onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{a.Business.id}}/';" style="color:#2B3856; cursor:pointer;">{{a.Business.Name}}</td>
+                <td>{{a.Plan.Name}}</td>
+                <td>{{a.DatePaid.date}}</td>
+                <td>{{a.Plan.Price}}</td>
+                <td>{{a.Start.date}}</td>
+                <td>{{a.End.date}}</td>
+                <td style="color:yellow;">{{a.Status}}</td>
+            </tr>
+        {%endfor%}
+        {% for a in inactive.values%}
+            <tr>
+                <td onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{a.Business.id}}/';" style="color:#2B3856; cursor:pointer;">{{a.Business.Name}}</td>
+                <td>{{a.Plan.Name}}</td>
+                <td>{{a.DatePaid.date}}</td>
+                <td>{{a.Plan.Price}}</td>
+                <td>{{a.Start.date}}</td>
+                <td>{{a.End.date}}</td>
+                <td style="color:red;">{{a.Status}}</td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<div id="search" {%if search%} class="open_search" {%else%} class="search" {%endif%}>
+    <button type="button" onclick="closeSearch()" class="close_search">
+        <i class="material-icons" style="font-size:19px;">close</i>
+    </button>
+    <form method="post">
+        {%csrf_token%}
+        <input type="search" name="lookup_word" required placeholder="......name (or) id......" maxlength="60">
+        <button type="submit" name="lookup">
+           <i class="material-icons" style="font-size:20px;">search</i>
+        </button>
+    </form>
+    {%if search%}
+        {%for i in search%}
+            <div class="result" onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{i.id}}/';">
+                <img src="{{i.photo.url}}" alt="unavailable">
+                <text>{{i.name}}</text>
+            </div>
+        {%endfor%}
+    {%endif%}
+</div>
+
+
+<script>
+
+    <!--open search-->
+    let search = document.getElementById("search");
+
+    function openSearch(){
+        search.classList.add("open_search");
+    }
+    function closeSearch(){
+        window.location.href="http://127.0.0.1:8000/subscriptions/";
+    }
+
+    <!--graph-->
+
+    const doughnut = document.getElementById('doughnut');
+
+    new Chart(doughnut, {
+        type: 'doughnut',
+        data: {
+            labels: ['Upgrades', 'Downgrades', 'Maintaining'],
+            datasets: [{
+                label: 'credits stats in %',
+                data: [{{upgrades_perc}}, {{downgrades_perc}}, {{maintaining_perc}}],
+                borderWidth: 0,
+                borderColor: 'gray',
+                backgroundColor:['#39FF14', '#FF0000', 'white'],
+                radius:50,
+                },
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+
+        },
+        plugins: {
+            datalabels: {
+                formatter: (value, context) =>{
+                    if (value){
+                        return(value) + '%';
+                    }return 0 + '%';
+                    console.log(value);
+
+                },
+                display: true,
+                align: 'end',
+                offset:20
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+</script>

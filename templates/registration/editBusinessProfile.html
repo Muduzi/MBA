@@ -1,0 +1,80 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/editBusinessProfile.css'%}"
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/business_profile/';">
+        <i class="material-icons" style="font-size:20px;">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {%csrf_token%}
+    <div class="inputs1">
+        <div class="profile_photo">
+            <label for="profilePic">
+                {%if ini.Photo.url != None%}
+                    <img src="{{ini.Photo.url}}" id="profile-pic">
+                {%else%}
+                    <img src="{%static '/appdefaults/add-photo4.png'%}">
+                {%endif%}
+            </label>
+            <input type="file" id="profilePic" name="photo" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+        </div>
+        <label for="name"><i class="material-icons" style="font-size:20px;">store</i>Name</label>
+        <input type="text" id="name" name="name"  required minlength="4" maxlength="40" {%if ini%} value="{{ini.Name}}" {%else%} placeholder="Name of the Business" {%endif%}>
+        <label for="type"><i class="material-icons" style="font-size:20px;">label_outline</i>Type</label>
+        <select id="type" name="type" {%if ini.Type%} {%else%} required {%endif%}>
+            {%if ini.Type%}
+                <option value="{{i}}" selected>{{ini.Type}}</option>
+                {%for i in bus_types%}
+                    <option value="{{i}}">{{i}}</option>
+                {%endfor%}
+            {%else%}
+                {%for i in bus_types%}
+                    <option value="{{i}}">{{i}}</option>
+                {%endfor%}
+            {%endif%}
+        </select>
+        <label for="email"><i class="material-icons" style="font-size:20px;">email</i>Email</label>
+        <input type="email" id="email" name="email" required maxlength="30" {%if ini%} value="{{ini.Email}}" {%else%} placeholder="Email" {%endif%}>
+        <label for="contact1"><i class="material-icons" style="font-size:20px;">call</i>Contact</label>
+        <input type="number" id="contact1" name="contact1" required maxlength="14" {%if ini.Contact1%} value="{{ini.Contact1}}" {%else%}  placeholder="phone number1" {%endif%}>
+        <label for="contact2"><i class="material-icons" style="font-size:20px;">call</i>Contact</label>
+        <input type="number" id="contact2" name="contact2" maxlength="14" {%if ini.Contact2%} value="{{ini.Contact2}}" {%else%}  placeholder="phone number2" {%endif%}>
+
+    </div>
+    <div class="inputs2">
+        <label for="about">About</label>
+        <textarea id="about" name="about"  class="textarea1" required maxlength="165" placeholder="Description or About">{%if ini%}{{ini.About}}{%else%}{%endif%}</textarea>
+        <label for="address">Physical address</label>
+        <textarea  id="address" name="address"  class="textarea2" required maxlength="165" placeholder="Physical address">{%if ini.Address%} {{ini.Address}} {%else%}{%endif%}</textarea>
+        <label for="postAddress">Post Address</label>
+        <input id="postAddress" name="postbox"  required maxlength="30" {%if ini.PostBox%} value="{{ini.PostBox}}" {%else%} placeholder="Post address" {%endif%}>
+        <label for="city">City</label>
+        <input type="text" id="city" name="city"  required maxlength="30" {%if ini%} value="{{ini.City}}" {%else%} placeholder="City" {%endif%}>
+        <label for="country">Country</label>
+        <input type="text" id="country" name="country"  required maxlength="60" {%if ini%} value="{{ini.Country}}" {%else%} placeholder="Country" {%endif%}>
+        <label for="zipcode">ZipCode</label>
+        <input type="text" id="zipcode" name="zipcode"  maxlength="30" {%if ini.ZipCode%} value="{{ini.ZipCode}}" {%else%} placeholder="ZipCode" {%endif%}>
+        <label for="instagram">Instagram</label>
+        <input type="text" id="instagram" name="instagram" {%if ini.Instagram%} value="{{ini.Instagram}}" {%else%} placeholder="Instagram Link" {%endif%}>
+        <label for="facebook">Facebook</label>
+        <input type="text" id="facebook" name="facebook" {%if ini.Facebook%} value="{{ini.Facebook}}" {%else%} placeholder="Facebook Link" {%endif%}>
+        <label for="linkedin">Linkedin</label>
+        <input type="text" id="linkedin" name="linkedin" {%if ini.Linkedin%} value="{{ini.Linkedin}}" {%else%}  placeholder="Linkedin link" {%endif%}>
+    </div>
+    <div class="but">
+        <button type="submit" name="save" class="save">{%if ini%}Save{%else%}Register{%endif%}</button>
+    </div>
+</form>

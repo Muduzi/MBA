@@ -1,0 +1,213 @@
+body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    row-gap:7px;
+    position:relative;
+    width:100wh;
+    height:100vh;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+.form_or_table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    width:25%;
+    height:20%;
+}
+.form_or_table text{
+    color:#4B61D1;
+    font-size:17px;
+}
+.buttons{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:50%;
+}
+.buttons button{
+    width:30%;
+    height:50%;
+    color:white;
+    font-size:15px;
+    padding:3px;
+    border:hidden;
+    border-radius:10px;
+}
+.New{
+    background-image: linear-gradient(to right, #00BFFF, #0E3386, #2B3856);
+}
+.New:hover{
+    font-size:16px;
+    background-image: linear-gradient(to left, #00BFFF, #0E3386, #2B3856);
+}
+.Existing{
+    background-image: linear-gradient(to left, #00BFFF, #0E3386, #2B3856);
+}
+.Existing:hover{
+    font-size:16px;
+    background-image: linear-gradient(to right, #00BFFF, #0E3386, #2B3856);
+}
+form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    top:10%;
+    width:30%;
+    height:70%;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+
+.open_NewVendor{
+    display:flex;
+    visibility:visible;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    position:absolute;
+    z-index:3;
+    top:10%;
+    width:30%;
+    height:60%;
+    padding:10px;
+    background:#F9F6EE;
+    border-radius:10px;
+}
+form text{
+    color:#2B3856;
+    font-size:18px;
+}
+.NewVendor input{
+    width:100%;
+    height:10%;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+.NewVendor textarea{
+    width:100%;
+    height:30%;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:10%;
+    border-radius:10px;
+}
+.but button{
+    position:center;
+    width:25%;
+    height:70%;
+    border-radius:10px;
+    color:white;
+    border:hidden;
+    padding:2px;
+}
+.but button:hover{
+    width:26%;
+    height:71%;
+}
+.save{
+    background:blue;
+}
+.save:hover{
+    background-image: linear-gradient(to left, white, cyan, blue)
+}
+
+.cancel{
+    background:red;
+}
+.cancel:hover{
+    background-image: linear-gradient(to right, white, #E44D2E, red)
+}
+.open_SelectVendor{
+    display:flex;
+    visibility:visible;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    position:absolute;
+    z-index:3;
+    top:17%;
+    width:30%;
+    height:38%;
+    padding:10px;
+    background:#F9F6EE;
+    border-radius:10px;
+}
+.selectVendor select{
+    width:70%;
+    height:15%;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+.butt{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:18%;
+    border-radius:10px;
+}
+.butt button{
+    position:center;
+    width:25%;
+    height:70%;
+    border-radius:10px;
+    color:white;
+    border:hidden;
+    padding:2px;
+}
+
+@media(max-width:430px){
+    .container{
+        display:flex;
+        flex-direction:column;
+        justify-content:flex-start;
+        row-gap:10px;
+        width:100%;
+        height:100%;
+    }
+    .asset_info{
+        width:96%;
+        height:36%;
+        padding-left:7px;
+        padding-right:5px;
+        padding-top:10px;
+        padding-bottom:10px;
+    }
+    .title{
+        font-size:15px;
+    }
+    .content{
+        font-size:14px;
+    }
+    .form_or_table{
+        width:80%;
+        height:15%;
+        padding-left:7px;
+        padding-right:5px;
+        padding-top:10px;
+        padding-bottom:10px;
+    }
+    .form_or_table text{
+        font-size:15px;
+    }
+
+}

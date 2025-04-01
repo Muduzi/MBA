@@ -1,0 +1,56 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/caperror.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<p class="warning"><i class="material-icons" style="color:red; font-size:30px;">warning</i>Not enough funds to make the purchase</p>
+<div class="instructions">
+    <text>1.Press credit to credit the amount lacking to make the purchase or council the transaction.</text>
+    <text>Or</text>
+    <text>2.Press edit to make changes to the amount and(or) quantity.</text>
+</div>
+<form method="post" class="recovery">
+    {%csrf_token%}
+    <text>Recovery Options:</text>
+    <div class="recovery_options">
+        <button type="submit" name="credit" class="credit">
+        <i class="material-icons" style="font-size:20px; border:hidden;">credit_card</i>
+            credit
+        </button>
+        <button type="button" onclick="openPopup()" class="edit">
+            <i class="material-icons" style="font-size:20px; border:hidden;">edit</i>
+            edit
+        </button>
+    </div>
+</form>
+<form method="post" class="popup" id="popup">
+    {%csrf_token%}
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" name="amount" value="{{data.Amount}}" required placeholder="Amount">
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" value="{{data.Quantity}}" required placeholder="Quantity">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="save">Save</button>
+        <button type = 'submit' class = 'cancel' name="cancel">Cancel</button>
+    </div>
+</form>
+
+<script>
+        let popup = document.getElementById("popup");
+
+        function openPopup(){
+        popup.classList.add("open-popup");
+        }
+
+        function closePopup(){
+        popup.classList.remove("open-popup");
+        }
+</script>

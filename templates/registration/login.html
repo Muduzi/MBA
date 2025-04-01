@@ -1,0 +1,60 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/login.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--link for Google icons-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+
+<h1>MAT</h1>
+
+<form method="post" id="login" class="login">
+    {%csrf_token%}
+    <label for="username">
+        <i class="material-icons" style="font-size:18px;">person</i>
+    </label>
+    <input type="text" id="username" name="username" required minlength="2" maxlength="30" placeholder="username">
+    <label for="password">
+        <i class="material-icons" style="font-size:18px;">key</i>
+    </label>
+    <input type="password" id="password" name="password" required minlength="5" maxlength="15" placeholder="password">
+    <button type="submit" name="login" class="ok">Login</button>
+    <div class="instruction">
+        <text>Don't have an account?</text><button type="button" onclick="window.location.href='/sign_up/';">Signup</button>
+    </div>
+</form>
+
+<script>
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "/login/";
+    }
+</script>

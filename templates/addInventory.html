@@ -1,0 +1,121 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/addInventory.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+        <button onclick="openDraftList()">
+            Drafts:{{draft_count}}
+        </button>
+    <button type="button" onclick="window.location.href='/inventory/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" id="draftList" class="draft_li">
+    {%csrf_token%}
+    <label></label>
+    <select name="selected_draft" size="6">
+        {%for i in draft_li%}
+            <option value="{{i.id}}">{{i.InitialQuantity}}&nbsp;{{i.Name}}&nbsp; @ &nbsp;{{i.Cost}}</option>
+        {%endfor%}
+    </select>
+    <div class="but">
+        <button onclick="closeDraftList()">close</button>
+        <button type="submit" name="this_draft">
+            Ok
+        </button>
+    </div>
+</form>
+
+<form method="post">
+    {%csrf_token%}
+    <div class="product">
+        <text style="color:rgb(54, 69, 79); border:hidden;">1</text>
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            {%for i in categories%}
+                <option value="{{i.id}}">{{i.Name}}</option>
+            {%endfor%}
+        </select>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" {%if initial%} disabled value="{{initial.Name}}" class="disabled" {%else%} {%endif%} maxlength="30">
+        <label for="brand">Brand</label>
+        <input type="text" id="brand" name="brand" required maxlength="30">
+        <label for="size">Size</label>
+        <input type="text" id="size" name="size" required maxlength="15">
+        <label for="expiryDate">ExpiryDate</label>
+        <input type="date" id="expiryDate" name="expiry_date">
+    </div>
+
+    <div class="product_info">
+        <text style="color:rgb(54, 69, 79); border:hidden;">2</text>
+        <div class="input_cont">
+            <div class="input">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" maxlength="30"  placeholder="shelf,aisle">
+            </div>
+            <div class="input">
+                <label for="barcode">Bar Code</label>
+                <input type="text" id="barcode" name="barcode"  maxlength="50">
+            </div>
+        </div>
+        <div class="input_cont">
+            <div class="input">
+                <label for="BPrice">Purchase Price/Unit</label>
+                {%if initial%}
+                    <input type="number" name="BPrice" disabled value="{{buying_price}}" class="disabled">
+                {%else%}
+                    <input type="number" id="BPrice" name="BPrice" required>
+                {%endif%}
+            </div>
+            <div class="input">
+                <label for="SPrice">Selling Price/Unit</label>
+                <input type="number" id="SPrice" name="SPrice" required>
+            </div>
+        </div>
+        <label for="Quantity">Quantity</label>
+        {%if initial%}
+            <input type="number" name="quantity" disabled value="{{initial.InitialQuantity}}" style="width:50%;" class="disabled">
+        {%else%}
+            <input type="number" id="Quantity" name="quantity" required style="width:50%;">
+        {%endif%}
+        <label for="slider">Reorder: <span id="reorder"></span>%</label>
+        <input type="range" id="slider" name="reorder" value="50" placeholder="select reorder percentage">
+    </div>
+
+    <div class="but">
+        <button type="submit" name="save" class="save3">
+            Save
+        </button>
+    </div>
+
+</form>
+<script>
+    let slider = document.getElementById("slider");
+    let reorder = document.getElementById("reorder");
+
+
+    reorder.innerHTML = slider.value;
+
+    slider.oninput = function(){
+        reorder.innerHTML = this.value;
+    }
+
+    dl = document.getElementById("draftList");
+
+    function openDraftList(){
+        dl.classList.add("open_draft_li");
+    }
+    function closeDraftList(){
+        dl.classList.remove("open_draft_li");
+    }
+</script>

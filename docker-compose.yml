@@ -1,0 +1,67 @@
+name: MAT
+
+services:
+  django:
+    build: .
+    container_name: MAT-P1
+    command: >
+      sh -c "python manage.py migrate
+            python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/MAT
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - DJANG0_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - DB_HOST=mat_db
+      - DB_NAME=mat
+      - DB_USER=Derrick_Ken
+      - DB_PASS=mudu6534210
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - mat_db
+      - redis
+
+  mat_db:
+    image: postgres:16.6-alpine3.21
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    container_name: MAT_db
+    environment:
+      POSTGRES_USER: "Derrick_Ken"
+      POSTGRES_PASSWORD: "mudu6534210"
+    volumes:
+      - ./postgres/scripts:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    restart: always
+
+  celery:
+    restart: always
+    build: .
+    command: celery -A MAT worker -l INFO
+    environment:
+      - DEBUG=1
+      - DB_HOST=mat_db
+      - DB_NAME=mat
+      - DB_USER=Derrick_Ken
+      - DB_PASS=mudu6534210
+      - DJANG0_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    volumes:
+      - .:/MAT
+
+    depends_on:
+      - django
+      - redis
+
+  redis:
+    image: "redis:7.4-alpine"
+
+volumes:
+  mat_db_data:

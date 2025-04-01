@@ -1,0 +1,68 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/Assetsvendor.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="form_or_table" id="form_or_table">
+    <text>New or Previously contacted vendor</text>
+    <div class="buttons">
+        <button type="button" class="New" onclick="openNewForm()">
+            New
+        </button>
+        <button type="button" class="Existing" onclick="openSelectForm()">
+            Select
+        </button>
+    </div>
+</div>
+<form method="post" id="NewVendor" class="NewVendor">
+    {%csrf_token%}
+    <text>Enter the suppliers details</text>
+    <input type="text" name="vendor" required maxlength="40" placeholder="Vendor">
+    <input type="email" name="email" required placeholder="Email">
+    <input type="number" name="contact" required placeholder="Contact">
+    <textarea name="information" placeholder="information" maxlength="240"></textarea>
+    <div class="but">
+        <button type="submit" class="save" name="new_vendor">Save</button>
+        <button type="submit" class="cancel" name="cancel" onclick="closeNewForm()">Cancel</button>
+    </div>
+</form>
+<form method="post" id="selectVendor" class="selectVendor">
+    {%csrf_token%}
+    <text>Select a supplier</text>
+    <select name="ven_id">
+        {%for i in vendor%}
+            <option value="{{i.id}}">{{i.Vendor}}</option>
+        {%endfor%}
+    </select>
+    <div class="butt">
+        <button type="submit" class="save" name="selected_vendor">Save</button>
+        <button type="submit" class="cancel" name="cancel" onclick="closeSelectForm()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let selectVendor = document.getElementById("selectVendor");
+    let NewVendor = document.getElementById("NewVendor");
+
+    function openNewForm(){
+        NewVendor.classList.add("open_NewVendor");
+    }
+    function closeNewForm(){
+        NewVendor.classList.remove("open_NewVendor");
+    }
+
+    function openSelectForm(){
+        selectVendor.classList.add("open_SelectVendor");
+    }
+    function closeSelectForm(){
+        selectVendor.classList.remove("open_SelectVendor");
+    }
+</script>

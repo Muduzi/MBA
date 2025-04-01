@@ -1,0 +1,85 @@
+.main{
+display:flex;
+flex-direction:column;
+width:100%;
+height:100%;
+background:#EDEADE;
+align-items:center;
+justify-content:space-evenly;
+}
+.container{
+display:flex;
+flex-direction:column;
+align-items:center;
+position:relative;
+height:75%;
+width:30%;
+border:1px;
+border-radius:30px;
+padding:1px;
+background:#F9F6EE;
+}
+.formcont{
+display:flex;
+flex-direction:column;
+align-items:left;
+justify-content:left;
+color:#F9F6EE;
+position:relative;
+height:75%;
+width:66%;
+border:4px solid #F9F6EE;
+border-radius:15px 15px;
+padding:10px;
+background:#2B3856;
+}
+form li{
+list-style:none;
+font-size:18;
+font-weight:500;
+}
+form button{
+position:right;
+width:100px;
+height:30px;
+border:hidden;
+border-radius:20px 20px;
+color:#F9F6EE;
+font-size:15;
+font-weight:500;
+padding:5px;}
+
+.bbutton{
+display:flex;
+align-items:center;
+justify-content:flex-end;
+color:#F9F6EE;
+position:relative;
+height:6%;
+width:90%;
+border:4px solid #F9F6EE;
+border-radius:15px 15px;
+padding:5px;
+background:transparent;
+}
+.fbutton{
+display:flex;
+align-items:center;
+justify-content:center;
+}
+.back{
+position:relative;
+width:50px;
+height:30px;
+border:hidden;
+border-radius:20px 20px;
+color:#F9F6EE;
+font-size:15;
+font-weight:500;
+padding:1px;
+background:purple;
+}
+.save{
+background:blue;}
+.delete{
+background:red;}

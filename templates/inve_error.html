@@ -1,0 +1,25 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/inve_error.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<div class="main">
+
+    <div class="errortext1">
+        <p>Item not available in inventory!!!</p>
+    </div>
+
+    <div class="errortext2">
+        <p class="p1">Check the spelling of the item you entered by clicking Go back!</p>
+        <p class="p2">Or</p>
+        <p class="p3">Check inventory to verify by clicking inventory! </p>
+    </div>
+    <div class="buttons">
+        <form action='http://127.0.0.1:8000/buffer/'>
+            <input type="submit" value="Go back" class="button"/>
+        </form>
+
+        <form action='http://127.0.0.1:8000/inventory/'>
+            <input type="submit" value="Inventory" class="button"/>
+        </form>
+    </div>
+
+</div>

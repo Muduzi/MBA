@@ -1,0 +1,300 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/doubleEntry.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+     <button type="button" onclick="window.location.href='/expenses/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<table class="mainTable">
+    <thead>
+        <tr>
+            <th class="account_title">Account</th>
+            <th class="amount_title">Debt</th>
+            <th class="amount_title">credit</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--Income-->
+        <tr>
+            <td class="account_title">Income</td>
+            <td class="amount_title"></td>
+            <td class="amount_title"></td>
+        </tr>
+        <tr>
+            <td class="account" style="font-weight:600;">
+                <button type="button" id="ProductIncomeDropDown" onclick="showProductIncomeDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Products
+                </button>
+                <button type="button" id="ProductIncomeDropUp" onclick="hideProductIncomeDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Products
+                </button>
+            </td>
+            <td class="amount"></td>
+            <td class="amount"></td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="ProductIncomeDetail" class="Detail">
+                    <tbody>
+                        {%for key, value in product_income.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                <td class="amount">{{value.total}}</td>
+                                <td class="amount"></td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Inventory</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.COG}}</td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Cash</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.total}}</td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">COG</td>
+                                <td class="amount">{{value.COG}}</td>
+                                <td class="amount"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        {%endfor%}
+
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr></tr>
+        <tr>
+            <td class="account" style="font-weight:600;">
+                <button type="button" id="ServiceIncomeDropDown" onclick="showServiceIncomeDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Services
+                </button>
+                <button type="button" id="ServiceIncomeDropUp" onclick="hideServiceIncomeDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Services
+                </button>
+            </td>
+            <td class="amount"></td>
+            <td class="amount"></td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="ServiceIncomeDetail" class="Detail">
+                    <tbody>
+                        {%for key, value in service_income.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.total}}</td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Cash</td>
+                                <td class="amount">{{value.Cash}}</td>
+                                <td class="amount"></td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Accounts Receivable</td>
+                                <td class="amount">{{value.Credit}}</td>
+                                <td class="amount"></td>
+                            </tr>
+                            <tr>
+                                <td class="separator"></td>
+                            </tr>
+                        {%endfor%}
+
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Sales Revenue</td>
+            <td class="amount_subTitle"></td>
+            <td class="amount_subTitle">{{total_revenue}}</td>
+        </tr>
+        {%if product_income%}
+            <tr>
+                <td class="account_subTitle">Inventory</td>
+                <td class="amount_subTitle"></td>
+                <td class="amount_subTitle">{{total_cog}}</td>
+            </tr>
+        {%endif%}
+        <tr>
+            <td class="account_subTitle">Cash</td>
+            <td class="amount_subTitle">{{revenue_cash}}</td>
+            <td class="amount_subTitle"></td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Accounts Receivable</td>
+            <td class="amount_subTitle" >{{accounts_receivable}}</td>
+            <td class="amount_subTitle"></td>
+        </tr>
+        {%if product_income%}
+            <tr>
+                <td class="account_subTitle">Total Cog</td>
+                <td class="amount_subTitle">{{total_cog}}</td>
+                <td class="amount_subTitle"></td>
+            </tr>
+        {%endif%}
+        <!--Expenses-->
+        <tr>
+            <td class="account_title">Expenses</td>
+            <td class="amount_title"></td>
+            <td class="amount_title"></td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">
+                <button type="button" id="expenseDropDown" onclick="showExpenseDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>
+                </button>
+                <button type="button" id="expenseDropUp" onclick="hideExpenseDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>
+                </button>
+            </td>
+            <td class="amount_subTitle"></td>
+            <td class="amount_subTitle"></td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="expenseDetail" class="Detail">
+                    <tbody>
+                        {%for key, value in expense_accounts.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                <td class="amount"></td>
+                                <td class="amount"></td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Cash</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.cash}}</td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Payable</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.credit}}</td>
+                            </tr>
+                            <tr>
+                                <td class="separator"></td>
+                            </tr>
+                        {%endfor%}
+                        {%for key, value in expense_totals.items%}
+                            <tr>
+                                <td class="account" style="margin-left:50px;">{{key}}</td>
+                                <td class="amount">{{value.total}}</td>
+                                <td class="amount"></td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Cash</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.cash}}</td>
+                            </tr>
+                            <tr>
+                                <td class="account" style="margin-left:50px;">Payable</td>
+                                <td class="amount"></td>
+                                <td class="amount">{{value.credit}}</td>
+                            </tr>
+                            <tr>
+                                <td class="separator"></td>
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Total Expenses</td>
+            <td class="amount_subTitle">{{total_expenses}}</td>
+            <td class="amount_subTitle"></td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Cash</td>
+            <td class="amount_subTitle"></td>
+            <td class="amount_subTitle">{{total_expense_cash}}</td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Accounts Payable</td>
+            <td class="amount_subTitle"></td>
+            <td class="amount_subTitle">{{total_expense_credit}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr>
+            <td class="account_title"></td>
+            <td class="amount_title">{{total}}</td>
+            <td class="amount_title">{{total}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    let ProductIncomeDetail = document.getElementById("ProductIncomeDetail");
+    let ProductIncomeDropDown = document.getElementById("ProductIncomeDropDown");
+    let ProductIncomeDropUp = document.getElementById("ProductIncomeDropUp");
+
+    function showProductIncomeDetail(){
+        ProductIncomeDetail.classList.add("showDetail");
+        ProductIncomeDropDown.classList.add("hide");
+        ProductIncomeDropUp.classList.add("show");
+    }
+    function hideProductIncomeDetail(){
+        ProductIncomeDetail.classList.remove("showDetail");
+        ProductIncomeDropDown.classList.remove("hide");
+        ProductIncomeDropUp.classList.remove("show");
+    }
+
+    let ServiceIncomeDetail = document.getElementById("ServiceIncomeDetail");
+    let ServiceIncomeDropDown = document.getElementById("ServiceIncomeDropDown");
+    let ServiceIncomeDropUp = document.getElementById("ServiceIncomeDropUp");
+
+    function showServiceIncomeDetail(){
+        ServiceIncomeDetail.classList.add("showDetail");
+        ServiceIncomeDropDown.classList.add("hide");
+        ServiceIncomeDropUp.classList.add("show");
+    }
+    function hideServiceIncomeDetail(){
+        ServiceIncomeDetail.classList.remove("showDetail");
+        ServiceIncomeDropDown.classList.remove("hide");
+        ServiceIncomeDropUp.classList.remove("show");
+    }
+
+    let expenseDetail = document.getElementById("expenseDetail");
+    let expenseDropDown = document.getElementById("expenseDropDown");
+    let expenseDropUp = document.getElementById("expenseDropUp");
+
+    function showExpenseDetail(){
+        expenseDetail.classList.add("showDetail");
+        expenseDropDown.classList.add("hide");
+        expenseDropUp.classList.add("show");
+    }
+    function hideExpenseDetail(){
+        expenseDetail.classList.remove("showDetail");
+        expenseDropDown.classList.remove("hide");
+        expenseDropUp.classList.remove("show");
+    }
+</script>

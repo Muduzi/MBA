@@ -1,0 +1,134 @@
+<title>INVOICE</title>
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/invoice.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<form method="post" class="Navigation">
+    {%csrf_token%}
+    <button type="button" onclick="window.location.href='/invoice_form/{{invoice_obj.id}}/';">
+        <i class="material-icons" style="font-size:19px;">edit</i>
+    </button>
+    <button type="submit" name="generate">
+        PDF
+    </button>
+    <button type="button" onclick="window.history.go(-1)">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</form>
+
+<div class="header_frame">
+    <h1>{{buss.Name}}</h1>
+    <h2>{{buss.Address}}</h2>
+    <text>{{buss.About}}</text>
+    <h4>
+        {%if buss.Email%}
+            Email: {{buss.Email}}
+        {%endif%},
+        {%if buss.Contact1%}
+            Phone1: {{buss.Contact1}}
+        {%endif%},
+        {%if buss.Contact2%}
+            Phone2: {{buss.Contact2}}
+        {%endif%}
+    </h4>
+</div>
+<h3>INVOICE</h3>
+<div class="receiver">
+    <text>
+        <span>To:</span>
+        {{invoice_obj.Receiver.Name}}
+    </text>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">Order no</th>
+            <th colspan="2">Invoice date</th>
+            <th colspan="2">Invoice no</th>
+            <th colspan="2">Dispatch date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>&nbsp;{{invoice_obj.OrderNumber}}</td>
+            <td>&nbsp;{{invoice_obj.Date.date}}</td>
+            <td>&nbsp;{{invoice_obj.id}}</td>
+            <td>&nbsp;{{invoice_obj.DispatchDate.date}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th>Quantity</th>
+            <th colspan="4">Description</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in invoice_items%}
+            <tr>
+                <td>{{i.Quantity}}</td>
+                {%if i.Product%}
+                    <td colspan="4">{{i.Product.Name}}</td>
+                {%elif i.Service%}
+                    <td colspan="4">{{i.Service.Name}}</td>
+                {%elif i.Package%}
+                    <td colspan="4">{{i.Package.Name}}</td>
+                {%endif%}
+                <td>{{i.UnitPrice}}</td>
+                <td>{{i.Total}}</td>
+            </tr>
+        {%endfor%}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="titles">SUB TOTAL</td>
+            <td>{{invoice_obj.SubTotal}}</td>
+        </tr>
+        <tr>
+            <td class="titles">VAT</td>
+            <td>{{invoice_obj.VAT}}</td>
+        </tr>
+        <tr>
+            <td class="titles">GRAND TOTAL</td>
+            <td>{{invoice_obj.GrandTotal}}</td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="footer_frame">
+    <div class="signature">
+        <text>Valid Until&nbsp;:&nbsp;{{invoice_obj.ValidityLimit.date}}</text>
+    </div>
+    <div class="signature">
+        <text>Signature&nbsp;&nbsp;:&nbsp;........................</text>
+    </div>
+</div>
+
+<script>
+    let form = document.getElementById("invoiceForm");
+
+    function openForm(){
+        form.classList.add("openForm");
+    }
+    function closeForm(){
+        form.classList.remove("openForm");
+    }
+
+    let slider = document.getElementById("slider");
+    let VatRate = document.getElementById("VatRate");
+
+
+    VatRate.innerHTML = slider.value;
+
+    slider.oninput = function(){
+        VatRate.innerHTML = this.value;
+    }
+</script>

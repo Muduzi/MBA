@@ -1,0 +1,250 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/taxes.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="openTaxAccountForm()">
+        <i class="material-icons" style="font-size:19px;">add</i>Account
+    </button>
+    <button type="button" onclick="openTaxInstallmentForm()">
+        <i class="material-icons" style="font-size:19px;">add</i>Installment
+    </button>
+    <button type="button" class="nav2" onclick="openTaxForm()">
+        <i class="material-icons" style="font-size:19px;">settings</i>
+    </button>
+    <button type="button" class="nav3" onclick="history.back()">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
+<text class="stage"><span style="color:purple; font-size:18px; margin-left:10px;">Tax Year:</span> &nbsp;&nbsp;{{this_tax_year.TaxYearStart.date}} - {{this_tax_year.TaxYearEnd.date}}</text>
+
+<div class="information_container">
+    <div class="information">
+        <div class="info_column_container">
+            <div class="info2">
+                <text class="value">
+                    {{tax_account_count}}
+                </text>
+                <text class="title">Total Accounts</text>
+            </div>
+            <div class="info2">
+                <text class="value">
+                    {{total_tax}}
+                </text>
+                <text class="title">Total Taxes</text>
+            </div>
+        </div>
+        <div class="info_doughnut_graph">
+            <canvas id="doughnut"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<div class="container1">
+    <text class="stage">Tax Balances</text>
+    <!-- Accounts -->
+    <table class="taxes">
+        <thead>
+            <tr>
+                <th class="tth1">Name</th>
+                <th class="tth2">Total</th>
+                <th class="tth2">Paid</th>
+                <th class="tth2">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for key, values in taxes_this_year.items%}
+                <tr>
+                    <td class="tth1">{{key.Name}}</td>
+                    <td class="tth2">{%if values.Total%} {{values.Total}} {%else%} - {%endif%}</td>
+                    <td class="tth2">{%if values.Paid%} {{values.Paid}} {%else%} -  {%endif%}</td>
+                    <td class="tth2">{%if values.Balance%} {{values.Balance}} {%else%} -  {%endif%}</td>
+                </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="container2">
+    <text class="stage">Installments</text>
+    <!-- Installments -->
+    <table class="installments">
+        <thead>
+            <tr>
+                <th class="ith1">Date</th>
+                <th class="ith2">Account</th>
+                <th class="ith1">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for key, value in installments.items%}
+            {%for i in value%}
+                <tr>
+                    <td class="ith1">{{i.Date.date}}</td>
+                    <td class="ith2">{{i.TaxAccountThisYear.TaxAccount.Name}}</td>
+                    <td class="ith1">{{i.Amount}}</td>
+                </tr>
+            {%endfor%}
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<form method="post" id="taxForm">
+    {%csrf_token%}
+    <label>Show Tax estimates</label>
+    <input type="checkbox" name="show_estimate" {%if tax_settings.ShowEstimates%} checked {%endif%}>
+    <label>Include VAT in statement calculations</label>
+    <input type="checkbox" name="include_vat" {%if tax_settings.IncludeVAT%} checked {%endif%}>
+    <label>Include PAYE in statement calculations</label>
+    <input type="checkbox" name="include_paye"  {%if tax_settings.IncludePAYE%} checked {%endif%}>
+    <label>Include PRESUMPTIVE TAX in statement calculations</label>
+    <input type="checkbox" name="include_presumptive_tax"  {%if tax_settings.IncludePresumptiveTax%} checked {%endif%}>
+    <label>Include INCOME TAX in statement calculations</label>
+    <input type="checkbox" name="include_income_tax"  {%if tax_settings.IncludeIncomeTax%} checked {%endif%}>
+    <label for="slider">VAT rate: <span id="VatRate"></span>%</label>
+    <input type="range" id="slider" name="vat_rate" {%if tax_settings.VATRate%} value="{{tax_settings.VATRate}}"{%else%}value="16.5" {%endif%} placeholder="select reorder percentage">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="tax_settings">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeTaxForm()">Cancel</button>
+    </div>
+</form>
+
+<form method="post" id="taxAccountForm">
+    {%csrf_token%}
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required maxlength="39" placeholder="name of the tax.">
+    <label for="interval">Interval</label>
+    <select id="interval" name="interval">
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Annually">Annually</option>
+    </select>
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" maxlength="245"  placeholder="1-198"></textarea>
+    <div class="but">
+        <button type = 'submit' name="create_tax_account" class = 'save'>Save</button>
+        <button type = 'button' onclick="closeTaxAccountForm()" class = 'cancel'>Cancel</button>
+    </div>
+</form>
+
+<form method="post" id="taxInstallmentForm">
+    {%csrf_token%}
+    <label for="account">Account</label>
+    <select id="account" name="account_id">
+        {%for a in tax_accounts%}
+            <option value="{{a.id}}">{{a.Name}}</option>
+        {%endfor%}
+    </select>
+    <label for="installment">amount</label>
+    <input type="number" id="installment" name="installment_amount">
+    <label for="businessYear">Business Year</label>
+    <select id="businessYear" name="business_year">
+        <option value="this year">This Year</option>
+        <option value="previous year">Previous Year</option>
+        <option value="next year">Next Year</option>
+    </select>
+    <div class="but">
+        <button type = 'submit' class = 'save' name="tax_installment">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeTaxInstallmentForm()">Cancel</button>
+    </div>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+    <!-- Tax Form -->
+    let tf = document.getElementById("taxForm");
+
+    function openTaxForm(){
+        tf.classList.add("tax_settings");
+    }
+    function closeTaxForm(){
+        tf.classList.remove("tax_settings");
+    }
+
+    <!--Add Tax Account -->
+    let taf = document.getElementById("taxAccountForm");
+
+    function openTaxAccountForm(){
+        taf.classList.add("tax_account_form");
+    }
+    function closeTaxAccountForm(){
+        taf.classList.remove("tax_account_form");
+    }
+
+    <!--Add Tax installment -->
+    let tif = document.getElementById("taxInstallmentForm");
+
+    function openTaxInstallmentForm(){
+        tif.classList.add("tax_installment_form");
+    }
+    function closeTaxInstallmentForm(){
+        tif.classList.remove("tax_installment_form");
+    }
+
+    <!-- vatSlider-->
+    VatRate.innerHTML = slider.value;
+
+    slider.oninput = function(){
+        VatRate.innerHTML = this.value;
+    }
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = '/taxes/';
+    }
+
+    const doughnut = document.getElementById('doughnut');
+
+        new Chart(doughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Balance', 'Paid'],
+                datasets: [{
+                    label: 'Tax',
+                    data: [{{balance}}, {{total_paid}}],
+                    borderWidth: 0,
+                    borderColor: 'gray',
+                    backgroundColor:['black', '#5D6166'],
+                    radius: 60,
+                    },
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+
+            }
+        });
+
+</script>

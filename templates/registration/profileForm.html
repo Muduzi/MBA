@@ -1,0 +1,74 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/profileForm.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/';">
+        <i class="material-icons" style="font-size:20px;">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    {%csrf_token%}
+    <div class="container">
+        <div class="profile_pic">
+            <label for="profilePic">
+                {%if profile.Photo%}
+                    <img src="{{profile.Photo.url}}" alt="add image" width=100 height=100 class="rounded-circle">
+                {%else%}
+                    <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+                {%endif%}
+            </label>
+            <input type="file" id="profilePic" name="photo" value="{{profile.photo}}" multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+        </div>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" {%if user.username%} value="{{user.username}}" {%else%} placeholder="username" {%endif%} required maxlength="14">
+        <label for="gender">Gender</label>
+        <select id="gender" name="gender" required>
+            {%if profile.Gender == 'Male'%}
+                <option value="Male" selected>Male</option>
+                <option value="Female">Female</option>
+            {%else%}
+                <option value="Male">Male</option>
+                <option value="Female" selected>Female</option>
+            {%endif%}
+        </select>
+
+        <label for="date">D.O.B</label>
+        <input type="date" id="date" name="dob" {% if profile.DOB %} value="{{date}}" {%else%} required {%endif%}>
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" {%if profile.City%} value="{{profile.City}}" {%else%}  placeholder="City" {%endif%} required maxlength="30">
+        <label for="country">Country</label>
+        <input type="text" id="country" name="country" {%if profile.Country%} value="{{profile.Country}}" {%else%}  placeholder="Country" {%endif%} required maxlength="30">
+    </div>
+    <div class="container">
+        <label for="about">About</label>
+        <textarea id="about" name="about" required placeholder="About" maxlength="130">{{user.profile.About}}</textarea>
+        <label for="contact1">Contact1</label>
+        <input type="number" id="contact1" name="contact1" required maxlength="14" {%if profile.Contact1%} value="{{profile.Contact1}}" {%else%}  placeholder="phone number1" {%endif%}>
+        <label for="contact2">Contact2</label>
+        <input type="number" id="contact2" name="contact2" maxlength="14" {%if profile.Contact2%} value="{{profile.Contact2}}" {%else%}  placeholder="phone number2" {%endif%}>
+        <label for="instagram">Instagram</label>
+        <input type="text" id="instagram" name="instagram" {%if profile.Instagram%} value="{{profile.Instagram}}" {%else%} placeholder="Instagram Link" {%endif%}>
+        <label for="facebook">Facebook</label>
+        <input type="url" id="facebook" name="facebook" {%if profile.Facebook%} value="{{profile.Facebook}}" {%else%} placeholder="Facebook Link" {%endif%}>
+        <label for="linkedin">Linkedin</label>
+        <input type="text" id="linkedin" name="linkedin" {%if profile.Linkedin%} value="{{profile.Linkedin}}" {%else%}  placeholder="Linkedin link" {%endif%}>
+    </div>
+    <div class="but">
+        <button type="submit">Save</button>
+    </div>
+</form>
+
+<script>
+
+</script>

@@ -1,0 +1,270 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/expenses.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="but">
+                    <button type="submit" name="No" value="{{b_id}}" class="setSupplier">
+                        No
+                    </button>
+                    <button type="submit" name="Yes" class="setSupplier">
+                        Yes
+                    </button>
+                </div>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+<div class="top_nav">
+    <button type="button" onclick="openPopup()">
+        <i class="material-icons" style="font-size:18px">add</i>
+    </button>
+     <button type="button" onclick="window.location.href='/expense_accounts/';">
+        <i class="material-icons" style="font-size:18px"></i>Accounts
+    </button>
+    <button type="button" onclick="window.location.href='/expenses_dash/';">
+        <i class="material-icons" style="font-size:18px">insert_chart</i>Report
+    </button>
+    <button type="button" onclick="window.location.href='/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Date</th>
+            <th class="sth2">Expense</th>
+            <th class="sth2">Type</th>
+            <th class="sth3">Quant</th>
+            <th class="sth4">Notes</th>
+            <th class="sth1">Cash</th>
+            <th class="sth1">Credit</th>
+            <th class="psth">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in Table%}
+        <tr>
+            <td class="sth1">{{i.Date.date}}</td>
+            <td class="sth2">{{i.Name}}</td>
+            <td class="sth2">{{i.Type}}</td>
+            <td class="sth3">{{i.Quantity}}</td>
+            <td class="sth4">{{i.Notes}}</td>
+            <td class="sth1">
+            {% if 'Cash' in i.PMode %}
+                {{i.Price}}
+            {% else %}
+                0
+            {% endif %}
+            </td>
+            <td class="sth1">
+            {%if 'Credit' in i.PMode%}
+                {{i.Price}}
+            {% else %}
+                0
+            {% endif %}
+            </td>
+            {% if 'Cash' in i.PMode %}
+                <td style="color:black" class="psth">{{i.Price}}</td>
+                {% else %}
+                <td style="color:red" class="psth">{{i.Price}}</td>
+                {% endif %}
+            {%endfor%}
+        </tr>
+    </tbody>
+</table>
+<div class="bottom_nav" id="bottom_nav">
+    <button type="button" onclick="openPopup()">
+        <i class="material-icons" style="font-size:22px">add_circle</i>
+    </button>
+    <button type="button" onclick="window.location.href='/';">
+        <i class="material-icons" style="font-size:22px">home</i>
+    </button>
+    <button type="button" onclick="viewGraph()">
+        <i class="fa fa-bar-chart" style="font-size:20px;"></i>
+    </button>
+    <button type="button" onclick="window.location.href='/expenses_dash/';">
+        <i class="fa fa-line-chart" style="font-size:20px;"></i>
+    </button>
+</div>
+
+<form method="post" class="popup" id="popup">
+    {%csrf_token%}
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required class="textinput">
+    <label for="quantity">Quantity</label>
+    <input type="number" id="quantity" name="quantity" required>
+    <label for="price">Total Price</label>
+    <input type="number" id="price" name="price" required>
+    <label for="type">Type</label>
+    <select id="type" name="type">
+        <option value="Operational">Operational</option>
+        <option value="Payroll">Payroll</option>
+        <option value="Stock">Stock</option>
+    </select>
+    <label for="p_mode">PMode</label>
+    <select id="p_mode" name="p_mode">
+        <option value="Cash">Cash</option>
+        <option value="Credit">Credit</option>
+    </select>
+    <label for="discount">Discount</label>
+    <input type="checkbox" id="discount" name="discount">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" required maxlength="35" placeholder="1-146"></textarea>
+    <div class="but">
+        <button type = 'button' class = 'more' name="more" onclick="window.location.href='/buffer_expense/';">+1</button>
+        <button type = 'submit' class = 'save' name="save">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closePopup()">Cancel</button>
+    </div>
+</form>
+<div class="graph" id="graph">
+    <div class="exit">
+        <button onclick="closeGraph()"><i class="material-icons">close</i></button>
+    </div>
+    <text class="phone_graph_title">Expenses by Category
+        <i class="material-icons" style="font-size:16px; color:green;Z">scales</i>
+    </text>
+    <div class="doughnut_graph">
+        <canvas id="doughnutGraph"></canvas>
+    </div>
+    <div class="bar_graph">
+        <canvas id="barGraph"></canvas>
+    </div>
+</div>
+
+<script>
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+
+    let popup = document.getElementById("popup");
+
+        function openPopup(){
+        popup.classList.add("open-popup");
+        }
+
+        function closePopup(){
+        popup.classList.remove("open-popup");
+        }
+
+    let graph = document.getElementById("graph");
+
+        function viewGraph(){
+        graph.classList.add("view-graph");
+        }
+
+        function closeGraph(){
+        graph.classList.remove("view-graph");
+        }
+    const doughnutGraph = document.getElementById('doughnutGraph');
+
+    new Chart(doughnutGraph, {
+        type: 'doughnut',
+        data: {
+            labels: ['Cash', 'Credit'],
+            datasets: [{
+                label: 'Expense records',
+                data: [{{cash}}, {{debts}}],
+                borderWidth: 0,
+                borderColor: 'gray',
+                backgroundColor:['#5D6166', 'black'],
+                radius:70,
+                },
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+
+        }
+    });
+
+    const barGraph = document.getElementById('barGraph');
+
+    new Chart(barGraph, {
+        type: 'bar',
+        data: {
+            labels:[{%for i in label%} '{{i}}', {%endfor%}],
+            datasets: [{
+                label: 'Expenses by category',
+                data: [{%for a in amounts%} {{a}}, {%endfor%}],
+                borderWidth: 0,
+                borderColor: '#8A2BE2',
+                backgroundColor: [
+                    '#908f8f',
+                    '#40404F',
+                    '#2C3539',
+                    ],
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            },
+            plugins: {
+                datalabels: {
+                    formatter: (value, context) =>{
+                        if (value>1000,000,000){
+                            return(value/1000,000,0000) + 'B';
+                        }if (value>1000,000){
+                            return(value/1000,000) + 'M';
+                        }if (value>1000){
+                            return(value/1000) + 'k';
+                        }return value;
+
+                        console.log(value);
+
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+</script>

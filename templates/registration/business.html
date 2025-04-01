@@ -1,0 +1,365 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/business.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" {%if not tax_this_year%} disabled style="opacity:50%;" {%endif%} class="nav1" onclick="window.location.href='/balance_sheet/';">
+        <i class="material-icons" style="font-size:19px;">account_balance</i>Bal sheet
+    </button>
+    <button type="button" class="nav1" onclick="window.location.href='/business_profile/';">
+        <i class="material-icons" style="font-size:19px;">storefront</i>Profile
+    </button>
+    <button type="button" onclick="openCapitalForm()">
+        <i class="material-icons" style="font-size:19px;">settings</i>
+    </button>
+    <button type="button" {%if not tax_this_year%} disabled style="opacity:50%;" {%endif%} class="nav2" onclick="window.location.href='/taxes/'">
+        Taxes
+    </button>
+    <button type="button" class="nav3" onclick="window.location.href='/management/';">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<form method="post" id="capitalForm" {%if not tax_this_year%} class="capital" {%endif%}>
+    {%csrf_token%}
+    <label for="businessYear">Business Year commencement date</label>
+    <input id="businessYear" type="date" name="start_business_year"
+           {% if core_settings.StartBusinessYear %} disabled value="{{start_date}}" {%endif%}>
+    <label for="capital">Add Capital</label>
+    <input type="text" id="capital" name="Amount" {% if not core_settings.Capital %} required {%endif%} placeholder="Value">
+    <label for="payoutRatio">PayoutRatio</label>
+    <input type="text" id="payoutRatio" name="pay_out_ratio" required placeholder="Value">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="add_capital" onclick="openCapitalForm();">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeCapitalForm();">Cancel</button>
+    </div>
+</form>
+
+<div class="information">
+    <div class="info_column_container">
+        <div class="info2">
+            <text class="value">
+                {{core_settings.Capital}}
+            </text>
+            <text class="title">Capital</text>
+        </div>
+        <div class="info2">
+            <text class="value">
+                {{cash_account.Value}}
+            </text>
+            <text class="title">Cash Account</text>
+        </div>
+    </div>
+    <div class="info_doughnut_graph">
+        <canvas id="changeInFundsGraph"></canvas>
+    </div>
+</div>
+<div class="information">
+        <div class="info_column_container">
+            <div class="info2">
+                <text class="value">
+                    {{net_profit}}
+                </text>
+                <text class="title">Net Profit</text>
+            </div>
+            <div class="info2">
+                <text class="value">
+                    {{total_dividends}}
+                </text>
+                <text class="title">Total Dividends</text>
+            </div>
+            <div class="info2">
+                <text class="value">
+                    {{retained_earnings}}
+                </text>
+                <text class="title">Retained Earnings</text>
+            </div>
+        </div>
+        <div class="info_doughnut_graph">
+            <canvas id="payoutRatioGraph"></canvas>
+        </div>
+</div>
+<div class="information">
+    <canvas id="invoiceGraph"></canvas>
+</div>
+
+<div class="content_choice">
+    <form method="post" class="NavForm">
+        {%csrf_token%}
+        <label for="Content">Content:</label>
+        <select id="Content" name="content_choice">
+            {%if content%}
+                <option value="{{content.Choice}}" selected>{{content.Choice}}</option>
+            {%endif%}
+            <option value="This Month">This Month</option>
+            <option value="This Year">This Year</option>
+        </select>
+        <button type="submit" name="content">Ok</button>
+    </form>
+</div>
+
+
+<div class="monthly_income_expense_totals">
+    <canvas id="IncomeExpensePerMonthGraph"></canvas>
+</div>
+
+<div class="income_expense_totals">
+    <div class="income_expense_text">
+        <text class="value">
+            {{total_income}}
+        </text>
+        <text class="title">Total Income</text>
+    </div>
+    <div class="income_expense_text">
+        <text class="value">
+            {{total_expenses}}
+        </text>
+        <text class="title">Total Expenses</text>
+    </div>
+    <div class="income_expense_totals_graph">
+        <canvas id="IncomeExpenseTotals"></canvas>
+    </div>
+</div>
+
+
+<script>
+     const payoutRatioGraph = document.getElementById('payoutRatioGraph');
+
+        new Chart(payoutRatioGraph, {
+            type: 'doughnut',
+            data: {
+                labels: ['Payout Ratio',],
+                datasets: [{
+                    label: '%',
+                    data: [{{cash_account.PayoutRatio}}, {{pay_out_ratio_remainder}}],
+                    borderWidth: 1,
+                    borderColor: '#EDEADE',
+                    backgroundColor:['#5D6166', '#F9F6EE'],
+                    radius: 50,
+                    },
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+
+            }
+        });
+
+    const changeInFundsGraph = document.getElementById('changeInFundsGraph');
+
+        new Chart(changeInFundsGraph, {
+            type: 'doughnut',
+            data: {
+                labels: ['Change in funds %',],
+                datasets: [{
+                    label: '%',
+                    data: [{{delta_funds_percentage}}, {{delta_funds_percentage_remainder}}],
+                    borderWidth: 1,
+                    borderColor: '#EDEADE',
+                    backgroundColor:['#5D6166', '#F9F6EE'],
+                    radius: 50,
+                    },
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+
+            }
+        });
+
+
+    const invoiceGraph = document.getElementById('invoiceGraph');
+
+    new Chart(invoiceGraph, {
+        type: 'bar',
+        data: {
+            labels:['Pending', 'Processed', 'Overdue'],
+            datasets: [{
+                label: 'Invoices',
+                data: [{{pending_invoices_stats.total}}, {{processed_invoices_stats.total}}, {{overdue_invoices_stats.total}}],
+                borderWidth: 0,
+                borderColor: '#8A2BE2',
+                backgroundColor: [
+                    '#908f8f',
+                    'green',
+                    'black',
+                    ],
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            }
+        }
+    });
+
+
+
+    const IncomeExpensePerMonthGraph = document.getElementById('IncomeExpensePerMonthGraph');
+
+    new Chart(IncomeExpensePerMonthGraph, {
+        type: 'bar',
+        data: {
+            labels:[{%for month, total in income_record.items%} '{{month}}', {%endfor%}],
+            datasets: [{
+                            label: 'Income',
+                            data: [{%for month, total in income_record.items%} {{total}}, {%endfor%}],
+                            {%if content == 'This Year'%} barThickness: '30', {%elif content == 'This Month'%} barThickness: '10', {%endif%}
+                            borderWidth: 0,
+                            borderColor: 'Teal',
+                            backgroundColor: 'Teal',
+                        },
+                        {
+                            label: 'Expenses',
+                            data: [{%for i in expense_record.values%} {{i.Amount}}, {%endfor%}],
+                            {%if content == 'This Year'%} barThickness: '30', {%elif content == 'This Month'%} barThickness: '10', {%endif%}
+                            borderWidth: 0,
+                            borderColor: '#5D6166',
+                            backgroundColor: '#5D6166',
+                        },
+
+            ]
+        },
+        options: {
+            indexAxis: 'x',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#5D6166'
+                    },
+                }
+            },
+        }
+    });
+
+
+    const IncomeExpenseTotals = document.getElementById('IncomeExpenseTotals');
+
+    new Chart(IncomeExpenseTotals, {
+        type: 'bar',
+        data: {
+            labels:['Inc:', 'Exp:'],
+            datasets: [{
+                    label: 'Total Income (Inc)   vs   Total Expenses (Exp)',
+                    data: [{{total_income}},{{total_expenses}}],
+                    barThickness: 45,
+                    borderWidth: 0,
+                    borderColor: '#8A2BE2',
+                    backgroundColor: ['Teal', '#5D6166']
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: ' rgba(54, 69, 79)'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#F9F6EE'
+                    },
+                    display: false,
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            }
+        }
+    });
+
+
+    <!-- Capital Form -->
+    let cf = document.getElementById("capitalForm");
+
+    function openCapitalForm(){
+        cf.classList.add("capital");
+    }
+    function closeCapitalForm(){
+        cf.classList.remove("capital");
+        window.location.href='/business/';
+    }
+
+
+    <!-- ShareHolder Form -->
+    let shf = document.getElementById("shareHolderForm");
+
+    function openShareHolderForm(){
+        shf.classList.add("shareHolder");
+    }
+    function closeShareHolderForm(){
+        shf.classList.remove("shareHolder");
+    }
+
+
+     <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>

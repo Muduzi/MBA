@@ -1,0 +1,34 @@
+{%load static%}
+<div class="graph">
+    <div class="Dchart">
+        <canvas id="myChart" width="180%" height="30%"></canvas>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myChart');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Received','Expected','Overdue'],
+      datasets: [{
+        label:'',
+        data: [{%for a in graphd%} {{a}}, {%endfor%}],
+        borderWidth: 1,
+        backgroundColor:['green','#00A36C','#282C35'],
+        hoverBackgroundColor:'#191970'
+      },
+      ]
+
+    },
+    options: {
+      scales: {
+        x: {
+          beginAtZero: true
+        }
+      },
+      indexAxis: 'y',
+    }
+  });
+</script>

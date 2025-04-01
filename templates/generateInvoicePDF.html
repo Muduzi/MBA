@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>INVOICE</title>
+    <style>
+        @page{
+            size: a4 portrait;
+
+            @frame header_frame{
+                -pdf-frame-content: header_content;
+                 left: 50pt;
+                 width: 512pt;
+                 top: 1pt;
+                 height:190pt;
+                 padding:10pt;
+            }
+            @frame footer_frame{
+                -pdf-frame-content: header_content;
+                 left: 50pt;
+                 width: 512pt;
+                 bottom: 1pt;
+                 height:50pt;
+                 padding:10pt;
+            }
+            @frame content_frame{
+                left: 50pt;
+                width: 512pt;
+                height:692pt;
+                padding:10px;
+            }
+
+        }
+
+        h1{
+            font-size:25px;
+
+        }
+        h2{
+            font-size:17px;
+            font-weight:400;
+        }
+
+        h3{
+            font-size:15px;
+            font-weight:400;
+        }
+        h4{
+            font-size:13px;
+            font-weight:300;
+
+        }
+
+        p{
+            font-size:17px;
+            font-weight:500;
+            margin-top:50pt;
+        }
+        .receiver{
+            margin-top:30px;
+            padding-bottom:20px;
+        }
+        text{
+            font-size:15px;
+            font-weight:400;
+        }
+        table{
+            border:1px solid black;
+            margin-top:10pt;
+        }
+        table thead{
+            height:30px;
+        }
+        table tr{
+            border:hidden;
+            height:30px;
+        }
+
+        table th{
+            font-size:15px;
+            font-weight:400;
+            text-align:left;
+            padding-left:2pt;
+            padding-top:2.5pt;
+            border:1px solid black;
+        }
+        table td{
+            height:30px;
+            font-size:13.5px;
+            padding-left:2pt;
+            padding-top:2.5pt;
+            border-right:1px solid black;
+        }
+        tfoot td{
+            height:30px;
+            font-size:16px;
+            font-weight:600;
+        }
+
+        .signature{
+            padding-top:10px;
+            margin-top:10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="header_frame">
+            <h1 align="center">{{buss.Name}}</h1>
+            <h2 align="center">{{buss.Address}}</h2>
+            <h3 align="center">{{buss.About}}</h3>
+            <h4 align="center">
+                {%if buss.Email%}
+                    Email: {{buss.Email}}
+                {%endif%},
+                {%if buss.Contact1%}
+                    Phone1: {{buss.Contact1}}
+                {%endif%},
+                {%if buss.Contact2%}
+                    Phone2: {{buss.Contact2}}
+                {%endif%}
+            </h4>
+        </div>
+         <p align="center">INVOICE</p>
+        <div class="receiver">
+            <text>
+                <span style="font-weight:400;">To:</span>
+                {{inv_obj.Receiver.Name}}
+            </text>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Order no</th>
+                <th>Invoice date/tax point</th>
+                <th>invoice no</th>
+                <th>Dispatch date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&nbsp;{{inv_obj.OrderNumber}}</td>
+                <td>&nbsp;{{inv_obj.Date.date}}</td>
+                <td>&nbsp;{{inv_obj.id}}</td>
+                <td>&nbsp;{{inv_obj.DispatchDate.date}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            <tr>
+                <th>Quantity</th>
+                <th colspan="4">Description</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for i in items%}
+                <tr>
+                    <td >{{i.Quantity}}</td>
+                    {%if i.Product%}
+                        <td colspan="4">{{i.Product.Name}}</td>
+                    {%elif i.Package%}
+                        <td colspan="4">{{i.Package.Name}}</td>
+                    {%elif i.Service%}
+                        <td colspan="4">{{i.Service.Name}}</td>
+                    {%endif%}
+                    <td>{{i.UnitPrice}}</td>
+                    <td>{{i.Total}}</td>
+                </tr>
+            {%endfor%}
+        </tbody>
+        <tfoot>
+            <tr style="border-top:1px solid black;">
+                <td colspan="6" style="text-align:right; margin-right:5px;">SUB TOTAL</td>
+                <td style="border-top:1px solid black;">{{inv_obj.SubTotal}}</td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align:right; margin-right:5px;">VAT</td>
+                <td style="border-top:1px solid black;">{{inv_obj.VAT}}</td>
+            </tr>
+            <tr style="border-top:hidden; border-bottom:1px solid black;">
+                <td colspan="6" style="text-align:right; margin-right:5px;">GRAND TOTAL</td>
+                <td style="border-top:1px solid black;">{{inv_obj.GrandTotal}}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <div id="footer_frame">
+        <div class="signature">
+            <text><span style="font-size:13px;">Valid Until</span>: {{inv_obj.ValidityLimit.date}}</text>
+        </div>
+        <div class="signature">
+            <text><span style="font-size:13px;">Signature</span>.........................</text>
+        </div>
+    </div>
+</body>
+</html>

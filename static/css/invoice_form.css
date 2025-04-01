@@ -1,0 +1,177 @@
+body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    row-gap:10px;
+    width:100vw;
+    height:auto;
+    background:#EDEADE;
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+
+/*messages*/
+.messages{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    align-self:flex-start;
+    justify-content:flex-start;
+    position:fixed;
+    z-index:5;
+    row-gap:15px;
+    width:45%;
+    height:15%;
+    padding:10px;
+    background:rgb(230, 230, 250, 0.95);
+    border-radius:10px;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.message{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:95%;
+    height:20%;
+    color:#2B3856;
+    font-size:16px;;
+}
+.close{
+    align-self:flex-end;
+    background:transparent;
+    border:hidden;
+}
+.close:hover{
+    cursor:pointer;
+    color:white;
+    background:#2B3856;
+}
+
+
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:370px;
+    height:32px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+    border:hidden;
+    border-radius:10px;
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+
+h3{
+    color:rgb(54, 69, 79);
+}
+.invoice_form{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    width:370px;
+    height:750px;
+    font-size:15px;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10;
+    padding-bottom:10px;
+}
+
+form text{
+    color:rgb(54, 69, 79);
+    font-size:18px;
+}
+.openForm{
+    display:flex;
+    visibility:visible;
+}
+form label{
+    color:rgb(54, 69, 79);
+    font-size:15px;
+}
+
+form input{
+    width:100%;
+    height:35px;
+    font-size:14px;
+    color:#5D6166;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+
+form textarea{
+    color:#5D6166;
+    font-size:14px;
+    padding:5px;
+    width:100%;
+    height:100px;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+
+form button{
+    align-self:center;
+    width:100px;
+    height:30px;
+    color:#5D6166;
+    font-weight:550;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+form button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+@media(max-width:430px){
+    .Navigation{
+        width:90%;
+    }
+    .invoice_form{
+        width:90%;
+    }
+    form text{
+        color:rgb(54, 69, 79);
+        font-size:16px;
+    }
+    form label{
+        font-size:14px;
+    }
+    form input{
+        font-size:13px;
+    }
+    form textarea{
+        font-size:13px;
+    }
+
+    form button{
+        font-size:14px;
+    }
+}

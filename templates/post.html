@@ -1,0 +1,165 @@
+{%load static%}
+{%load widget_tweaks%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/post.css'%}" xmlns="http://www.w3.org/1999/html">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div class="main">
+    <div class="container1">
+        <div class="Navigation">
+            {%if request.user in s_list%}
+                <button type = 'button' class = 'action' onclick="window.location.href='/createpost/';">
+                    <i class="material-icons" style="font-size:15px;">add_a_photo</i>
+                    Create Post
+                </button>
+
+                <button type = 'button' class = 'action' onclick="window.location.href='/';">
+                    <i class="material-icons" style="font-size:15px;">home</i>
+                    Home
+                </button>
+
+                <button type = 'button' class = 'action' onclick="window.location.href='/catalogue/';">
+                    <i class="material-icons" style="font-size:15px;">store</i>
+                    Catalogue
+                </button>
+
+                <button type = 'button' class = 'action' onclick="openPopup()">
+                    <i class="material-icons" style="font-size:15px;">search</i>
+                    Search
+                </button>
+            {%else%}
+                 <button type = 'button' class = 'action1'>
+                    <i class="material-icons" style="font-size:15px;">add_a_photo</i>
+                    Create Post
+                </button>
+
+                <button type = 'button' class = 'action1'>
+                    <i class="material-icons" style="font-size:15px;">arrow_back</i>
+                    Go back
+                </button>
+
+                <button type = 'button' class = 'action1'>
+                    <i class="material-icons" style="font-size:15px;">home</i>
+                    Home
+                </button>
+                <button type = 'button' class = 'action' onclick="openPopup()">
+                    <i class="material-icons" style="font-size:15px;">search</i>
+                    Search
+                </button>
+            {%endif%}
+            <div class="popup" id="popup">
+                <div class="formcont">
+                    <form method="post">
+                        {%csrf_token%}
+                        <input type="search" required  name="accountname" class="searchtitle" placeholder="Search...">
+                        <button type='submit' class='searchaction' onclick=" closePopup()">
+                            <i class="material-icons" style="font-size:15px;">search</i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="businesses">
+            <div class="title">
+                <p>Posts</p>
+            </div>
+            <div class="businesslist">
+                {%for c in businesses.keys%}
+                    <button type="submit" name="buscatalogue" value="{{c}}" class="bcontent"
+                            onclick="window.location.href='/catalogue/{{c.id}}/';">
+                        {%if c.photo.url != None%}
+                        <img src="{{c.photo.url}}" alt="Avatar" width=30 height=60  class="rounded-circle">
+                        {%else%}
+                        <text>Image not available</text>
+                        {%endif%}
+                        {{c.Name}}
+                    <i class="material-icons" style="font-size:20px; border:hidden;">chevron_right</i>
+                    </button>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+    <div class="container2">
+        {%for p in posts%}
+        <div class="post">
+            <div class="postheader">
+                <div class="profphoto">
+                    <button type="button" class="propic" onclick="window.location.href='/catalogue/{{p.Bussiness.id}}/';">
+                        {%if p.Bussiness.photo.url != None%}
+                        <img src="{{p.Bussiness.photo.url}}" alt="Avatar" width=30 height=80  class="rounded-circle">
+                        {%else%}
+                        <text>Image not available</text>
+                        {%endif%}
+                    </button>
+                </div>
+                <div class="Bname">
+                    <text>{{p.Bussiness.Name}}</text>
+
+                </div>
+                <div class="Ptitle">
+                    <text>{{p.Title}}</text>
+                    <text>{{p.date_of_creation}}</text>
+                </div>
+                <div class="viewpost">
+                    <form method="post">
+                        {%csrf_token%}
+                        {%for key, value in businesses.items%}
+                            {%if key == p.Bussiness%}
+                                {%if request.user in value%}
+                                    <button type="submit" class="bviewpost" value="{{p.id}}" name="follow">
+                                        Following
+                                    </button>
+                                {%else%}
+                                    <button type="submit" class="bviewpost" value="{{p.id}}" name="follow">
+                                        Follow
+                                    </button>
+                                {%endif%}
+                            {%endif%}
+                        {%endfor%}
+                        {%for key, value in likes.items%}
+                            {%if key == p.id%}
+                                {%if request.user in value%}
+                                    <button type="submit" class="bviewpost" value="{{p.id}}" name="like">
+                                        <i class="material-icons" style="font-size:20px; font-weight:500;">favorite</i>
+                                    </button>
+                                {%else%}
+                                    <button type="submit" class="bviewpost" value="{{p.id}}" name="like">
+                                        <i class="material-icons" style="font-size:20px; font-weight:500;">favorite_border</i>
+                                    </button>
+                                {%endif%}
+                            {%endif%}
+                        {%endfor%}
+                        <button type="button" class="bviewpost" onclick="window.location.href='/viewpost/{{p.id}}/';">
+                            <i class="material-icons" style="font-size:20px; font-weight:500;">fullscreen</i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="postphoto">
+                {%for x in photos%}
+                {%if x.Post == p%}
+                <img src="{{x.photo.url}}" alt="{{p.Description|truncatewords:30}}" class="photo">
+                {%endif%}
+                {%endfor%}
+            </div>
+            <div class="postdescription">
+                <article class="description">
+                    {{p.Description|truncatewords:40}}
+                </article>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+</div>
+<script>
+        let popup = document.getElementById("popup");
+
+        function openPopup(){
+        popup.classList.add("open-popup");
+        }
+
+        function closePopup(){
+        popup.classList.remove("open-popup");
+        }
+</script>

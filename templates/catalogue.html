@@ -1,0 +1,243 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <div class="store_name" id="store">
+        <p>{{bus_data.Name}}</p>
+    </div>
+    <div class="nav_but" id="nav_but">
+        <button type="button" onclick="window.location.href='/market/';">
+            Market
+        </button>
+        {%if request.user in s_list%}
+            <button type="button" onclick="openSearch()">
+                <i class="material-icons" style="font-size:20px;">search</i>
+            </button>
+            <button type="button" onclick="window.location.href='/add_category/';">
+                Add Category
+            </button>
+            <button type="button" onclick="window.location.href='/add_product/';">
+                Add Product
+            </button>
+            <button type="button" onclick="window.location.href='/';">
+                <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+            </button>
+        {%else%}
+            <button type="button" onclick="openSearch()">
+                <i class="material-icons" style="font-size:20px;">search</i>
+            </button>
+            <button type="button" onclick="window.location.href='/market/';">
+                <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+            </button>
+        {%endif%}
+    </div>
+    <button type="button" class="open_nav" onclick="openPhoneNav()" id="open_nav">
+        <i class="material-icons" style="font-size:25px;">list</i>
+    </button>
+</div>
+<div class="phone_nav" id="phone_nav">
+    <button type="button" class="close_nav" onclick="closePhoneNav()" id="close_nav">
+        &nbsp;
+        <i class="material-icons" style="font-size:20px;">close</i>
+    </button>
+    <button type="button" onclick="window.location.href='/';">
+        Back
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+    <button type="button" onclick="openSearch()">
+        Search
+        <i class="material-icons" style="font-size:19px;">search</i>
+    </button>
+    {%if request.user in s_list%}
+        <button type="button" onclick="window.location.href='/add_product/';">
+            Add Product
+            <i class="material-icons" style="font-size:19px;">add</i>
+        </button>
+        <button type="button" onclick="window.location.href='/add_category/';">
+            Add Category
+            <i class="material-icons" style="font-size:19px;">add</i>
+        </button>
+    {%else%}
+    {%endif%}
+    <button type="button" onclick="window.location.href='/market/';">
+        Market
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
+<div class="profile" id="profile">
+    <img {%if bus_data.Photo%} src="{{bus_data.Photo.url}}" {%else%} alt="failed to load profile photo" {%endif%}>
+    <div class="about_us">
+        <button type="button" onclick="viewInfo()">
+            About Us
+        </button>
+    </div>
+</div>
+
+
+<div class="categories">
+    <p class="categories_title">Categories</p>
+    {%for key, value in categories.items%}
+        <div class="category_card" onclick="window.location.href = '/category/{{key}}/';">
+            <div class="category_card_image">
+                <img src="{{value.Photo.url}}" alt="failed to load category image">
+            </div>
+            <text class="item_name">{{value.Name}}</text>
+            <text class="prod_count">{{value.Count}}</text>
+        </div>
+    {%endfor%}
+</div>
+
+<div class="compInfo_hide" id="compInfo">
+    <div class="name_about">
+        <h1>{{bus_data.Name}}</h1>
+        <h4>{{bus_data.About}}</h4>
+    </div>
+    <div class="contact_details">
+        <text>Phone: +265 {{bus_data.Contact1}}</text>
+        <text>Email: <a href="mailto:{{bus_data.Email}}">{{bus_data.Email}}</a></text>
+        <text>City: {{bus_data.City}}</text>
+        <text>Country: {{bus_data.Country}}</text>
+        <text>Zipcode: {{bus_data.ZipCode}}</text>
+        <div class="find_us">
+            <a href="http://{{bus_data.Instagram}}" class="fa fa-instagram"></a>
+            <a href="http://{{bus_data.Facebook}}" class="fa fa-facebook"></a>
+            <button type="button" onclick="closeInfo()" class="close_info">
+                <i class="material-icons" style="font-size:20px;">keyboard_double_arrow_down</i>
+            </button>
+            <a href="http://{{bus_data.Linkedin}}" class="fa fa-linkedin"></a>
+            <a href="https://wa.me/{{bus_data.Contact2}}/" class="fa fa-whatsapp"></a>
+        </div>
+    </div>
+</div>
+
+<!--forms-->
+<form method="post" id="search" {%if search1 and search2 or search1 or search2%} class="open_search" {%else%} class="search" {%endif%}>
+    {%csrf_token%}
+    <button type="button" onclick="closeSearch()" class="close_search">
+        <i class="material-icons" style="font-size:19px;">close</i>
+    </button>
+    <div class="search_input">
+        <input type="search" name="lookup_word" required placeholder="search......" maxlength="60">
+        <button type="submit" name="lookup"  onclick="getLocation()">
+           <i class="material-icons" style="font-size:22px;">search</i>
+        </button>
+    </div>
+    <div class="results">
+        {%if search1%}
+            {%for i in search1%}
+                <div class="result" onclick="window.location.href='/view_product/{{i.id}}/';">
+                    <img src="{{i.photo.url}}" alt="unavailable">
+                    <text>{{i.name}}</text>
+                </div>
+            {%endfor%}
+        {%endif%}
+        {%if search2%}
+            {%for i in search2%}
+                <div class="result" onclick="window.location.href='/category/{{i.id}}/';">
+                    <img src="{{i.photo.url}}" alt="unavailable">
+                    <text>{{i.name}}</text>
+                </div>
+            {%endfor%}
+        {%endif%}
+    </div>
+</form>
+
+<!--footer-->
+<div class="footer">
+    <p class="company_name">MBSAPP</p>
+    <div class="links">
+        <text><i class="material-icons" style="font-size:21px;">mail</i><a href="mailto:stevenderrickmuduzi"></a></text>
+        <a href="http://" class="fa fa-instagram"></a>
+        <a href="http://" class="fa fa-facebook"></a>
+        <a href="http://" class="fa fa-linkedin"></a>
+        <a href="https://wa.me/994586120/" class="fa fa-whatsapp"></a>
+    </div>
+    <div class="copyright">
+        <text>copyright &copy; 2024 Muduzi Inc</text>
+        <p onclick="window.location.href='/terms/';">Terms of Service</p>
+        <p onclick="window.location.href='/company/';">Company</p>
+    </div>
+</div>
+
+<script>
+    <!--phone navigation-->
+    let phone_nav =  document.getElementById("phone_nav");
+    let open_nav =  document.getElementById("open_nav");
+    let close_nav =  document.getElementById("close_nav");
+
+    function openPhoneNav(){
+        phone_nav.classList.add("open_phone_nav");
+        open_nav.classList.add("hide");
+        close_nav.classList.add("open_nav");
+    }
+
+    function closePhoneNav(){
+        phone_nav.classList.remove("open_phone_nav");
+        open_nav.classList.remove("hide");
+        close_nav.classList.remove("open_nav");
+    }
+
+
+    <!--bring in-out company information -->
+    let compInfo =  document.getElementById("compInfo");
+
+    function viewInfo(){
+        compInfo.classList.add("compInfo");
+    }
+
+    function closeInfo(){
+        compInfo.classList.remove("compInfo");
+    }
+
+
+    <!--click on company name-->
+    let store = document.getElementById("store");
+    store.addEventListener('click', goTo);
+
+    function goTo(){
+        window.location.href='/catalogue/{{id}}/';
+    }
+
+    <!--search-->
+    let search = document.getElementById("search");
+
+    function openSearch(){
+        search.classList.add("open_search");
+    }
+    <!--
+        function hideSearch(){
+            search.classList.remove("open_search");
+        }
+    -->
+</script>

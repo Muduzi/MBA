@@ -1,0 +1,339 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/profit_and_loss_dash_range.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" onclick="openRange()">
+        <i class="material-icons" style="font-size:18;">calendar_month</i>
+    </button>
+    <button type="button" onclick="window.location.href='/profit_and_loss_dash/';">
+        <i class="material-icons" style="font-size:18;">arrow_forward</i>
+    </button>
+    <button type="button" onclick="window.location.href='/debt/';">
+        <i class="material-icons" style="font-size:18;">account_balance_wallet</i>
+        Debt
+    </button>
+    <button type="button"  onclick="window.location.href='/credit/';">
+        <i class="material-icons" style="font-size:18;">account_balance_wallet</i>
+        Credit
+    </button>
+</div>
+
+<div class="revenue_or_expense">
+    <text class="title">Revenue</text>
+    <table>
+        <tbody>
+        <tr class="section">
+            <td class="section1">Product</td>
+            <td class="section2">Amount</td>
+        </tr>
+        {%if product_income%}
+            {%for a,b in product_income.items%}
+                {%if a == "VAT"%}
+                    <tr>
+                        <td class="account_section_total">{{b.Name}}</td>
+                        <td class="amount_section_total">{{b.revenue}}</td>
+                    </tr>
+                {%else%}
+                    <tr>
+                        <td class="section1">{{b.Name}}</td>
+                        <td class="section2">{{b.revenue}}</td>
+                    </tr>
+                {%endif%}
+            {%endfor%}
+            <tr>
+                <td class="account_section_total">Total</td>
+                <td class="amount_section_total">{{total_product_income}}</td>
+            </tr>
+        {%else%}
+            <tr>
+                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+            </tr>
+        {%endif%}
+        <tr class="section">
+            <td class="section1">Service/Package</td>
+            <td class="section2">Amount</td>
+        </tr>
+        {%if service_income%}
+            {%for a,b in service_income.items%}
+                {%if a == "VAT"%}
+                    <tr>
+                        <td class="account_section_total">{{b.Name|slice:"20"}}</td>
+                        <td class="amount_section_total">{{b.Amount}}</td>
+                    </tr>
+                {%else%}
+                    <tr>
+                        <td class="section1">
+                            {{b.Name|slice:"30"}}
+                            {%if b.Name|length > 25%}
+                                ....
+                            {%endif%}
+                        </td>
+                        <td class="section2">{{b.Amount}}</td>
+                    </tr>
+                {%endif%}
+            {%endfor%}
+            <tr>
+                <td class="account_section_total">Total</td>
+                <td class="amount_section_total">{{total_service_income}}</td>
+            </tr>
+        {%else%}
+            <tr>
+                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+            </tr>
+        {%endif%}
+        </tbody>
+    </table>
+    <div class="info1">
+        <text>Total Revenue &nbsp; :{{total_sales}}</text>
+        <text>Debt &nbsp; :{{total_debt}}</text>
+        <text>Cash in hand(CIN) &nbsp; :{{income_in_hand}}</text>
+    </div>
+</div>
+
+
+<div class="profit_or_loss">
+    <div class="details">
+        <div class="detail">
+            <div class="state1">
+                <text>
+                    <span class="detail_title">Revenue(R)</span>
+                    <span class="detail_content">: {{total_sales}}</span>
+                </text>
+                <text>
+                    <span class="detail_title">Tax(VAT)</span>
+                    <span class="detail_content">: {{total_vat}}</span>
+                </text>
+                <text>
+                    <span class="detail_title">Cost of Goods</span>
+                    <span class="detail_content">: {{cog}}</span>
+                </text>
+            </div>
+            <div class="state2">
+                <text>
+                    <span class="detail_title">Gross Profit($)</span>
+                    <span class="detail_content">: {{gp}}</span>
+                </text>
+            </div>
+        </div>
+        <div class="detail">
+            <div class="state1">
+                <text>
+                    <span class="detail_title">Revenue(R)</span>
+                    <span class="detail_content">: {{total_sales}}</span>
+                </text>
+                <text>
+                    <span class="detail_title">Total Expenses(TE)</span>
+                    <span class="detail_content">: {{total_expense}}</span>
+                </text>
+            </div>
+            <div class="state2">
+                <text>
+                    <span class="detail_title">Operational Profit($)</span>
+                    <span class="detail_content">: {{op}}</span>
+                </text>
+            </div>
+        </div>
+        <div class="detail">
+            <div class="state1">
+                <text>
+                    <span class="detail_title">Gross Profit</span>
+                    <span class="detail_content">: {{gp}}</span>
+                </text>
+                <text>
+                    <span class="detail_title">Expense(Credit)</span>
+                    <span class="detail_content">: {{total_credit}}</span>
+                </text>
+                <text>
+                    <span class="detail_title">Total Expenses</span>
+                    <span class="detail_content">: {{total_expense}}</span>
+                </text>
+            </div>
+            <div class="state2">
+                <text>
+                    <span class="detail_title">Net Profit($)</span>
+                    <span class="detail_content">: {{net_profit}}</span>
+                </text>
+            </div>
+        </div>
+        <div class="detail">
+            <div class="state1">
+                <text>
+                    <span class="detail_title">Credit</span>
+                    <span class="detail_content">: {{total_credit}}</span>
+                </text>
+                <text>
+                    <span class="detail_title">Debt</span>
+                    <span class="detail_content">: {{total_debt}}</span>
+                </text>
+            </div>
+            <div class="state2">
+                <text>
+                    <span class="detail_title">Cash in hand(CIN)</span>
+                    <span class="detail_content">: {{income_in_hand}}</span>
+                </text>
+            </div>
+        </div>
+    </div>
+    <div class="graph_container">
+        <div class="bar_chart">
+            <canvas id="myDChart"></canvas>
+        </div>
+        <div class="profit_perc">
+            <text class="percentage_title">Profit Margin</text>
+            {%if profit_perc >= 0%}
+                <text class="percentage" style="color:green;">{{profit_perc}}%</text>
+            {%elif profit_perc < 0%}
+                <text class="percentage" style="color:red;">{{profit_perc}}%</text>
+            {%endif%}
+        </div>
+    </div>
+</div>
+
+<div class="revenue_or_expense">
+    <text class="title">Expenses</text>
+    <table>
+        <tbody>
+        <tr class="section">
+            <td class="section1">Operational Expense</td>
+            <td class="section2">Amount</td>
+        </tr>
+        {%if oe%}
+        {%for i in oe%}
+        <tr>
+            <td class="section1">{{i.Name}}</td>
+            <td class="section2">{{i.Price}}</td>
+        </tr>
+        {%endfor%}
+        {%else%}
+        <tr>
+            <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+        </tr>
+        {%endif%}
+        <tr>
+            <td class="account_section_total">Total OP</td>
+            <td class="amount_section_total">{{oe_total}}</td>
+        </tr>
+        <tr class="section">
+            <td class="section1">Payroll Expense</td>
+            <td class="section2">Amount</td>
+        </tr>
+        {%if pe%}
+        {%for i in pe%}
+        <tr>
+            <td class="section1">{{i.Name}}</td>
+            <td class="section2">{{i.Price}}</td>
+        </tr>
+        {%endfor%}
+        {%else%}
+        <tr>
+            <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+        </tr>
+        {%endif%}
+        <tr>
+            <td class="account_section_total">Total PE</td>
+            <td class="amount_section_total">{{pe_total}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="info2">
+        <text>{{total_expense}}: &nbsp; Total Expenses(TE)</text>
+        <text>{{total_credit}}: &nbsp; Credit</text>
+        <text>{{paid_for}}: &nbsp; Paid for(PF)</text>
+    </div>
+</div>
+
+
+<form method="post" id="range">
+    {%csrf_token%}
+    <label for="start">Start</label>
+    <input type="date" id="start" name="start" required >
+    <label for="end">End</label>
+    <input type="date" id="end" name="end" required >
+    <button type="submit" name="filter" onclick="closeRange()">
+        <i class="material-icons" style="font-size:20; font-size:20px;">search</i>
+        filter
+    </button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+   let range = document.getElementById("range");
+
+    function openRange(){
+        range.classList.add("open_range");
+    }
+    function closeRange(){
+        range.classList.remove("open_range");
+    }
+
+    const ctxx = document.getElementById('myDChart');
+
+    new Chart(ctxx, {
+    type: 'bar',
+    data: {
+        labels: ['R', 'CIN', 'TE', 'PF'],
+        datasets: [{
+            label: 'Revenue(R), Cash In Hand(CIN), Total Expenses(TE), Paid for(PF)',
+            data: [{{sales}}, {{income_in_hand}}, {{total_expense}},{{paid_for}}],
+            borderWidth: 0,
+            backgroundColor: ['green', '#00FF00', '#00008B', '#6F00FF'],
+            hoverBackgroundColor:'gray'
+        },
+        ]
+    },
+    options: {
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: 'rgba(54, 69, 79)'
+                },
+                display: true,
+                grid: {
+                    drawOnChartArea: false,
+                }
+            },
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    color: 'rgba(54, 69, 79)'
+                },
+                display: true,
+                grid: {
+                    drawOnChartArea: false,
+                }
+            }
+        },
+        plugins: {
+            datalabels: {
+                formatter: (value, context) =>{
+                    if (value>1000000000){
+                        return(value/10000000000) + 'B';
+                    }if (value>1000000){
+                        return(value/1000000) + 'M';
+                    }if (value>1000){
+                        return(value/1000) + 'K';
+                    }return value;
+
+                    console.log(value);
+
+                }
+            }
+        }
+        },
+        plugins: [ChartDataLabels]
+    });
+</script>

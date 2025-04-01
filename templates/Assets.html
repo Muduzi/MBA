@@ -1,0 +1,188 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/Assets.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/asset_form/';" class="new">
+        <i class="material-icons" style="font-size:18px; border:hidden;">add</i>
+    </button>
+    <button type = 'button' onclick="window.location.href='/';">
+       <i class="material-icons" style="font-size:18px;">home</i>
+    </button>
+    <button type = 'button' onclick="window.location.href='/management/';">
+       <i class="material-icons" style="font-size:18px;">arrow_forward</i>
+    </button>
+</div>
+
+<div class="dashboard">
+    <div class="container1">
+        <canvas id="assetStatsChat1"></canvas>
+    </div>
+    <div class="container2">
+        <div class="card">
+            <text class="content">{{count}}</text>
+            <text class="title">Asset Count</text>
+        </div>
+        <div class="card">
+            <text class="content">{{current_value}}</text>
+            <text class="title">Current Value</text>
+        </div>
+        <div class="card">
+            <text class="content">{{total_annual_depreciation}}</text>
+            <text class="title">Annual Depreciation</text>
+        </div>
+        <div class="card">
+            <text class="content">{{remaining_useful_life}}</text>
+            <text class="title">Useful Life Left</text>
+        </div>
+    </div>
+    <div class="container3">
+        <canvas id="assetStatsChat2"></canvas>
+    </div>
+</div>
+
+<table class="assets">
+    <thead>
+        <tr>
+            <th class="ath1">Acquired on</th>
+            <th class="ath1">Name</th>
+            <th class="ath2">initial Value</th>
+            <th class="ath2">Depreciation Rate</th>
+            <th class="ath2">Total Depreciation</th>
+            <th class="ath2">Current Value</th>
+            <th class="ath3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for key, value in assets.items%}
+            <tr>
+                <td class="ath1">{{value.Date.date}}</td>
+                <td class="ath1">{{value.Name}}</td>
+                <td class="ath2">{{value.InitialValue}}</td>
+                <td class="ath2">{{value.DepreciationRate}}%</td>
+                <td class="ath2">{{value.AccumulatedDepreciation}}</td>
+                <td class="ath2">{{value.CurrentValue}}</td>
+                <td class="ath3">
+                    <button type = 'button' class = 'action1' onclick="window.location.href='/asset_form/{{key}}/';">
+                        <i class="material-icons" style="font-size:15px;">edit</i>
+                    </button>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let assetForm = document.getElementById("assetForm");
+
+    function openForm(){
+        assetForm.classList.add("open_form");
+    }
+
+    function closeForm(){
+        assetForm.classList.remove("open_form");
+    }
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "/services/";
+    }
+
+    const assetStatsChat1 = document.getElementById('assetStatsChat1');
+
+    new Chart(assetStatsChat1, {
+        type: 'doughnut',
+        data: {
+            labels: ['', 'Useful Life Percentage'],
+            datasets: [{
+                label: 'Remaining Useful Life%',
+                data: [{{spent_useful_life}}, {{remaining_useful_life_perc}}],
+                borderWidth: 1,
+                borderColor: '#F9F6EE',
+                backgroundColor:['#F9F6EE', '#5D6166',],
+                radius: 70,
+                }
+            ],
+
+        },
+        options: {
+            maintainAspectRatio: false,
+
+        }
+    });
+
+    const assetStatsChat2 = document.getElementById('assetStatsChat2');
+
+    new Chart(assetStatsChat2, {
+        type: 'bar',
+        data: {
+            labels: ['Depreciation', 'Current Value'],
+            datasets: [{
+                label: 'Depreciation Vs Current Value',
+                data: [{{total_accumulated_depreciation}}, {{current_value}}],
+                borderWidth: 1,
+                barThickness: 40,
+                borderColor: '#EDEADE',
+                backgroundColor:['rgb(54, 69, 79)', '#5D6166'],
+               },
+            ],
+
+        },
+        options: {
+            indexAxis: 'x',
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: ' rgba(54, 69, 79)'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                },
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#F9F6EE'
+                    },
+                    display: false,
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            },
+        }
+    });
+</script>

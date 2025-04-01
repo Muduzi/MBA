@@ -1,0 +1,48 @@
+
+<script>
+    const ctx = document.getElementById('myLChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{%for i in dates%} '{{i.date}}', {%endfor%}],
+            datasets: [{
+            label: 'Initial Stock',
+            data: [{%for a in amounts%} {{a}}, {%endfor%}],
+            borderWidth: 1,
+            },
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    }
+    );
+
+    const ctxx = document.getElementById('myDChart');
+
+    new Chart(ctxx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Cash', 'Credit'],
+            datasets: [{
+                label: 'This weeks sales in',
+                data: [{{Cash}}, {{Credit}}],
+                borderWidth: 1,
+                backgroundColor: [
+                'rgb(54, 162, 235)',
+                ' rgb(255, 0, 0)',
+                ],
+            },
+            ]
+        },
+        options: {
+
+        }
+    }
+    );
+</script>

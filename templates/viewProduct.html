@@ -1,0 +1,130 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/viewProduct.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation" id="Navigation">
+    <button type = 'button' onclick="showContact()">
+        <i class="fa fa-phone"></i>
+    </button>
+    <button type = 'button' onclick="window.location.href='/add_product/{{prod_obj.id}}/';">
+        <i class="material-icons" style="font-size:20px;">edit</i>
+    </button>
+    <button type = 'button' onclick="history.go(-1)">
+        <i class="material-icons" style="font-size:20px;">arrow_back</i>
+    </button>
+</div>
+
+<div class="content" id="content">
+    <div class="product_container">
+        <div class="product" id="lpv">
+            <button  type="button" id="previousImage" class="prev_next">
+                <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_left</i>
+            </button>
+            <div class="product_image">
+
+                <img id="currentImage" src="{{images.0}}" alt="no more images to display">
+
+            </div>
+            <button id="nextImage" type="button" class="prev_next">
+                <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_right</i>
+            </button>
+        </div>
+
+        <text class="name">{{prod_obj.Name}}</text>
+        <text class="price">K{{prod_obj.Price}}</text>
+    </div>
+    <div class="details">
+        <text>
+            {{prod_obj.Description}}
+        </text>
+        <table>
+            <thead>
+                <tr>
+                    <th class="t1">Specification</th>
+                    <th class="t2">Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+            {%for i in prod_features_obj%}
+                <tr>
+                    <td class="t1">{{i.Name}}</td>
+                    <td class="t2">{{i.Description}}</td>
+                </tr>
+            {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="contact" id="contact">
+    <div class="close">
+        <button type="button" onclick="hideContact()">
+            <i class="fa fa-close"></i>
+        </button>
+    </div>
+    <text>Phone: +265 {{bus_data.Contact1}}</text>
+    <text>Email: <a href="mailto:{{bus_data.Email}}">{{bus_data.Email}}</a></text>
+    <div class="links">
+        <a href="http://{{user.profile.Instagram}}" class="fa fa-instagram"></a>
+        <a href="http://{{user.profile.Facebook}}" class="fa fa-facebook"></a>
+        <a href="http://{{user.profile.Twitter}}" class="fa fa-twitter"></a>
+    </div>
+</div>
+
+<script>
+
+    let lpv = document.getElementById("lpv");
+    let currentImage = document.getElementById("currentImage");
+    let prevImg = document.getElementById("previousImage");
+    let nextImg = document.getElementById("nextImage");
+
+    let contact = document.getElementById("contact");
+
+    let currentIndex = 0
+
+
+    prevImg.addEventListener("click", previousImage);
+    nextImg.addEventListener("click", nextImage);
+
+
+    function nextImage(){
+        let List = [{%for i in images%} '{{i}}', {%endfor%}]
+        let limit = List.length-1
+        if (currentIndex < limit){
+            currentIndex +=1
+            }else{
+            }
+        currentImage.src = List[currentIndex]
+
+    }
+    function previousImage(){
+        if (currentIndex >= 1){
+            currentIndex -=1
+            }else{
+            currentIndex=currentIndex
+            }
+        let List = [{%for i in images%} '{{i}}', {%endfor%}]
+        currentImage.src = List[currentIndex]
+
+    }
+
+   function showContact(){
+        contact.classList.add("showContact");
+    }
+    function hideContact(){
+        contact.classList.remove("showContact");
+    }
+
+
+</script>

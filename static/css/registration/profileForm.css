@@ -1,0 +1,227 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    row-gap:10px;
+    position:relative;
+    width:100vw;
+    height:auto;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+    overflow-y:scroll;
+}
+
+/*navigation*/
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:61%;
+    height:32px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+    border:hidden;
+    border-radius:10px;
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+form{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:relative;
+    row-gap:10px;
+    width:60%;
+    height:100%;
+    font-size:15px;
+    padding:10px;
+    background:#EDEADE;
+    border-radius:10px;
+}
+
+.container{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:relative;
+    width:45%;
+    height:90%;
+}
+
+.profile_pic{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    position:relative;
+    width:100%;
+    height:25%;
+}
+.profile_pic label{
+    display:flex;
+    align-items:center;
+    justify-content:space-evenly;
+    position:relative;
+    width:100%;
+    height:100%;
+    border-radius:10px;
+}
+.profile_pic input{
+    display:none;
+}
+.profile_pic img{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+}
+
+form label{
+    color:rgb(54, 69, 79);
+    font-size:16px;
+}
+
+form input{
+    width:100%;
+    height:35px;
+    font-size:14px;
+    color:#5D6166;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+
+form select{
+    width:auto;
+    height:35px;
+    font-size:14px;
+    color:#5D6166;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+form textarea{
+    width:100%;
+    height:80px;
+    font-size:14px;
+    color:#5D6166;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:32px;
+    border-radius:10px;
+}
+.but button{
+    width:110px;
+    height:90%;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.but button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+@media(max-width:1000px){
+    .Navigation{
+        width:765px;
+    }
+
+    form{
+        width:750px;
+        height:650px;
+    }
+
+    form label{
+        font-size:14px;
+    }
+    form input{
+        font-size:13px;
+    }
+    form select{
+        font-size:13px;
+    }
+    form textarea{
+        font-size:13px;
+    }
+
+    .but button{
+        font-size:13px;
+    }
+
+}
+@media(max-width:768px){
+    .Navigation{
+        width:708px;
+    }
+
+    form{
+        width:700px;
+        height:650px;
+    }
+}
+@media(max-width:430px){
+    .Navigation{
+        width:95%;
+    }
+
+    form{
+        width:90%;
+        height:1300px;
+    }
+    .container{
+        width:100%;
+        height:47%;
+    }
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

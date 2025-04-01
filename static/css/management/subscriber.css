@@ -1,0 +1,352 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    row-gap:10px;
+    position:relative;
+    width:100wh;
+    height:100vh;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.Navigation{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:100%;
+    height:5%;
+    border:hidden;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    position:center;
+    width:auto;
+    height:80%;
+    color:white;
+    border:hidden;
+    background-image:linear-gradient(to left, #00BFFF, #3F00FF, #0000CD);
+    padding:4px;
+    border-radius:10px;
+}
+.Navigation button:hover{
+    background-image:linear-gradient(to right, #00BFFF, #3F00FF, #0000CD);
+    padding:4px;
+}
+
+/*messages*/
+.messages{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    align-self:center;
+    justify-content:flex-start;
+    position:fixed;
+    z-index:2;
+    row-gap:30px;
+    width:35%;
+    height:20%;
+    padding:10px;
+    background:rgb(230, 230, 250, 0.95);
+    border-radius:10px;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.message{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:70%;
+    height:20%;
+    color:#2B3856;
+    font-size:16px;;
+}
+.close{
+    align-self:flex-end;
+    background:transparent;
+    border:hidden;
+}
+.close:hover{
+    cursor:pointer;
+    color:white;
+    background:red;
+}
+
+
+.profile{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:flex-start;
+    position:relative;
+    row-gap:10px;
+    width:20%;
+    height:80%;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:15px;
+    padding-bottom:15px;
+    background-image:linear-gradient(to bottom, #00BFFF, #3F00FF, #0000CD);
+}
+
+.profile_photo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:100%;
+    height:20%;
+    padding:2px;
+    border-radius:10px;
+}
+
+.profile_photo img{
+    width:36%;
+    height:90%;
+    border-radius:50%;
+}
+
+.details{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:space-around;
+    justify-content:flex-start;
+    position:relative;
+    width:100%;
+    height:60%;
+    background:rgb(10, 10, 10, 0.1);
+    backdrop-filter:blur(15px);
+    border-radius:10px;
+}
+
+.details text{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+    width:100%;
+    height:auto%;
+    color:#F9F6EE;
+    font-size:15px;
+    margin-top:2px;
+    margin-left:5px;
+}
+.details a{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+    width:100%;
+    height:auto%;
+    color:#F9F6EE;
+    font-size:15px;
+    text-decoration:none;
+    margin-top:2px;
+    margin-left:5px;
+}
+.new_renew{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:13%;
+}
+
+.new_renew button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:30%;
+    height:40%;
+    color:white;
+    background:transparent;
+    border:1px solid white;
+    border-radius:10px;
+}
+.new_renew button:hover{
+    color:blue;
+    background:white;
+}
+
+/*table*/
+table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:70%;
+    height:85%;
+    background:#F9F6EE;
+}
+
+table caption{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:10%;
+    color:blue;
+    font-size:20px;
+    font-weight:600;
+    background:#EDEADE;
+}
+thead{
+    position:sticky;
+    top:0;
+    z-index:2;
+    width:100%;
+    height:10%;
+    color:white;
+    background-image:linear-gradient(to left, #00BFFF, #3F00FF, #0000CD);
+}
+thead tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+
+th{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    width:16.4%;
+    font-size:15px;
+    padding-left:5px;
+}
+.feature{
+    width:30%;
+    padding-left:3px;
+    background:white;
+}
+tbody{
+    font-size:14px;
+    width:100%;
+    height:70%;
+    background:white;
+    overflow-y:scroll;
+}
+tbody tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:35px;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    font-size:14px;
+    width:16.4%;
+    height:100%;
+    color:gray;
+    padding-left:5px;
+}
+
+tfoot{
+    position:sticky;
+    bottom:0;
+    z-index:2;
+    font-size:14px;
+    width:100%;
+    height:10%;
+    background:white;
+}
+tfoot tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+tfoot td{
+    width:16.4%;
+    font-size:19px;
+    color:#00BFFF;
+    padding-left:5px;
+}
+
+.planForm{
+    display:flex;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:center;
+    align-self:center;
+    justify-content:space-around;
+    position:absolute;
+    z-index:2;
+    width:30%;
+    height:40%;
+}
+.openPlanForm{
+    display:flex;
+    visibility:visible;
+    flex-direction:column;
+    align-items:center;
+    align-self:center;
+    justify-content:space-between;
+    position:absolute;
+    z-index:2;
+    width:30%;
+    height:40%;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:15px;
+    padding-bottom:15px;
+    background-image:linear-gradient(to bottom, #00BFFF, #3F00FF, #0000CD);
+    border-radius:10px;
+}
+select{
+    width:50%;
+    height:15%;
+    padding-left:5px;
+    color:white;
+    background-color:blue;
+    border:1px solid white;
+    border-radius:10px;
+}
+
+.close2{
+    align-self:flex-end;
+    background:transparent;
+    width:auto;
+    height:auto;
+    color:white;
+    padding:5px;
+    border:hidden;
+}
+.planForm button:hover{
+    color:blue;
+    background:white;
+}
+.save{
+    width:24%;
+    height:13%;
+    color:white;
+    font-size:15px;
+    background:transparent;
+    border:1px solid white;
+    border-radius:10px;
+}
+
+

@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DELIVERY NOTE</title>
+    <style>
+        @page{
+            size: a4 portrait;
+
+            @frame header_frame{
+                -pdf-frame-content: header_content;
+                 left: 50pt;
+                 width: 512pt;
+                 top: 1pt;
+                 height:140pt;
+                 padding:10pt;
+            }
+            @frame footer_frame{
+                -pdf-frame-content: header_content;
+                 left: 50pt;
+                 width: 512pt;
+                 bottom: 1pt;
+                 height:50pt;
+                 padding:10pt;
+            }
+            @frame content_frame{
+                left: 50pt;
+                width: 512pt;
+                height:692pt;
+                padding:10px;
+            }
+
+        }
+
+        h1{
+            font-size:25px;
+
+        }
+        h2{
+            font-size:17px;
+            font-weight:400;
+        }
+
+        h3{
+            font-size:15px;
+            font-weight:400;
+        }
+        h4{
+            font-size:13px;
+            font-weight:300;
+
+        }
+
+        p{
+            font-size:17px;
+            font-weight:500;
+            margin-top:50pt;
+        }
+        .receiver{
+            margin-top:10px;
+        }
+        text{
+            font-size:15px;
+            font-weight:400;
+        }
+
+        .note{
+            margin-top:20pt;
+        }
+        .note text{
+            color:gray;
+        }
+        table{
+            border:1px solid black;
+            margin-top:5pt;
+        }
+        table tr{
+            border:hidden;
+        }
+
+        table th{
+            font-size:15px;
+            font-weight:400;
+            text-align:left;
+            padding-left:2pt;
+            padding-top:2.5pt;
+            border:1px solid black;
+        }
+        table td{
+            font-size:13.5px;
+            padding-left:2pt;
+            padding-top:2.5pt;
+            border-right:1px solid black;
+        }
+        tfoot td{
+            font-size:15px;
+            font-weight:600;
+        }
+
+        .signature{
+            padding-top:10px;
+            margin-top:10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="header_frame">
+            <h1 align="center">{{buss.Name}}</h1>
+            <h2 align="center">{{buss.Address}}</h2>
+            <h3 align="center">{{buss.About}}
+            {{buss.About}}
+            {{buss.About}}
+            {{buss.About}}
+            {{buss.About}}
+            </h3>
+            <h4 align="center">
+                {%if buss.Email%}
+                    Email: {{buss.Email}}
+                {%endif%},
+                {%if buss.Contact1%}
+                    Phone1: {{buss.Contact1}}
+                {%endif%},
+                {%if buss.Contact2%}
+                    Phone2: {{buss.Contact2}}
+                {%endif%}
+            </h4>
+        </div>
+         <p align="center">DELIVERY NOTE</p>
+        <div class="receiver">
+            <text>
+                <span style="font-weight:400;">To:</span>
+                somebody somebody
+            </text>
+        </div>
+        <div class="receiver">
+            <text>
+                <span style="font-weight:400;">Date:</span>
+                12/09/2024
+            </text>
+        </div>
+    </div>
+
+    <div class="note">
+        <text>Please receive these goods in order and condition.</text>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Quantity</th>
+                <th colspan="4">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td >.</td>
+                <td colspan="4">.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td colspan="4">.</td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="footer_frame">
+        <div class="signature">
+            <text>Delivered by..........................................................Signature.....................................</text>
+        </div>
+        <div class="signature">
+            <text>Received by...........................................................Signature.....................................</text>
+        </div>
+    </div>
+</body>
+</html>

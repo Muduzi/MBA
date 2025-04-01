@@ -1,0 +1,550 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:center;
+    position:relative;
+    gap:10px;
+    width:100wh;
+    height:auto;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+/*messages*/
+.messages{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:fixed;
+    top:10%;
+    z-index:5;
+    row-gap:20px;
+    width:45%;
+    height:15%;
+    padding:10px;
+    background:rgb(230, 230, 250, 0.95);
+    border-radius:10px;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.message{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:95%;
+    height:20%;
+    color:#2B3856;
+    font-size:16px;;
+}
+.close{
+    align-self:flex-end;
+    background:transparent;
+    border:hidden;
+}
+.close:hover{
+    cursor:pointer;
+    color:white;
+    background:#2B3856;
+}
+
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:85%;
+    height:32px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    border:hidden;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.stage{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:88%;
+    height:auto;
+    font-size:17px;
+    color:#2B3856;
+    margin-left:5px;
+}
+
+
+.information_container{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:86%;
+    height:190px;
+    border-radius:10px;
+}
+
+.information{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    width:400px;
+    height:90%;
+    cursor:hand;
+    padding:10px;
+    background:#F9F6EE;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+}
+.info_column_container{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:flex-start;
+    position:relative;
+    width:45%;
+    height:100%;
+}
+.info_doughnut_graph{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:55%;
+    height:100%;
+    background:;
+}
+.info2{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30%;
+}
+text{
+    margin-left:10px;
+}
+
+.value{
+    display:flex;
+    align-items:flex-end;
+    justify-content:flex-start;
+    position:relative;
+    width:100%;
+    height:70%;
+    font-size:20px;
+    color:rgb(54, 69, 79);
+}
+.title{
+    display:flex;
+    align-items:flex-end;
+    justify-content:flex-start;
+    position:relative;
+    width:100%;
+    height:30%;
+    font-size:13px;
+    color:#5D6166;
+}
+
+.container1{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:relative;
+    width:50%;
+    height:50%;
+}
+
+.taxes{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:100%;
+    height:90%;
+    background:#F9F6EE;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+    overflow-y:scroll;
+}
+
+.taxes button:hover{
+    background:#989898;
+}
+
+thead{
+    position:sticky;
+    top:0;
+    z-index:2;
+    width:100%;
+    height:35px;
+    background:#F9F6EE;
+    border-bottom:1px solid #EDEADE;
+    border-radius:10px 10px 0px 0px;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    margin-left:5px;
+    color:#5D6166;
+    font-size:16px;
+}
+.tth1{
+    width:30%;
+    height:100%;
+}
+.tth2{
+    width:23.33%;
+    height:100%;
+}
+
+tbody{
+    width:100%;
+}
+tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:35px;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    font-size:15px;
+    color:#5D6166;
+    margin-left:5px;
+}
+
+
+.container2{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:relative;
+    width:35%;
+    height:50%;
+}
+.installments{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:100%;
+    height:90%;
+    background:#F9F6EE;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+    border-radius:10px;
+    overflow-y:scroll;
+}
+.ith1{
+    width:30%;
+    height:100%;
+}
+.ith2{
+    width:40%;
+    height:100%;
+}
+
+
+form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:fixed;
+    top:15%;
+    z-index:3;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background:#EDEADE;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.5);
+    border-radius:10px;
+}
+input[type=checkbox]{
+    width:auto;
+    height:auto;
+    color:rgb(54, 69, 79);
+    margin-left:10px;
+    background:#F9F6EE;
+}
+
+label{
+    color:rgb(54, 69, 79);
+    font-size:16px;
+}
+input{
+    width:100%;
+    height:35px;
+    color:#5D6166;
+    font-size:15px;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+textarea{
+    width:100%;
+    height:105px;
+    color:#5D6166;
+    font-size:15px;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+form select{
+    width:auto;
+    height:auto;
+    color:#5D6166;
+    font-size:14px;
+    padding:5px;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+
+form select:focus{
+    outline:none;
+}
+select option{
+    display:flex;
+    align-items:center;
+    height:30px;
+    margin-top:4px;
+    font-size:14px;
+}
+select option:hover{
+    cursor:hand;
+    background:#EDEADE;
+}
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:30px;
+    border-radius:10px;
+}
+.but button{
+    width:20%;
+    height:90%;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+    padding:2px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.but button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.tax_settings{
+    display:flex;
+    visibility:visible;
+    width:30%;
+    height:65%;
+}
+
+.tax_account_form{
+    display:flex;
+    visibility:visible;
+    width:30%;
+    height:50%;
+}
+
+.tax_installment_form{
+    display:flex;
+    visibility:visible;
+    width:30%;
+    height:50%;
+}
+
+
+@media (max-width:1000px){
+     body{
+        height:auto%;
+        row-gap:15px;
+        overflow-y:scroll;
+    }
+
+    .tax_settings{
+        width:380px;
+        height:450px;
+    }
+
+    .tax_account_form{
+        width:380px;
+        height:360px;
+    }
+
+    .tax_installment_form{
+        width:380px;
+        height:330px;
+    }
+
+    .stage{
+        width:88%;
+    }
+
+    .information_container{
+        width:85%;
+    }
+    .container1{
+        width:85%;
+        height:320px;
+    }
+
+    .container2{
+        width:85%;
+        height:320px;
+    }
+}
+
+@media (max-width:768px){
+    .Navigation{
+        width:95%;
+    }
+    .stage{
+        width:98%;
+        font-size:15px;
+    }
+
+    .information_container{
+        width:95%;
+        height:200px;
+    }
+    .container1{
+        width:95%;
+    }
+    .value{
+        font-size:18px;
+    }
+    th{
+        font-size:13px;
+    }
+
+    td{
+        font-size:13px;
+    }
+
+    .container2{
+        width:95%;
+    }
+}
+@media (max-width:430px){
+    .Navigation{
+        width:99%;
+    }
+
+
+    .tax_settings{
+        width:350px;
+    }
+
+    form{
+        top:40%;
+    }
+    .tax_account_form{
+        width:350px;
+    }
+
+    .tax_installment_form{
+        width:350px;
+    }
+
+
+    .stage{
+        width:99%;
+        font-size:16px;
+    }
+
+    .information_container{
+        width:99%;
+        height:190px;
+    }
+    .info_column_container{
+        width:40%;
+    }
+    .info_doughnut_graph{
+        width:60%;
+    }
+    .title{
+        font-size:12px;
+    }
+
+    .value{
+        font-size:16px;
+    }
+
+
+    .container1{
+        width:99%;
+        height:40%;
+    }
+
+    .container2{
+        width:99%;
+        height:40%;
+    }
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

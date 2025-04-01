@@ -1,0 +1,25 @@
+{%load static%}
+{%load widget_tweaks%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/userbusserror.css'%}" xmlns="http://www.w3.org/1999/html">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div class="main">
+    <div class="container">
+        <div class="errormssg">
+            <div class="errortext1">
+                <p class="p0"><i class="material-icons" style="font-size:25;">error</i>You are not affiliated to any business acount</p>
+            </div>
+
+            <div class="errortext2">
+                <p class="p1">Please open a business account</p>
+                <p class="p2">Or</p>
+                <p class="p3">Ask the owner of the business account you want to access to register you as a staff</p>
+            </div>
+        </div>
+        <div class="buttons">
+            <button type = 'button' class = 'button' onclick="window.location.href='http://127.0.0.1:8000//';"><i class="material-icons" style="font-size:25;">home</i>Home</button>
+            <button type = 'button' class = 'button' onclick="window.location.href='http://127.0.0.1:8000/businness/';">Set up a businness</button>
+        </div>
+    </div>
+</div>

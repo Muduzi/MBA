@@ -1,0 +1,367 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/profit_and_loss.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/profit_and_loss_dash/';">
+        <i class="material-icons" style="font-size:18px">show_chart</i>
+    </button>
+    <button type="button" onclick="window.location.href='/debt/';">
+        <i class="material-icons" style="font-size:18;">account_balance_wallet</i>
+        Debt
+    </button>
+    <button type="button"  onclick="window.location.href='/credit/';">
+        <i class="material-icons" style="font-size:18;">account_balance_wallet</i>
+        Credit
+    </button>
+     <button type="button" onclick="window.location.href='/management/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<table class="mainTable">
+    <thead>
+        <tr>
+            <th class="account_th"></th>
+            <th class="amount_th">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--Product Income-->
+        <tr>
+            <td class="account_title">Income</td>
+            <td class="amount_title"></td>
+        </tr>
+        <tr>
+            <td class="button_td" style="font-weight:600;">
+                <button type="button" id="ProductIncomeDropDown" onclick="showProductIncomeDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Products
+                </button>
+                <button type="button" id="ProductIncomeDropUp" onclick="hideProductIncomeDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Products
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="ProductIncomeDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Product</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%for key, value in product_income.items%}
+                            {%if key == "VAT"%}
+                                <tr>
+                                    <td class="account_section_total">{{value.Name}}</td>
+                                    <td class="amount_section_total">{{value.revenue}}</td>
+                                </tr>
+                            {%else%}
+                                <tr>
+                                    <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                    <td class="amount">{{value.revenue}}</td>
+                                </tr>
+                            {%endif%}
+                        {%endfor%}
+                        <tr>
+                            <td class="account_section_total">Revenue</td>
+                            <td class="amount_section_total">{{total_product_income}}</td>
+                        </tr>
+                        <tr>
+                            <td class="separator"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <!--Service Income -->
+        <tr>
+            <td class="button_td" >
+                <button type="button" id="ServiceIncomeDropDown" onclick="showServiceIncomeDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Services
+                </button>
+                <button type="button" id="ServiceIncomeDropUp" onclick="hideServiceIncomeDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Services
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="ServiceIncomeDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Service</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%for key, value in service_income.items%}
+                            {%if key == "VAT"%}
+                                <tr>
+                                    <td class="account_section_total">{{value.Name}}</td>
+                                    <td class="amount_section_total">{{value.Amount}}</td>
+                                </tr>
+                            {%else%}
+                                <tr>
+                                    <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                    <td class="amount">{{value.Amount}}</td>
+                                </tr>
+                            {%endif%}
+                        {%endfor%}
+                        <tr>
+                            <td class="account_section_total">Revenue</td>
+                            <td class="amount_section_total">{{total_service_income}}</td>
+                        </tr>
+                        <tr>
+                            <td class="separator"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <!-- Revenue -->
+        <tr>
+            <td class="account_subTitle">Sales Revenue</td>
+            <td class="amount_subTitle">{{total_sales}}</td>
+        </tr>
+        <!--COG-->
+        <tr>
+            <td class="button_td" style="font-weight:600;">
+                <button type="button" id="ProductCogDropDown" onclick="showProductCogDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>Cog
+                </button>
+                <button type="button" id="ProductCogDropUp" onclick="hideProductCogDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>Cog
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="ProductCogDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Product</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%for key, value in product_income.items%}
+                            {%if key == "VAT"%}
+                            {%else%}
+                                <tr>
+                                    <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                    <td class="amount">{{value.cog}}</td>
+                                </tr>
+                            {%endif%}
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Total Cog</td>
+            <td class="amount_subTitle">{{cog}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!-- Gross Profit -->
+        <tr class="stage_account">
+            <td class="account_subTitle">Gross Profit</td>
+            <td class="amount_subTitle">{{gp}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!--Expenses-->
+        <tr>
+            <td class="account_title">Expenses</td>
+            <td class="amount_title"></td>
+        </tr>
+        <tr>
+            <td class="button_td">
+                <button type="button" id="expenseDropDown" onclick="showExpenseDetail()">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_down</i>expenses
+                </button>
+                <button type="button" id="expenseDropUp" onclick="hideExpenseDetail()" class="hide">
+                    <i class="material-icons" style="font-size:25px">arrow_drop_up</i>expenses
+                </button>
+            </td>
+        </tr>
+        <tr style="height:auto;">
+            <td style="width:100%;">
+                <table id="expenseDetail" class="Detail">
+                    <tbody>
+                        <tr class="section">
+                            <td class="account_section">Operational Expense</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%if oe%}
+                        {%for i in oe%}
+                        <tr>
+                            <td class="account">{{i.Name}}</td>
+                            <td class="amount">{{i.Price}}</td>
+                        </tr>
+                        {%endfor%}
+                        {%else%}
+                        <tr>
+                            <td style="color:rgb(54, 69, 79); width:100%;">No records to show</td>
+                        </tr>
+                        {%endif%}
+                        <tr>
+                            <td class="account_section_total">Total OE</td>
+                            <td class="amount_section_total">{{oe_total}}</td>
+                        </tr>
+                        <tr class="section">
+                            <td class="account_section">Payroll Expense</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%if pe%}
+                        {%for i in pe%}
+                        <tr>
+                            <td class="account">{{i.Name}}</td>
+                            <td class="amount">{{i.Price}}</td>
+                        </tr>
+                        {%endfor%}
+                        {%else%}
+                        <tr>
+                            <td class="button_td" style="color:rgb(54, 69, 79);">No records to show</td>
+                        </tr>
+                        {%endif%}
+                        <tr>
+                            <td class="account_section_total">Total PE</td>
+                            <td class="amount_section_total">{{pe_total}}</td>
+                        </tr>
+                        <tr class="section">
+                            <td class="account_section">Total Depreciation</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%if total_annual_depreciation%}
+                            <tr>
+                                <td class="account_section_total">Total Annual Depreciation</td>
+                                <td class="amount_section_total">{{total_annual_depreciation}}</td>
+                            </tr>
+                        {%else%}
+                            <tr>
+                                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+                            </tr>
+                        {%endif%}
+                        <tr>
+                            <td class="separator"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="account_subTitle">Total Expenses</td>
+            <td class="amount_subTitle">{{total_expense}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!-- Operational Profit -->
+        <tr class="stage_account">
+            <td class="account_subTitle">Operational Profit</td>
+            <td class="amount_subTitle">{{op}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!-- VAT -->
+        <tr>
+            <td class="account_subTitle">Total VAT</td>
+            <td class="amount_subTitle">{{total_vat}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <!-- Net Profit -->
+        <tr class="stage_account">
+            <td class="account_subTitle">Net Profit</td>
+            <td class="amount_subTitle">{{net_profit}}</td>
+        </tr>
+        <!-- Profit Margin -->
+        <tr>
+            <td class="account_subTitle">Profit Margin</td>
+            {%if profit_perc > 1%}
+                <td class="amount_subTitle" style="color:green">{{profit_perc}}%</td>
+            {%elif profit_perc < 1%}
+                <td class="amount_subTitle" style="color:red">{{profit_perc}}%</td>
+            {%endif%}
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    <!-- Product Income -->
+    let ProductIncomeDetail = document.getElementById("ProductIncomeDetail");
+    let ProductIncomeDropDown = document.getElementById("ProductIncomeDropDown");
+    let ProductIncomeDropUp = document.getElementById("ProductIncomeDropUp");
+
+    function showProductIncomeDetail(){
+        ProductIncomeDetail.classList.add("showDetail");
+        ProductIncomeDropDown.classList.add("hide");
+        ProductIncomeDropUp.classList.add("show");
+    }
+    function hideProductIncomeDetail(){
+        ProductIncomeDetail.classList.remove("showDetail");
+        ProductIncomeDropDown.classList.remove("hide");
+        ProductIncomeDropUp.classList.remove("show");
+    }
+    <!-- Product Cog -->
+    let ProductCogDetail = document.getElementById("ProductCogDetail");
+    let ProductCogDropDown = document.getElementById("ProductCogDropDown");
+    let ProductCogDropUp = document.getElementById("ProductCogDropUp");
+
+    function showProductCogDetail(){
+        ProductCogDetail.classList.add("showDetail");
+        ProductCogDropDown.classList.add("hide");
+        ProductCogDropUp.classList.add("show");
+    }
+    function hideProductCogDetail(){
+        ProductCogDetail.classList.remove("showDetail");
+        ProductCogDropDown.classList.remove("hide");
+        ProductCogDropUp.classList.remove("show");
+    }
+
+    <!-- Service Income -->
+    let ServiceIncomeDetail = document.getElementById("ServiceIncomeDetail");
+    let ServiceIncomeDropDown = document.getElementById("ServiceIncomeDropDown");
+    let ServiceIncomeDropUp = document.getElementById("ServiceIncomeDropUp");
+
+    function showServiceIncomeDetail(){
+        ServiceIncomeDetail.classList.add("showDetail");
+        ServiceIncomeDropDown.classList.add("hide");
+        ServiceIncomeDropUp.classList.add("show");
+    }
+    function hideServiceIncomeDetail(){
+        ServiceIncomeDetail.classList.remove("showDetail");
+        ServiceIncomeDropDown.classList.remove("hide");
+        ServiceIncomeDropUp.classList.remove("show");
+    }
+
+    <!-- Expenses -->
+    let expenseDetail = document.getElementById("expenseDetail");
+    let expenseDropDown = document.getElementById("expenseDropDown");
+    let expenseDropUp = document.getElementById("expenseDropUp");
+
+    function showExpenseDetail(){
+        expenseDetail.classList.add("showDetail");
+        expenseDropDown.classList.add("hide");
+        expenseDropUp.classList.add("show");
+    }
+    function hideExpenseDetail(){
+        expenseDetail.classList.remove("showDetail");
+        expenseDropDown.classList.remove("hide");
+        expenseDropUp.classList.remove("show");
+    }
+</script>

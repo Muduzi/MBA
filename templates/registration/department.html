@@ -1,0 +1,187 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/registration/department.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+{%if messages%}
+    {%for message in messages%}
+        <div class="messages" id="mssg">
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </div>
+    {%endfor%}
+{%endif%}
+
+
+<div class="Navigation">
+    <button type = 'button' onclick="openForm2()">
+       <i class="material-icons" style="font-size:18px; border:hidden;">attach_money</i>
+        salaries
+    </button>
+    <button type = 'button' onclick="openForm1()">
+       <i class="material-icons" style="font-size:18px; border:hidden;">edit</i>
+    </button>
+    <button type = 'button' onclick="openSelectUser();">
+       <i class="material-icons" style="font-size:18px; border:hidden;">person_add</i>
+        add staff
+    </button>
+    <button type = 'button' onclick="window.location.href='/departments/';">
+       <i class="material-icons" style="font-size:18px; border:hidden;">arrow_forward</i>
+    </button>
+</div>
+
+<div class="department_info">
+    <div class="info_container">
+        <div class="info">
+            <text class="title">Department</text>
+            <text class="content">:{{department.Name}}</text>
+        </div>
+        <div class="info">
+            <text class="title">Head of department</text>
+            <text class="content">:{{department.Head.get_full_name}}</text>
+        </div>
+        <div class="info">
+            <text class="title">Employee Count</text>
+            <text class="content">:{{employee_count}}</text>
+        </div>
+    </div>
+    <div class="Description">
+        <text class="title">Description</text>
+        <text class="content">:{{department.Description}}</text>
+    </div>
+</div>
+
+<table class="employees">
+    <thead>
+        <tr>
+            <th class="sth1" style="margin-left:3px;">Employee</th>
+            <th class="sth2">Position</th>
+            <th class="sth2">Access Level</th>
+            <th class="sth2">Salary</th>
+            <th class="sth3">Duties</th>
+            <th class="sth4"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for i in employees%}
+            <tr>
+                <td class="sth1" style="margin-left:3px;" onclick="window.location.href='/employee_form/edit/{{i.id}}/{{ID}}/';">
+                    {%if i.User.profile.Photo%}
+                     <img src="{{i.User.profile.Photo.url}}" alt="add image" width=100 height=100 class="rounded-circle">
+                    {%else%}
+                    <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+                    {%endif%}
+                    {{i.User}}
+                </td>
+                <td class="sth2">{{i.Position}}</td>
+                <td class="sth2">{{i.AccessLevel}}</td>
+                <td class="sth2">{{i.Salary}}</td>
+                <td class="sth3">{{i.Duty}}</td>
+                <td class="sth4">
+                    <button type="submit" name="department" class="edit" onclick="window.location.href='/employee_form/edit/{{i.id}}/{{ID}}/';">
+                        <i class="material-icons" style="font-size:15px; border:hidden;">edit</i>
+                    </button>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<form method="post" id="addDepartment" class="addDepartment">
+    {%csrf_token%}
+    <label for="name">Department Name</label>
+    <input type="text" id="name" name="name" value="{{department.Name}}" required maxlength="40" placeholder="name of department">
+    <label for="head">Department Head</label>
+    <select id="head" name="head">
+        {%if department.Head%}
+            <option value="{{department.Head.id}}" selected>{{department.Head}}</option>
+        {%endif%}
+        {%for e in employees%}
+            <option value="{{e.User.id}}">{{e.User}}</option>
+        {%endfor%}
+    </select>
+    <label for="description">Description</label>
+    <textarea id="description" name="description" required maxlength="390" placeholder="Description">{{department.Description}}</textarea>
+    <div class="but">
+        <button type = 'submit' class = 'save' name="edit">Save</button>
+        <button type = 'button' class = 'cancel' onclick="closeForm1()">Cancel</button>
+    </div>
+</form>
+
+<form method="post" id="salaries" class="pay_salaries">
+    {%csrf_token%}
+    <p>Press pay to confirm salary payment</p>
+    <div class="but">
+        <button type="submit" name="pay_salaries" class="ok_salaries">Pay</button>
+        <button type = 'button' class = 'cancel' onclick="closeForm2()">Cancel</button>
+    </div>
+</form>
+
+<form method="post" id="selectUser" {% if search_result %} class="selectUser" {% endif %}>
+    {%csrf_token%}
+    <p>Type in username to look for, then select the intended user</p>
+    <input type="search" name="search" placeholder="type in the name to look for........">
+    <label for="UserList">Select User</label>
+    <select id="UserList" name="user" size="6">
+        {%if search_result%}
+            {%for s in search_result%}
+                <option value="{{s.id}}">{{s.get_full_name}}</option>
+            {%endfor%}
+        {%endif%}
+    </select>
+    <div class="but">
+        <button type = 'submit' name="selected user" onclick="closeSelectUser()">Ok</button>
+        <button type = 'button' onclick="closeSelectUser()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let ad = document.getElementById("addDepartment");
+    let s = document.getElementById("salaries");
+    let su = document.getElementById('selectUser');
+
+    function openForm1(){
+        ad.classList.add("open_form1");
+    }
+    function closeForm1(){
+        ad.classList.remove("open_form1");
+    }
+
+    function openForm2(){
+        s.classList.add("open_pay_salaries");
+    }
+    function closeForm2(){
+        s.classList.remove("open_pay_salaries");
+    }
+
+    function openSelectUser(){
+        su.classList.add('selectUser');
+    }
+    function closeSelectUser(){
+        su.classList.remove('selectUser');
+    }
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.href.location = '/asset_form/{{asset.id}}/';
+    }
+</script>
