@@ -16,13 +16,13 @@ class Profile(models.Model):
     DOB = models.DateField(null=True)
     Photo = models.ImageField(null=True, upload_to='profile', width_field=None, height_field=None)
     About = models.TextField(null=True, max_length=130)
-    Contact1 = models.IntegerField(null=True)
-    Contact2 = models.IntegerField(blank=True, null=True)
+    Contact1 = models.CharField(null=True, max_length=15)
+    Contact2 = models.CharField(blank=True, null=True, max_length=15)
     City = models.CharField(null=True, max_length=50)
     Country = models.CharField(null=True, max_length=50)
-    Instagram = models.URLField(null=True, max_length=100)
-    Facebook = models.URLField(null=True, max_length=100)
-    Linkedin = models.URLField(null=True, max_length=100)
+    Instagram = models.CharField(null=True, max_length=100)
+    Facebook = models.CharField(null=True, max_length=100)
+    Linkedin = models.CharField(null=True, max_length=100)
     options = [
         ('Business', 'Business'),
         ('Work', 'Work'),
@@ -59,16 +59,22 @@ class Business(models.Model):
     Type = models.CharField(null=False, blank=True, max_length=33, default='Groceries')
     About = models.TextField(blank=False, null=False, max_length=110)
     Email = models.EmailField(null=False, blank=False)
-    Contact1 = models.IntegerField(blank=True, null=True)
-    Contact2 = models.IntegerField(blank=True, null=True)
+    Contact1 = models.CharField(blank=True, null=True, max_length=15)
+    Contact2 = models.CharField(blank=True, null=True, max_length=15)
     Address = models.CharField(blank=False, null=False, max_length=150)
     PostBox = models.CharField(blank=False, null=False, max_length=50, default='')
     City = models.CharField(null=False, blank=False, max_length=50)
     Country = models.CharField(null=False, blank=False, max_length=50)
     ZipCode = models.CharField(null=True, blank=True, max_length=50)
-    Instagram = models.URLField(null=True, blank=True, max_length=100)
-    Facebook = models.URLField(null=True, blank=True, max_length=100)
-    Linkedin = models.URLField(null=True, blank=True, max_length=100)
+    Instagram = models.CharField(null=True, blank=True, max_length=100)
+    Facebook = models.CharField(null=True, blank=True, max_length=100)
+    Linkedin = models.CharField(null=True, blank=True, max_length=100)
+
+    def whatsapp_link(self):
+        if self.Contact2:
+            return f"https://wa.me/{self.Contact2}"
+        else:
+            return f"https://wa.me/{self.Contact1}"
 
 
 # Settings

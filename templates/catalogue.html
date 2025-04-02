@@ -130,13 +130,11 @@
         <text>Country: {{bus_data.Country}}</text>
         <text>Zipcode: {{bus_data.ZipCode}}</text>
         <div class="find_us">
-            <a href="http://{{bus_data.Instagram}}" class="fa fa-instagram"></a>
-            <a href="http://{{bus_data.Facebook}}" class="fa fa-facebook"></a>
-            <button type="button" onclick="closeInfo()" class="close_info">
-                <i class="material-icons" style="font-size:20px;">keyboard_double_arrow_down</i>
-            </button>
-            <a href="http://{{bus_data.Linkedin}}" class="fa fa-linkedin"></a>
-            <a href="https://wa.me/{{bus_data.Contact2}}/" class="fa fa-whatsapp"></a>
+            <a href="mailto:stevenderrickmuduzi@gamil.com"><i class="material-icons" style="font-size:21px;">mail</i></a>
+            <a href="http://www.instagram.com/muduzie/" class="fa fa-instagram"></a>
+            <a href="http://www.facebook.com/derrickken.muduzie/" class="fa fa-facebook"></a>
+            <a href="http://" class="fa fa-linkedin"></a>
+            <a href="https://wa.me/994586120/" class="fa fa-whatsapp"></a>
         </div>
     </div>
 </div>
@@ -177,11 +175,11 @@
 <div class="footer">
     <p class="company_name">MBSAPP</p>
     <div class="links">
-        <text><i class="material-icons" style="font-size:21px;">mail</i><a href="mailto:stevenderrickmuduzi"></a></text>
-        <a href="http://" class="fa fa-instagram"></a>
-        <a href="http://" class="fa fa-facebook"></a>
-        <a href="http://" class="fa fa-linkedin"></a>
-        <a href="https://wa.me/994586120/" class="fa fa-whatsapp"></a>
+        <text><i class="material-icons" style="font-size:21px;">mail</i><a href="mailto:{{bus_data.Email}}"></a></text>
+        <a href="http://{{bus_data.Instagram}}" class="fa fa-instagram"></a>
+        <a href="http://{{bus_data.Facebook}}" class="fa fa-facebook"></a>
+        <a href="http://{{bus_data.Linkedin}}" class="fa fa-linkedin"></a>
+        <a href="https://wa.me/{{bus_data.Contact2}}/" class="fa fa-whatsapp"></a>
     </div>
     <div class="copyright">
         <text>copyright &copy; 2024 Muduzi Inc</text>
@@ -235,9 +233,7 @@
     function openSearch(){
         search.classList.add("open_search");
     }
-    <!--
-        function hideSearch(){
-            search.classList.remove("open_search");
-        }
-    -->
+    function closeSearch(){
+        search.classList.remove("open_search");
+    }
 </script>
