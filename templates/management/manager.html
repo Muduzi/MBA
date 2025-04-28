@@ -11,84 +11,52 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="message_options">
+                    <button type="submit" name="set customer" value="{{income_li}}">
+                        Yes
+                    </button>
+                    <button type="submit" name="don't set customer" value="{{income_li}}">
+                        No
+                    </button>
+                </div>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
 <div class="Navigation">
-    <button type = 'button' onclick="window.location.href='http://127.0.0.1:8000/subscriptions/';">
+    <button type = 'button' onclick="window.location.href='/subscriptionSettings/';">
+        plan settings
+    </button>
+    <button type = 'button' onclick="window.location.href='/subscriptions/';">
         subscriptions
     </button>
 </div>
 
-<text class="sp">Subscription Plans</text>
 
-<table class="subscriptions">
-    <thead>
-        <tr>
-            {%for i in plans%}
-                {%if i.Name == "Bronze"%}
-                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:#432c17;">{{i.Name}}</th>
-                {%elif i.Name == "Silver"%}
-                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(192,192,192);">{{i.Name}}</th>
-                {%elif i.Name == "Gold"%}
-                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(255,215,0);">{{i.Name}}</th>
-                {%elif i.Name == "Diamond"%}
-                <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(184,216,231);">{{i.Name}}</th>
-                {%elif i.Name == "Platinum"%}
-                    <th class="plan" onclick="window.location.href='http://127.0.0.1:8000/addfeature/{{i.id}}/';" style="background:rgb(229,228,226);">{{i.Name}}</th>
-                {%endif%}
-            {%endfor%}
-        </tr>
-    </thead>
-    <tbody>
-        {%for f in features%}
-            <tr>
-                {%for pf in  pf_container.values%}
-                    {%if f in pf%}
-                        <td class="yes_no">{{f.Name}}</td>
-                    {%else%}
-                        <td class="yes_no">-----</td>
-                    {%endif%}
-                {%endfor%}
-            </tr>
-        {%endfor%}
-    </tbody>
-    <tfoot>
-        <tr>
-            {%for i in plans%}
-                {%if i.Name == "Bronze"%}
-                    <td class="plan" style="color:#432c17;">
-                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
-                        {{i.Price}}
-                    </td>
-                {%elif i.Name == "Silver"%}
-                    <td class="plan"  style="color:rgb(192,192,192);">
-                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
-                        {{i.Price}}
-                    </td>
-                {%elif i.Name == "Gold"%}
-                    <td class="plan" style="color:rgb(255,215,0);">
-                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
-                        {{i.Price}}
-                    </td>
-                {%elif i.Name == "Diamond"%}
-                    <td class="plan" style="color:rgb(184,216,231);">
-                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
-                        {{i.Price}}
-                    </td>
-                {%elif i.Name == "Platinum"%}
-                    <td class="plan" style="color:rgb(229,228,226);">
-                        <i class="material-icons" style="font-size:25px; border:hidden;">attach_money</i>
-                        {{i.Price}}
-                    </td>
-                {%endif%}
-            {%endfor%}
-        </tr>
-    </tfoot>
-</table>
 <div class="section">
     <p>Monthly Performance This Year</p>
 </div>
+
 <div class="graph1">
     <canvas id="myLChartA"></canvas>
 </div>
+
 <div class="information">
     <div class="info">
         <text class="title">Upgrades</text>
@@ -143,6 +111,7 @@
         </text>
     </div>
 </div>
+
 <div class="total_average">
     <canvas id="doughnut"></canvas>
 </div>
@@ -150,9 +119,11 @@
 <div class="section">
     <p>Monthly Performance Per Package</p>
 </div>
+
 <div class="graph2">
     <canvas id="myLChartB"></canvas>
 </div>
+
 <table class="active_customers">
     <thead>
         <tr>
@@ -172,6 +143,7 @@
         {%endfor%}
     </tbody>
 </table>
+
 <div class="section">
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -377,4 +349,10 @@
         plugins: [ChartDataLabels]
     });
 
+     <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
 </script>

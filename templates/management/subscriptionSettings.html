@@ -1,0 +1,247 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/planSettings.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="message_options">
+                    <button type="submit" name="confirm delete" value="{{delete_feature.id}}">
+                        Yes
+                    </button>
+                    <button type="submit" name="don't delete" value="{{delete_feature.id}}">
+                        No
+                    </button>
+                </div>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="openAddFeature()">
+        <i class="material-icons" style="font-size:19px;">add</i>
+        Feature
+    </button>
+    <button type="button" onclick="openAddSubscriptionPlan()">
+        <i class="material-icons" style="font-size:19px;">add</i>
+        Plan
+    </button>
+    <button type="button" onclick="window.history.back()">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" id="addPlan">
+    {%csrf_token%}
+    <label>Select Plan</label>
+    <select name="name" style="width:auto;">
+        {%for plan in plan_options%}
+            <option value="{{plan}}">{{plan}}</option>
+        {%endfor%}
+    </select>
+
+    <label>Select Features</label>
+    <select name="features" multiple size="50">
+        {%for feature in features%}
+            <option value="{{feature.id}}">{{feature.Name}}</option>
+        {%endfor%}
+    </select>
+    <input type="number" name="price" required>
+    <div class="but">
+        <button type="submit" name="create plan">Save</button>
+        <button type="button" onclick="closeAddSubscriptionPlan()">Close</button>
+    </div>
+</form >
+<form method="post" id="addFeature" {%if edit_feature%} class="open-addFeature" {%endif%}>
+    {%csrf_token%}
+    <label>Select Plan</label>
+    <input type="text" name="feature" maxlength="90" required {%if edit_feature%} value="{{edit_feature.Name}}" {%endif%}>
+    <div class="but">
+        {%if edit_feature%}
+            <button type="submit" name="edited feature" value="{{edit_feature.id}}">Save</button>
+            <button type="submit" name="cancel edit" onclick="closeAddFeature()">Close</button>
+        {%else%}
+            <button type="submit"  name="add features">Save</button>
+            <button type="button" onclick="closeAddFeature()">Close</button>
+        {%endif%}
+    </div>
+</form >
+
+<!--
+    <text class="title">Subscription Plans</text>
+-->
+
+<table class="all_features">
+    <thead>
+        <tr>
+            <th>All Features</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for f in features%}
+            <tr>
+                <td style="width:10%;">
+                    <i class="material-icons" style="font-size:30px;">arrow_right</i>
+                </td>
+                <td style="width:70%;">{{f.Name}}</td>
+                <td style="width:20%;">
+                    <form method="post">
+                        {%csrf_token%}
+                        <button name="edit feature" value="{{f.id}}">
+                            <i class="material-icons" style="font-size:16px; color:rgb(54, 69, 79);">edit</i>
+                        </button>
+                        <button name="delete feature" value="{{f.id}}">
+                            <i class="material-icons" style="font-size:16px; color:rgb(54, 69, 79);">delete</i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+{%for a, b in plan_and_features.items%}
+    {%if b.Name == "Basic"%}
+        <table class="subscriptions">
+            <thead>
+                <tr>
+                    <th>{{b.Name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for f in b.Features%}
+                    <tr>
+                        <td>{{f}}</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="price">
+                        K
+                        {{b.Price}}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    {%elif b.Name == 'Standard'%}
+        <table class="subscriptions">
+            <thead>
+                <tr>
+                    <th>{{b.Name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for f in b.Features%}
+                    <tr>
+                        <td>{{f}}</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="price">
+                        K
+                        {{b.Price}}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    {%elif b.Name == 'Advanced'%}
+        <table class="subscriptions">
+            <thead>
+                <tr>
+                    <th>{{b.Name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for f in b.Features%}
+                    <tr>
+                        <td>{{f}}</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="price">
+                        K
+                        {{b.Price}}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    {%elif b.Name == 'Premium'%}
+        <table class="subscriptions">
+            <thead>
+                <tr>
+                    <th>{{b.Name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for f in b.Features%}
+                    <tr>
+                        <td>{{f}}</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="price">
+                        K
+                        {{b.Price}}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    {%endif%}
+{%endfor%}
+<script>
+    let addPlan = document.getElementById("addPlan");
+
+    function openAddSubscriptionPlan(){
+        addPlan.classList.add("open-addPlan");
+    }
+
+    function closeAddSubscriptionPlan(){
+        addPlan.classList.remove("open-addPlan");
+    }
+
+    let addFeature = document.getElementById("addFeature");
+
+    function openAddFeature(){
+        addFeature.classList.add("open-addFeature");
+    }
+
+    function closeAddFeature(){
+        addFeature.classList.remove("open-addFeature");
+    }
+
+     <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>
