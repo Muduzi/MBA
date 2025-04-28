@@ -1,0 +1,269 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    row-gap:10px;
+    position:relative;
+    width:100wh;
+    height:100vh;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+/*messages*/
+.messages{
+    display:flex;
+    visibility:visible;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:fixed;
+    z-index:7;
+    row-gap:10px;
+    width:600px;
+    height:90px;
+    padding-top:10px;
+    padding-bottom:15px;
+    padding-right:10px;
+    padding-left:10px;
+    background:rgb(230, 230, 250, 0.95);
+    border-radius:10px;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.message{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:70%;
+    height:20%;
+    color:#2B3856;
+    font-size:16px;;
+}
+.close{
+    align-self:flex-end;
+    background:transparent;
+    border:hidden;
+}
+.close:hover{
+    cursor:pointer;
+    color:white;
+    background:#2B3856;
+}
+
+.messages button:hover{
+    color:rgb(230, 230, 250, 0.95);
+    background:#2B3856;
+}
+
+.message_options{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:250px;
+    height:30px;
+    border-radius:10px;
+}
+.message_options button{
+    display:flex;
+    align-items:center;
+    justify-content:center:
+    position:relative;
+    width:auto;
+    height:auto;
+    color:#2B3856;
+    padding:5px;
+    background:transparent;
+    border:1px solid #2B3856;
+    border-radius:10px;
+}
+
+
+/*navigation*/
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:82%;
+    height:30px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    border:hidden;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.4);
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+
+.sales_record{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:relative;
+    row-gap:10px;
+    width:80%;
+    height:490px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:15px;
+    padding-bottom:15px;
+    background:#EDEADE;
+    border-radius:10px;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+}
+
+.cashier{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:space-around;
+    justify-content:flex-start;
+    position:relative;
+    width:300px;
+    height:30px;
+    background:rgba(10, 100, 10, 0.1);
+    border-radius:10px;
+}
+.cashier text{
+    display:flex;
+    align-items:center;
+    width:100%;
+    color:#5D6166;
+    font-size:15px;
+    margin-top:2px;
+    margin-left:5px;
+}
+
+.product_sales_info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    width:300px;
+    height:420px;
+}
+
+.debt_info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    width:300px;
+    height:250px;
+}
+
+label{
+    color:rgb(54, 69, 79);
+    font-size:16px;
+}
+
+input{
+    width:100%;
+    height:35px;
+    color:#5D6166;
+    font-size:15px;
+    background:#F9F6EE;
+    border:1px solid gray;
+    border-radius:10px;
+}
+
+.disabled{
+    border:1px solid #EDEADE;
+}
+
+form select{
+    width:auto;
+    height:35px;
+    color:#5D6166;
+    background:#F9F6EE;
+    border:1px solid gray;
+    border-radius:10px;
+}
+
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:300px;
+    height:30px;
+    border-radius:10px;
+}
+.but button{
+    width:20%;
+    height:90%;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+    padding:2px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.but button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.inventory_info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    width:300px;
+    height:500px;
+}
+
+.service_sale_info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    position:relative;
+    width:300px;
+    height:500px;
+}
+
+@media(max-width:430px){
+    body{
+        height:auto;
+        overflow-x:hidden;
+        overflow-y:scroll;
+    }
+
+    .messages{
+        width:90%;
+    }
+    .Navigation{
+        width:95%;
+    }
+    .sales_record{
+        flex-direction:column;
+        align-items:flex-start;
+        justify-content:flex-start;
+        row-gap:10px;
+        width:90%;
+        min-height:800px;
+        max-height:1200px;
+    }
+}

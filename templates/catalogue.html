@@ -43,10 +43,10 @@
             <button type="button" onclick="openSearch()">
                 <i class="material-icons" style="font-size:20px;">search</i>
             </button>
-            <button type="button" onclick="window.location.href='/add_category/';">
+            <button type="button" onclick="window.location.href='/addCategory/';">
                 Add Category
             </button>
-            <button type="button" onclick="window.location.href='/add_product/';">
+            <button type="button" onclick="window.location.href='/addProduct/';">
                 Add Product
             </button>
             <button type="button" onclick="window.location.href='/';">
@@ -79,11 +79,11 @@
         <i class="material-icons" style="font-size:19px;">search</i>
     </button>
     {%if request.user in s_list%}
-        <button type="button" onclick="window.location.href='/add_product/';">
+        <button type="button" onclick="window.location.href='/addProduct/';">
             Add Product
             <i class="material-icons" style="font-size:19px;">add</i>
         </button>
-        <button type="button" onclick="window.location.href='/add_category/';">
+        <button type="button" onclick="window.location.href='/addCategory/';">
             Add Category
             <i class="material-icons" style="font-size:19px;">add</i>
         </button>
@@ -107,10 +107,10 @@
 
 <div class="categories">
     <p class="categories_title">Categories</p>
-    {%for key, value in categories.items%}
+    {%for key, value in content.items%}
         <div class="category_card" onclick="window.location.href = '/category/{{key}}/';">
             <div class="category_card_image">
-                <img src="{{value.Photo.url}}" alt="failed to load category image">
+                <img src="{{value.Photo}}" alt="failed to load category image">
             </div>
             <text class="item_name">{{value.Name}}</text>
             <text class="prod_count">{{value.Count}}</text>
@@ -154,7 +154,7 @@
     <div class="results">
         {%if search1%}
             {%for i in search1%}
-                <div class="result" onclick="window.location.href='/view_product/{{i.id}}/';">
+                <div class="result" onclick="window.location.href='/viewProduct/{{i.id}}/';">
                     <img src="{{i.photo.url}}" alt="unavailable">
                     <text>{{i.name}}</text>
                 </div>

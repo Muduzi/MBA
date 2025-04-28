@@ -20,6 +20,8 @@ from income.product_income_dash import product_monthly_records_this_year, produc
 from income.service_income_dash import service_monthly_records_this_year, services_daily_records_this_month
 from expenses.expenses_dash import monthly_expenses_this_year, daily_expenses_this_month
 from income.invoice import get_invoices
+from django.core.cache import cache
+from celery import shared_task
 
 
 def find_user(search_item):
@@ -49,15 +51,17 @@ def business(request):
     expense_record = {}
     total_expenses = 0
     total_income = 0
-    months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep',
-              10: 'Oct', 11: 'Nov', 12: 'Dec'}
+
+    months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+              7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
     try:
         buss = Business.objects.get(Owner=request.user.id)
+        buss_id = buss.id
 
         owners_share = Shareholders.objects.get(User=buss.Owner)
 
         try:
-            core_settings = CoreSettings.objects.get(Business=buss)
+            core_settings = CoreSettings.objects.get(Business__id=buss_id)
         except CoreSettings.DoesNotExist:
             if owners_share:
                 value = owners_share.Capital
@@ -65,25 +69,25 @@ def business(request):
             core_settings.save()
 
         try:
-            tax_settings = TaxSettings.objects.get(Business=buss)
+            tax_settings = TaxSettings.objects.get(Business__id=buss_id)
         except TaxSettings.DoesNotExist:
             tax_settings = TaxSettings(Business=buss).save()
 
         try:
-            cash_account = CashAccount.objects.get(Business=buss)
+            cash_account = CashAccount.objects.get(Business__id=buss_id)
         except CashAccount.DoesNotExist:
             cash_account = CashAccount(Business=buss, Value=0, TotalShares=100, PayoutRatio=20)
             cash_account.save()
         pay_out_ratio_remainder = 100 - cash_account.PayoutRatio
 
         try:
-            content = BusinessDashContent.objects.get(Business=buss, Cashier=request.user)
+            content = BusinessDashContent.objects.get(Business__id=buss_id, Cashier=request.user)
         except BusinessDashContent.DoesNotExist:
             content = BusinessDashContent(Business=buss, Cashier=request.user, Choice='This Year')
             content.save()
 
         try:
-            TaxYear.objects.get(Business=buss, TaxYearStart=core_settings.StartBusinessYear)
+            TaxYear.objects.get(Business__id=buss_id, TaxYearStart=core_settings.StartBusinessYear)
         except TaxYear.DoesNotExist:
             if core_settings.StartBusinessYear:
                 tax_this_year = TaxYear(Business=buss, TaxYearStart=core_settings.StartBusinessYear,
@@ -102,7 +106,7 @@ def business(request):
 
             start_date = f"{core_settings.StartBusinessYear.year}-{month}-{day}"
 
-        tax_this_year = get_tax_year(buss)
+        tax_this_year = get_tax_year(buss_id)
         if not tax_this_year:
             messages.info(request, 'Tax(business) year start and end are not set, fill in the form below to set'
                                    ' it up')
@@ -111,41 +115,109 @@ def business(request):
             end = tax_this_year.TaxYearEnd
 
             (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-             total_payroll_expense) = expenses(buss, start, end)
-            product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
-            service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
-            total_debt = debt_total(buss, start, end)
+             total_payroll_expense) = expenses(buss_id, start, end)
+            product_income, total_product_income, cog, total_product_vat = product_revenue(buss_id, tax_settings, start, end)
+            service_income, total_service_income, total_service_vat = service_revenue(buss_id, tax_settings, start, end)
+            total_debt = debt_total(buss_id, start, end)
             total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
                 totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
                                    total_service_income, cog, total_expense))
-            total_dividends, dividends, retained_earnings = pay_out(buss, net_profit)
+            total_dividends, dividends, retained_earnings = pay_out(buss_id, net_profit)
 
             # income_expense graph(business overview)
             #  this year
-            total_service_income_y, cash_service_income_y, credit_service_income_y, service_income_this_year =\
-                service_monthly_records_this_year(buss.id)
-            total_product_income_y, cash_product_income_y, credit_product_income_y, product_income_this_year =\
-                product_monthly_records_this_year(buss.id)
-            (total_expenses_y, cash_expenses_y, credit_expenses_y, monthly_expense_record_y, suppliers_y,
-             expenses_this_year) = monthly_expenses_this_year(buss.id)
+
+            # service_monthly_records_this_year
+            service_monthly_records_this_year.delay(buss_id)
+            total_service_income_y = cache.get(str(buss_id) + 's_m_r_t_y-total')
+            cash_service_income_y = cache.get(str(buss_id) + 's_m_r_t_y-cash')
+            credit_service_income_y = cache.get(str(buss_id) + 's_m_r_t_y-credit')
+            service_income_this_year = cache.get(str(buss_id) + 's_m_r_t_y-income_this_year')
+
+            while (not total_service_income_y and cash_service_income_y and credit_service_income_y and
+                    service_income_this_year):
+                total_service_income_y, cash_service_income_y, credit_service_income_y, service_income_this_year = (
+                    service_monthly_records_this_year(buss_id))
+
+            # product_monthly_records_this_year
+            product_monthly_records_this_year.delay(buss_id)
+            total_product_income_y = cache.get(str(buss_id) + 'p_m_r_t_y-total')
+            cash_product_income_y = cache.get(str(buss_id) + 'p_m_r_t_y-cash')
+            credit_product_income_y = cache.get(str(buss_id) + 'p_m_r_t_y-credit')
+            products_income_this_year = cache.get(str(buss_id) + 'p_m_r_t_y-product_income_this_year')
+
+            while (not total_product_income_y and cash_product_income_y and credit_product_income_y and
+                    products_income_this_year):
+                total_product_income_y, cash_product_income_y, credit_product_income_y, products_income_this_year =\
+                    product_monthly_records_this_year(buss_id)
+
+            # monthly_expenses_this_year
+            monthly_expenses_this_year.delay(buss_id)
+            total_expenses_y = cache.get(str(buss_id) + 'm_e_t_y-total')
+            cash_expenses_y = cache.get(str(buss_id) + 'm_e_t_y-cash')
+            credit_expenses_y = cache.get(str(buss_id) + 'm_e_t_y-credit')
+            monthly_expense_record_y = cache.get(str(buss_id) + 'm_e_t_y-monthly_expense_records')
+            suppliers_y = cache.get(str(buss_id) + 'm_e_t_y-suppliers_y')
+            expenses_this_year = cache.get(str(buss_id) + 'm_e_t_y-expenses_this_year')
+
+            while (not total_expenses_y and cash_expenses_y and credit_expenses_y and monthly_expense_record_y and
+                    expenses_this_year):
+                (total_expenses_y, cash_expenses_y, credit_expenses_y, monthly_expense_record_y, suppliers_y,
+                 expenses_this_year) = monthly_expenses_this_year(buss_id)
 
             # this month
-            total_product_income_m, cash_product_income_m, credit_product_income_m, products_income_this_month =\
-                product_daily_records_this_month(buss.id)
-            total_service_income_m, cash_service_income_m, credit_service_income_m, services_income_this_month =\
-                services_daily_records_this_month(buss.id)
-            (total_expense_m, cash_expense_m, credit_expense_m, daily_expenses_record_m, suppliers_m,
-             expenses_this_month) = daily_expenses_this_month(buss.id)
+
+            # product_daily_records_this_month
+            product_daily_records_this_month.delay(buss_id)
+            total_product_income_m = cache.get(str(buss_id) + 'p_d_r_t_m-total')
+            cash_product_income_m = cache.get(str(buss_id) + 'p_d_r_t_m-cash')
+            credit_product_income_m = cache.get(str(buss_id) + 'p_d_r_t_m-credit')
+            products_income_this_month = cache.get(str(buss_id) + 'p_d_r_t_m-income_this_month')
+
+            while (not total_product_income_m and cash_product_income_m and credit_product_income_m and
+                    products_income_this_month):
+                total_product_income_m, cash_product_income_m, credit_product_income_m, products_income_this_month =\
+                    product_daily_records_this_month(buss_id)
+
+            # services_daily_records_this_month
+            services_daily_records_this_month.delay(buss_id)
+            total_service_income_m = cache.get(str(buss_id) + 's_d_r_t_m-total')
+            cash_service_income_m = cache.get(str(buss_id) + 's_d_r_t_m-cash')
+            credit_service_income_m = cache.get(str(buss_id) + 's_d_r_t_m-credit')
+            services_income_this_month = cache.get(str(buss_id) + 's_d_r_t_m-income_this_month')
+
+            while (not total_service_income_m and cash_service_income_m and credit_service_income_m and
+                    services_income_this_month):
+                total_service_income_m, cash_service_income_m, credit_service_income_m, services_income_this_month = (
+                    services_daily_records_this_month(buss_id))
+
+            # daily_expenses_this_month
+            daily_expenses_this_month.delay(buss_id)
+            total_expense_m = cache.get(str(buss_id) + 'd_e_t_m-total')
+            cash_expense_m = cache.get(str(buss_id) + 'd_e_t_m-cash')
+            credit_expense_m = cache.get(str(buss_id) + 'd_e_t_m-credit')
+            daily_expenses_record_m = cache.get(str(buss_id) + 'd_e_t_m-daily_totals')
+            suppliers_m = cache.get(str(buss_id) + 'd_e_t_m-suppliers_m')
+            expenses_this_month = cache.get(str(buss_id) + 'd_e_t_m-expenses_this_month')
+
+            while (not total_expense_m and cash_expense_m and credit_expense_m and daily_expenses_record_m and
+                    expenses_this_month):
+                (total_expense_m, cash_expense_m, credit_expense_m, daily_expenses_record_m, suppliers_m,
+                 expenses_this_month) = (daily_expenses_this_month(buss_id))
 
             if content.Choice == 'This Year':
                 expense_record = monthly_expense_record_y
                 total_expenses = total_expenses_y
-                total_income = total_product_income_y + total_service_income_y
+                try:
+                    total_income = total_product_income_y + total_service_income_y
+                except Exception as e:
+                    print(f'business-this_month{e}')
+                    return redirect('/business/')
                 """
                     make a dictionary from monthly service and product sales. 
                 """
                 for m, s in service_income_this_year.items():
-                    for m_, p in product_income_this_year.items():
+                    for m_, p in products_income_this_year.items():
                         if m == m_:
                             for key, value in s.items():
                                 if key == 'Amount':
@@ -160,7 +232,11 @@ def business(request):
             elif content.Choice == 'This Month':
                 expense_record = daily_expenses_record_m
                 total_expenses = total_expense_m
-                total_income = total_product_income_m + total_service_income_m
+                try:
+                    total_income = total_product_income_m + total_service_income_m
+                except Exception as e:
+                    print(f'business-this_month{e}')
+                    return redirect('/business/')
                 """
                     make a dictionary from daily service and product sales this month. 
                 """
@@ -190,7 +266,7 @@ def business(request):
                 delta_funds_percentage_remainder = 0
 
         (pending_invoices, pending_invoices_stats, processed_invoices, processed_invoices_stats, overdue_invoices,
-         overdue_invoices_stats) = get_invoices(buss.id)
+         overdue_invoices_stats) = get_invoices(buss_id)
 
         if 'add_capital' in request.POST:
             amount = request.POST.get('Amount')
@@ -217,7 +293,7 @@ def business(request):
                                         TaxYearEnd=start)
                 tax_this_year.save()
 
-                tax_accounts = TaxAccount.objects.filter(Business=buss)
+                tax_accounts = TaxAccount.objects.filter(Business__id=buss_id)
                 for a in tax_accounts:
                     TaxAccountThisYear(TaxAccount=a, TaxYear=tax_this_year, AccumulatedTotal=0).save()
 
@@ -226,13 +302,13 @@ def business(request):
                     core_settings.StartBusinessYear = start_business_year
                     core_settings.save()
                     try:
-                        tax_this_year = TaxYear.objects.get(Business=buss,
+                        tax_this_year = TaxYear.objects.get(Business__id=buss_id,
                                                             TaxYearStart__lt=core_settings.StartBusinessYear)
                         tax_this_year.TaxYearStart = core_settings.StartBusinessYear
                         tax_this_year.save()
                     except TaxYear.DoesNotExist:
                         TaxYear(Business=buss, TaxYearStart=core_settings.StartBusinessYear,
-                                TaxYearEnd=CoreSettings.objects.get(Business=buss).StartBusinessYear+timedelta(days=365)).save()
+                                TaxYearEnd=CoreSettings.objects.get(Business__id=buss_id).StartBusinessYear+timedelta(days=365)).save()
 
             cash_account.Value += amount
             cash_account.PayoutRatio = pay_out_ratio
@@ -261,7 +337,7 @@ def business(request):
         return redirect('/edit_business_profile/')
 
     context = {
-        'buss': buss,
+        'buss': buss_id,
         'tax_this_year': tax_this_year,
         'search_result': search_result,
         'core_settings': core_settings,
@@ -411,27 +487,35 @@ def edit_business_profile(request):
         if request.method == 'POST':
             (photo, name, Type, about, address, email, contact1, contact2, address, postbox, city,
              country, zipcode, instagram, facebook, linkedin) = form_data(request)
+            ini
+            try:
+                Business.objects.get(Name=name)
+                messages.error(request, f'A user by the name {name} already exists, please chose a different name')
 
-            buss = Business(Owner=request.user, Photo=photo, Name=name, Type=Type, About=about, Email=email,
-                            Contact1=contact1, Contact2=contact2, Address=address, PostBox=postbox,
-                            City=city, Country=country, ZipCode=zipcode, Instagram=instagram,
-                            Facebook=facebook, Linkedin=linkedin)
+                context = {
+                    'ini': ini
+                }
+            except Business.DoesNotExist:
+                buss = Business(Owner=request.user, Photo=photo, Name=name, Type=Type, About=about, Email=email,
+                                Contact1=contact1, Contact2=contact2, Address=address, PostBox=postbox,
+                                City=city, Country=country, ZipCode=zipcode, Instagram=instagram,
+                                Facebook=facebook, Linkedin=linkedin)
 
-            request.user.groups.add(group)
-            buss.save()
-            TaxSettings(Business=buss, VATRate=16.5).save()
-            CoreSettings(Business=buss, Capital=0).save()
-            CashAccount(Business=buss, Value=0, TotalShares=100, PayoutRatio=20).save()
-            Shareholders(Business=buss, User=request.user, Date=datetime.now(), Value=0).save()
-            TaxAccount(Business=buss, Name='VAT', Interval='Annually', Notes='').save()
-            TaxAccount(Business=buss, Name='PAYE', Interval='Annually', Notes='').save()
-            TaxAccount(Business=buss, Name='PRESUMPTIVE', Interval='Quarterly', Notes='').save()
-            TaxAccount(Business=buss, Name='INCOME', Interval='Annually', Notes='').save()
-            dep = Department(Business=buss, Name='Executive', Description='Decision making and Planning')
-            dep.save()
-            Employee(User=request.user, Business=buss, Department=dep, Duty=dep.Description, AccessLevel=group).save()
+                request.user.groups.add(group)
+                buss.save()
+                TaxSettings(Business=buss, VATRate=16.5).save()
+                CoreSettings(Business=buss, Capital=0).save()
+                CashAccount(Business=buss, Value=0, TotalShares=100, PayoutRatio=20).save()
+                Shareholders(Business=buss, User=request.user, Date=datetime.now(), Value=0).save()
+                TaxAccount(Business=buss, Name='VAT', Interval='Annually', Notes='').save()
+                TaxAccount(Business=buss, Name='PAYE', Interval='Annually', Notes='').save()
+                TaxAccount(Business=buss, Name='PRESUMPTIVE', Interval='Quarterly', Notes='').save()
+                TaxAccount(Business=buss, Name='INCOME', Interval='Annually', Notes='').save()
+                dep = Department(Business=buss, Name='Executive', Description='Decision making and Planning')
+                dep.save()
+                Employee(User=request.user, Business=buss, Department=dep, Duty=dep.Description, AccessLevel=group).save()
 
-            return redirect('/business/')
+                return redirect('/business/')
 
         context = {
             'bus_types': bus_types

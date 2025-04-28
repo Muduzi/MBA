@@ -1,5 +1,5 @@
 {%load static%}
-<link rel="stylesheet" type="text/css" href="{% static 'css/management/management.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/manager.css'%}" xmlns="http://www.w3.org/1999/html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,80 +48,75 @@
     </button>
 </div>
 
-
-<div class="section">
-    <p>Monthly Performance This Year</p>
-</div>
-
-<div class="graph1">
-    <canvas id="myLChartA"></canvas>
-</div>
-
-<div class="information">
-    <div class="info">
-        <text class="title">Upgrades</text>
-        <text class="content1">
-            {{upgrades}}
-        </text>
-        {%if upgrades_perc > downgrades_perc%}
-            <text class="content2" style="color:green">
-                %{{upgrades_perc}}
+<div class="upgrade_downgrade_stats">
+    <div class="total_average">
+        <canvas id="doughnut"></canvas>
+    </div>
+    <div class="information">
+        <div class="info">
+            <text class="title">Upgrades</text>
+            <text class="content1">
+                {{upgrades}}
             </text>
-        {%elif upgrades_perc < downgrades_perc%}
-            <text class="content2" style="color:red">
-                %{{upgrades_perc}}
+            {%if upgrades_perc > downgrades_perc%}
+                <text class="content2" style="color:green">
+                    {{upgrades_percentage}}%
+                </text>
+            {%elif upgrades_percentage < downgrades_percentage%}
+                <text class="content2" style="color:red">
+                    {{upgrades_percentage}}%
+                </text>
+            {%else%}
+                <text class="content2">
+                    {{upgrades_percentage}}%
+                </text>
+            {%endif%}
+        </div>
+        <div class="info">
+            <text class="title">Downgrades</text>
+            <text class="content1">
+                {{downgrades}}
             </text>
-        {%else%}
+            {%if downgrades_percentage > upgrades_percentage%}
+                <text class="content2" style="color:red;">
+                    {{downgrades_percentage}}%
+                </text>
+            {%else%}
+                <text class="content2" style="color:green">
+                    {{downgrades_percentage}}%
+                </text>
+            {%endif%}
+        </div>
+        <div class="info">
+            <text class="title">Maintaining</text>
+            <text class="content1">
+                {{maintaining}}
+            </text>
             <text class="content2">
-                %{{upgrades_perc}}
+                {{maintaining_percentage}}%
             </text>
-        {%endif%}
-    </div>
-    <div class="info">
-        <text class="title">Downgrades</text>
-        <text class="content1">
-            {{downgrades}}
-        </text>
-        {%if downgrades_perc > upgrades_perc%}
-            <text class="content2" style="color:red;">
-                %{{downgrades_perc}}
+        </div>
+        <div class="info">
+            <text class="title">Non-renewal</text>
+            <text class="content1">
+                {{non_renewal}}
             </text>
-        {%else%}
-            <text class="content2" style="color:green">
-                %{{downgrades_perc}}
+            <text class="content2">
+                {{non_renewal_percentage}}%
             </text>
-        {%endif%}
-    </div>
-    <div class="info">
-        <text class="title">Maintaining</text>
-        <text class="content1">
-            {{maintaining}}
-        </text>
-        <text class="content2">
-            %{{maintaining_perc}}
-        </text>
-    </div>
-    <div class="info">
-        <text class="title">Non-renewal</text>
-        <text class="content1">
-            {{non_renewal}}
-        </text>
-        <text class="content2">
-            %{{non_renewal_perc}}
-        </text>
+        </div>
     </div>
 </div>
 
-<div class="total_average">
-    <canvas id="doughnut"></canvas>
-</div>
-
-<div class="section">
-    <p>Monthly Performance Per Package</p>
-</div>
-
-<div class="graph2">
-    <canvas id="myLChartB"></canvas>
+<div class="major_graphs">
+    <text class="graph_title">Monthly Performance This Year</text>
+    <div class="major_graph">
+        <canvas id="myLChartA"></canvas>
+    </div>
+    <text class="graph_title">Monthly Performance Per Package</text>
+    <div class="major_graph">
+        <canvas id="myLChartB"></canvas>
+    </div>
 </div>
 
 <table class="active_customers">
@@ -135,7 +130,7 @@
         {%for a in active_customers%}
             <tr>
                 <td class="name" onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{a.Business.id}}/';">
-                    <img src="{{a.Business.photo.url}}" alt="!">
+                    <img src="{{a.Business.Photo.url}}" alt="!">
                     {{a.Business.Name}}
                 </td>
                 <td class="package" onclick="window.location.href='http://127.0.0.1:8000/subscription/{{a.id}}/';">{{a.Plan.Name}}</td>
@@ -144,24 +139,21 @@
     </tbody>
 </table>
 
-<div class="section">
-</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-
     const doughnut = document.getElementById('doughnut');
 
     new Chart(doughnut, {
         type: 'doughnut',
         data: {
-            labels: ['total count', 'active'],
+            labels: ['Active Users', 'Inactive Users'],
             datasets: [
                 {
                     label: 'active subscribers',
-                    data: [{%for i in average_perc.values%} {{i}}, {%endfor%}],
-                    borderWidth: 0,
-                    borderColor: 'gray',
-                    backgroundColor:['gray', 'green'],
+                    data: [{{average_percentages.average}}, {{average_percentages.remainder}}],
+                    borderWidth: 1,
+                    borderColor: '#EDEADE',
+                    backgroundColor:['#5D6166', '#EDEADE'],
                     radius: 90,
                 },
             ]
@@ -182,12 +174,12 @@
                 label: 'Sales this year',
                 data: [{%for i in overall_monthly_record.values%} '{{i.total}}', {%endfor%}],
                 borderWidth: 1,
-                borderColor: '#0039a6',
-                backgroundColor: '#0039a6',
+                borderColor: '#5D6166',
+                backgroundColor: '#5D6166',
                  fill: {
                     target: 'origin',
-                    above: '#E0FFFF',   // Area will be red above the origin
-                    below: '#AFDBF5'    // And blue below the origin
+                    above: '#5D6166',   // Area will be red above the origin
+                    below: '#006994'    // And blue below the origin
                     }
                 },
             ]
@@ -220,21 +212,21 @@
                 }
             }
         },
-        plugins: [ChartDataLabels]
+        <!--plugins: [ChartDataLabels]-->
     });
 
     const lChartB = document.getElementById('myLChartB');
 
     new Chart(lChartB, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: [{%for i in monthly_package_record.keys%} '{{i}}', {%endfor%}],
             datasets: [{
-                            label: 'Bronze',
+                            label: 'Basic',
                             data: [
                                    {%for i in monthly_package_record.values%}
                                         {%for a,b in i.items%}
-                                            {%if a == 'Bronze'%}
+                                            {%if a == 'Basic'%}
                                                 {%for x, y in b.items%}
                                                 {%if x == 'total'%}
                                                     {{y}},
@@ -246,16 +238,16 @@
                                     {%endfor%}
                                    ],
                             borderWidth: 1,
-                            borderColor: '#432c17',
-                            backgroundColor: '#432c17',
+                            borderColor: '#5D6166',
+                            backgroundColor: '#5D6166',
 
                         },
                         {
-                            label: 'Silver',
+                            label: 'Standard',
                             data: [
                                        {%for i in monthly_package_record.values%}
                                             {%for a,b in i.items%}
-                                                {%if a == 'Silver'%}
+                                                {%if a == 'Standard'%}
                                                     {%for x, y in b.items%}
                                                     {%if x == 'total'%}
                                                         {{y}},
@@ -267,16 +259,16 @@
                                         {%endfor%}
                                    ],
                             borderWidth: 2,
-                            borderColor: 'rgb(192,192,192)',
-                            backgroundColor: 'rgb(192,192,192)',
+                            borderColor: '#2B3856',
+                            backgroundColor: '#2B3856',
 
                         },
                         {
-                            label: 'Gold',
+                            label: 'Advanced',
                             data: [
                                        {%for i in monthly_package_record.values%}
                                             {%for a,b in i.items%}
-                                                {%if a == 'Gold'%}
+                                                {%if a == 'Advanced'%}
                                                     {%for x, y in b.items%}
                                                     {%if x == 'total'%}
                                                         {{y}},
@@ -288,16 +280,16 @@
                                         {%endfor%}
                                    ],
                             borderWidth: 2,
-                            borderColor: 'rgb(255,215,0)',
-                            backgroundColor: 'rgb(255,215,0)',
+                            borderColor: 'rgb(0, 128, 128)',
+                            backgroundColor: 'rgb(0, 128, 128)',
 
                         },
                         {
-                            label: 'Diamond',
+                            label: 'Premium',
                             data: [
                                        {%for i in monthly_package_record.values%}
                                             {%for a,b in i.items%}
-                                                {%if a == 'Diamond'%}
+                                                {%if a == 'Premium'%}
                                                     {%for x, y in b.items%}
                                                     {%if x == 'total'%}
                                                         {{y}},
@@ -309,8 +301,8 @@
                                         {%endfor%}
                                    ],
                             borderWidth: 2,
-                            borderColor: 'rgb(184,216,231)',
-                            backgroundColor: 'rgb(184,216,231)',
+                            borderColor: 'rgb(63, 0, 255)',
+                            backgroundColor: 'rgb(63, 0, 255)',
 
                         },
 
@@ -346,7 +338,7 @@
                 }
             }
         },
-        plugins: [ChartDataLabels]
+        <!--plugins: [ChartDataLabels]-->
     });
 
      <!-- messages -->

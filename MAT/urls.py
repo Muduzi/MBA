@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-#for image uploading
+
+# for image uploading
 from django.conf import settings
 from django.conf.urls.static import static
 
-from home.views import home_view
+from home.views import *
 from User.views import (login_view, sign_up, logout_view, management, profile_form, department_view,
                         departments_view, employee_form)
 from User.business import business, business_profile, edit_business_profile, taxes
@@ -41,8 +42,8 @@ from statements.views1 import profit_and_loss_dash, balance_sheet
 from statements.views import profit_and_loss_dash_range
 from statements.doubleEntries import double_entry
 from assets.views import assets_view, asset_form
-from catalogue.views import (catalogue_view, market_view, category, add_category, add_product, view_product,
-                             view_buss_type_products)
+from catalogue.views import (catalogue_view, market_view, category, add_category, add_product, edit_product,
+                             view_product, view_buss_type_products)
 from management.views import *
 from income.invoice import invoice_form, invoices_view, generate_invoice_pdf, delivery_note, invoice_view
 from income.service_income_dash import service_income_dash
@@ -57,6 +58,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home_view, name="home"),
     path("management/", management, name="manager"),
+    path("Error/<str:code>/", display_error, name="errorMessage"),
 
     # user urls
     # user profile
@@ -141,22 +143,24 @@ urlpatterns = [
     path("asset_form/<int:id>/", asset_form, name="asset_form"),
 
     # management
-    path("manager/", management_view, name="management"),
-    path("addfeature/<int:id>/", addfeature, name="addFeature"),
+    path("manager/", manager, name="management"),
     path("subscriptions/", subscriptions, name="subscriptions"),
-    path("subscriber/<int:id>/", addSubscription, name="addSubscription"),
+    path("subscriber/<int:id>/", subscriber, name="addSubscription"),
     path("subscription/<int:id>/", subscription, name="subscription"),
+    path("subscriptionSettings/", subscription_settings, name="subscriptionSettings"),
+    path("editPlan/<int:id>", edit_plan, name="editPlan"),
+    path("transactionInformation/<str:trans_type>/<int:trans_id>/", transaction_info, name="transactionInformation"),
 
     # catalogue
     path("market/", market_view, name="market"),
     path("catalogue/", catalogue_view, name="catalogue"),
-    path("catalogue/<int:id>/", catalogue_view, name="catalogue"),
-    path("add_category/", add_category, name="addCategory"),
+    path("catalogue/<str:store_name>/", catalogue_view, name="catalogue"),
+    path("addCategory/", add_category, name="addCategory"),
     path("category/", category, name="category"),
     path("category/<int:id>/", category, name="catalogue"),
-    path("add_product/", add_product, name="addProduct"),
-    path("add_product/<int:id>/", add_product, name="addProduct"),
-    path("view_product/<int:id>/", view_product, name="view_product"),
+    path("addProduct/", add_product, name="addProduct"),
+    path("editProduct/<int:id>/", edit_product, name="editProduct"),
+    path("viewProduct/<int:id>/", view_product, name="view_product"),
     path("viewBusinessTypeProducts/<str:business_type>/", view_buss_type_products, name="viewBusinessTypeProducts")
 
 ]

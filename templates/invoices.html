@@ -146,6 +146,22 @@
     </tbody>
 </table>
 
+{% if process_this_invoice %}
+    <form method="post" class="process_this_invoice">
+        {%csrf_token%}
+        <P>Press Okay to confirm to process invoice</P>
+        <text>Note&nbsp;:&nbsp;this process is irreversible</text>
+        <div class="but">
+            <button type="submit" name="confirm_process_invoice" value="{{process_this_invoice}}">
+                Okay
+            </button>
+            <button type="submit" name="don't_process_invoice">
+                Cancel
+            </button>
+        </div>
+    </form>
+{%endif%}
+
 <script>
     const barGraph = document.getElementById('barGraph');
 
@@ -217,17 +233,3 @@
         mssg.classList.add("hide");
     }
 </script>
-
-<form method="post">
-    {%csrf_token%}
-    <P>Press Okay to confirm to process invoice</P>
-    <text>Note&nbsp;:&nbsp;this process is irreversible</text>
-    <div class="but">
-        <button type="submit" name="confirm_process_invoice" value="{{process_this_invoice}}">
-            Okay
-        </button>
-        <button type="submit" name="don't_process_invoice">
-            Cancel
-        </button>
-    </div>
-</form>

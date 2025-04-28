@@ -94,6 +94,9 @@ def logout_view(request):
 
 @login_required(login_url="/login/")
 def management(request):
+    if request.method == "POST":
+        if "refresh cache" in request.POST:
+            cache.clear()
     context = {
 
     }

@@ -1,5 +1,5 @@
 {%load static%}
-<link rel="stylesheet" type="text/css" href="{% static 'css/management/planSettings.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/subscriptionSettings.css'%}" xmlns="http://www.w3.org/1999/html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,7 +48,7 @@
         <i class="material-icons" style="font-size:19px;">add</i>
         Plan
     </button>
-    <button type="button" onclick="window.history.back()">
+    <button type="button" onclick="window.location.href='/manager/';">
         <i class="material-icons" style="font-size:19px;">arrow_forward</i>
     </button>
 </div>
@@ -63,11 +63,12 @@
     </select>
 
     <label>Select Features</label>
-    <select name="features" multiple size="50">
+    <select name="features" multiple size="15">
         {%for feature in features%}
             <option value="{{feature.id}}">{{feature.Name}}</option>
         {%endfor%}
     </select>
+    <label>Price</label>
     <input type="number" name="price" required>
     <div class="but">
         <button type="submit" name="create plan">Save</button>
@@ -126,7 +127,7 @@
     {%if b.Name == "Basic"%}
         <table class="subscriptions">
             <thead>
-                <tr>
+                <tr onclick="window.location.href='/editPlan/{{a}}';">
                     <th>{{b.Name}}</th>
                 </tr>
             </thead>
@@ -149,7 +150,7 @@
     {%elif b.Name == 'Standard'%}
         <table class="subscriptions">
             <thead>
-                <tr>
+                <tr onclick="window.location.href='/editPlan/{{a}}';">
                     <th>{{b.Name}}</th>
                 </tr>
             </thead>
@@ -172,7 +173,7 @@
     {%elif b.Name == 'Advanced'%}
         <table class="subscriptions">
             <thead>
-                <tr>
+                <tr onclick="window.location.href='/editPlan/{{a}}';">
                     <th>{{b.Name}}</th>
                 </tr>
             </thead>
@@ -195,7 +196,7 @@
     {%elif b.Name == 'Premium'%}
         <table class="subscriptions">
             <thead>
-                <tr>
+                <tr onclick="window.location.href='/editPlan/{{a}}';">
                     <th>{{b.Name}}</th>
                 </tr>
             </thead>

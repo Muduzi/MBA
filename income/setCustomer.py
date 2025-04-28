@@ -34,8 +34,10 @@ def set_customer(request, id=0):
         if not data_s:
             data_p = IncomeBuffer.objects.filter(Business=buss, Cashier=user_obj)
 
+            messages.error(request, 'Unable to process the transaction draft')
+
         customers = Customer.objects.filter(Business=buss)
-        print('=======================================',data_s[0].PMode)
+
         if request.method == 'POST':
             if 'newCustomer' in request.POST:
                 name = request.POST.get('name')
@@ -57,7 +59,7 @@ def set_customer(request, id=0):
                 elif data_p:
                     result = product_set(buss, user_obj, data_p, customer)
 
-                if type(result) == int:
+                if type(result) == int or type(result) == str:
                     messages.success(request, 'sales record made successfully')
                 else:
                     return redirect(f'/debt_form/{result.id}/')
@@ -90,7 +92,7 @@ def set_customer(request, id=0):
                                 elif data_s[0].PMode == 'Cash':
                                     result = service_cash_set(buss, user_obj, data_s, c)
 
-                                if type(result) == int:
+                                if type(result) == int or type(result) == str:
                                     search_result = None
                                     messages.success(request, 'sales record made successfully')
                                 else:

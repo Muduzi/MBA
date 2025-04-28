@@ -454,6 +454,10 @@ form input[type="checkbox"]{
         width:90%;
     }
 }
+
+
+
+
 /* width */
 ::-webkit-scrollbar {
   width: 5px;

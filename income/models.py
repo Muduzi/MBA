@@ -6,7 +6,7 @@ from inventory.models import InventoryProduct
 # Create your models here.
 
 
-#product income
+# product income
 class ProductIncome(models.Model):
     Business = models.ForeignKey(Business, on_delete=models.CASCADE, blank=True, null=True)
     Options = [

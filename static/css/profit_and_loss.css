@@ -9,6 +9,7 @@ body{
     height:auto;
     background:#EDEADE;
     border-radius:10px;
+    overflow:hidden;
     overflow-y:scroll;
 }
 
@@ -18,7 +19,7 @@ body{
     justify-content:flex-end;
     gap:10px;
     position:relative;
-    width:90%;
+    width:50%;
     height:32px;
     border-radius:10px;
 }

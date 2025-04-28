@@ -134,27 +134,28 @@
 </div>
 
 {%for key, value in billboard.items%}
-    <div class="category">
+    <form method="post" class="category">
+        {%csrf_token%}
         <p>{{key|upper}}</p>
         {%for v in value%}
-            <div class="example_normal" onclick="window.location.href='/catalogue/{{v.Business.id}}/';">
-                <img src="{{v.Photo.url}}" alt="add image">
-                <text>{{v.Name}}</text>
-            </div>
+            <button type="submit" name="goto" value="{{v.Business_Name}}" class="example_normal">
+                <img src="{{v.Product_Photo}}" alt="add image">
+                {{v.Product_Name}}
+            </button>
         {%endfor%}
-    </div>
+    </form>
 {%endfor%}
 
 <div class="products" id="products" >
     <p>Latest Products</p>
     {%for product in content%}
-        <div class="product"  onclick="window.location.href = '/view_product/{{product.product_id}}/';">
+        <div class="product"  onclick="window.location.href = '/viewProduct/{{product.product_id}}/';">
             <div class="image_name">
-                <img src="{{product.store_photo.url}}" alt="add image">
+                <img src="{{product.store_photo}}" alt="add image">
                 <text>{{product.store_name}}</text>
             </div>
             <div class="product_image" >
-                <img src="{{product.product_photo.url}}" alt="add image">
+                <img src="{{product.product_photo}}" alt="add image">
             </div>
             <div class="product_detail">
                 <text class="name">{{product.product_name}}</text>

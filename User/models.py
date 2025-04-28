@@ -70,12 +70,6 @@ class Business(models.Model):
     Facebook = models.CharField(null=True, blank=True, max_length=100)
     Linkedin = models.CharField(null=True, blank=True, max_length=100)
 
-    def whatsapp_link(self):
-        if self.Contact2:
-            return f"https://wa.me/{self.Contact2}"
-        else:
-            return f"https://wa.me/{self.Contact1}"
-
 
 # Settings
 class TaxYear(models.Model):

@@ -11,9 +11,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<div class="logo">
-    <text onclick="window.location.href='/';">MAT</text>
-</div>
+<form method="post" class="logo">
+    {%csrf_token%}
+    <button type="submit" name="refresh cache">MAT</button>
+</form>
 
 <div class="container1">
     <div class="card">
@@ -37,11 +38,6 @@
         <i class="material-icons" style="font-size:25; font-size:70px;">work</i>
         <text>Go to management, manage department and staff records; Add, edit and delete records.</text>
         <button type="submit" class="save" name="save" onclick="window.location.href='/management/';">Management</button>
-    </div>
-    <div class="card">
-        <i class="material-icons" style="font-size:25; font-size:70px;">perm_media</i>
-        <text>Post pictures; products and burners to advertise your business.</text>
-        <button type="submit" class="save" name="save" onclick="window.location.href='/post/';">Post</button>
     </div>
     <div class="card">
         <i class="material-icons" style="font-size:25; font-size:70px;">store</i>

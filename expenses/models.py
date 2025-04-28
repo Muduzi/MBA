@@ -43,7 +43,7 @@ class Expense(models.Model):
     Type = models.CharField(blank=False, null=False, max_length=20, choices=Option, default='Operational Expense')
     PMode = models.CharField(blank=False, null=False, max_length=7, choices=options, default='Cash')
     Discount = models.BooleanField(blank=False, null=False, default=0)
-    Notes = models.TextField(blank=False, null=False, max_length=150, default='non')
+    Notes = models.TextField(blank=True, null=True, max_length=150, default='non')
 
 
 class Discount(models.Model):

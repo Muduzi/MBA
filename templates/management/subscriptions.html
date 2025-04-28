@@ -15,79 +15,47 @@
     <button type = 'button' onclick="openSearch()">
        <i class="material-icons" style="font-size:18px; border:hidden;">search</i>
     </button>
-    <button type = 'button' onclick="window.location.href='http://127.0.0.1:8000/manager/';">
+    <button type = 'button' onclick="window.location.href='/manager/';">
        <i class="material-icons" style="font-size:18px; border:hidden;">arrow_forward</i>
     </button>
 </div>
 
 
-<div class="information">
-    <div class="info_container">
-        <div class="info">
-            <text class="title">Active Businesses</text>
-            <p class="total">{{active_businesses}}/{{businesses_count}}</p>
+<div class="container">
+    <div class="revenue_users">
+        <div class="revenue">
+            <text class="revenue_value">K{{total_revenue}}</text>
+            <text class="title">Total Revenue</text>
         </div>
-        <div class="info">
-            <text class="title">Revenue</text>
-            <p class="total">
-                <i class="material-icons" style="font-size:14px">attach_money</i>{{total_amount}}
-            </p>
-        </div>
-        <div class="info">
-            <text class="title">Upgrades</text>
-            <text class="content1">
-                {{upgrades}}
-            </text>
-            {%if upgrades_perc > downgrades_perc%}
-                <text class="content2" style="color:green">
-                    %{{upgrades_perc}}
+        <div class="user_count">
+            {%if active_count < inactive_count%}
+                <text class="count_value" style="color:red">
+                    <i class="material-icons" style="font-size:18px; border:hidden;">person</i>
+                    {{active_count}}
                 </text>
-            {%elif upgrades_perc < downgrades_perc%}
-                <text class="content2" style="color:red">
-                    %{{upgrades_perc}}
+            {%elif active_count == inactive_count%}
+                <text class="count_value" style="color:gray">
+                    <i class="material-icons" style="font-size:18px; border:hidden;">person</i>
+                    {{active_count}}
                 </text>
             {%else%}
-                <text class="content2">
-                    %{{upgrades_perc}}
+                <text class="count_value" style="color:green">
+                    {{active_count}}
+                    <i class="material-icons" style="font-size:18px; border:hidden;">person</i>
                 </text>
             {%endif%}
+            <text class="title">Active Users</text>
         </div>
-        <div class="info">
-            <text class="title">Downgrades</text>
-            <text class="content1">
-                {{downgrades}}
+        <div class="user_count">
+            <text class="count_value">
+                <i class="material-icons" style="font-size:18px; border:hidden;">person</i>
+                {{inactive_count}}
             </text>
-            {%if downgrades_perc > upgrades_perc%}
-                <text class="content2" style="color:red;">
-                    %{{downgrades_perc}}
-                </text>
-            {%else%}
-                <text class="content2" style="color:green">
-                    %{{downgrades_perc}}
-                </text>
-            {%endif%}
-        </div>
-        <div class="info">
-            <text class="title">Maintaining</text>
-            <text class="content1">
-                {{maintaining}}
-            </text>
-            <text class="content2">
-                %{{maintaining_perc}}
-            </text>
-        </div>
-        <div class="info">
-            <text class="title">Non-renewal</text>
-            <text class="content1">
-                {{non_renewal}}
-            </text>
-            <text class="content2">
-                %{{non_renewal_perc}}
-            </text>
+            <text class="title">Inactive Users</text>
         </div>
     </div>
-    <div class="doughnut">
-        <canvas id="doughnut"></canvas>
+    <div class="subscription_stats">
+        <canvas id="subscriptionStats"></canvas>
     </div>
 </div>
 
@@ -141,7 +109,7 @@
 </table>
 
 <div id="search" {%if search%} class="open_search" {%else%} class="search" {%endif%}>
-    <button type="button" onclick="closeSearch()" class="close_search">
+    <button type="button" onclick="closeSearch()" class="search_close_button">
         <i class="material-icons" style="font-size:19px;">close</i>
     </button>
     <form method="post">
@@ -153,7 +121,7 @@
     </form>
     {%if search%}
         {%for i in search%}
-            <div class="result" onclick="window.location.href='http://127.0.0.1:8000/subscriber/{{i.id}}/';">
+            <div class="result" onclick="window.location.href='/subscriber/{{i.id}}/';">
                 <img src="{{i.photo.url}}" alt="unavailable">
                 <text>{{i.name}}</text>
             </div>
@@ -171,44 +139,66 @@
         search.classList.add("open_search");
     }
     function closeSearch(){
-        window.location.href="http://127.0.0.1:8000/subscriptions/";
+        search.classList.remove("open_search");
+        search.classList.add("hide");
     }
 
     <!--graph-->
 
-    const doughnut = document.getElementById('doughnut');
+    const subscriptionStats = document.getElementById('subscriptionStats');
 
-    new Chart(doughnut, {
-        type: 'doughnut',
+    new Chart(subscriptionStats, {
+        type: 'bar',
         data: {
             labels: ['Upgrades', 'Downgrades', 'Maintaining'],
             datasets: [{
-                label: 'credits stats in %',
+                label: 'subscription stats',
                 data: [{{upgrades_perc}}, {{downgrades_perc}}, {{maintaining_perc}}],
                 borderWidth: 0,
-                borderColor: 'gray',
-                backgroundColor:['#39FF14', '#FF0000', 'white'],
+                borderColor: 'white',
+                backgroundColor:['Teal', '#FF0000', 'white'],
                 radius:50,
                 },
             ]
         },
         options: {
-            maintainAspectRatio: false,
-
+        maintainAspectRatio: false,
+        indexAxis: 'x',
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: 'rgba(54, 69, 79, 0.8)'
+                },
+                display: true,
+                grid: {
+                    drawOnChartArea: false,
+                }
+            },
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    color: 'rgba(54, 69, 79, 0.8)'
+                },
+                display: true,
+                grid: {
+                    drawOnChartArea: false,
+                }
+            }
         },
         plugins: {
             datalabels: {
                 formatter: (value, context) =>{
-                    if (value){
-                        return(value) + '%';
-                    }return 0 + '%';
+                    if (value > 1){
+                        return value + '%';
+                    }else{
+                        return '';
+                    }
                     console.log(value);
 
-                },
-                display: true,
-                align: 'end',
-                offset:20
+                }
             }
+        }
         },
         plugins: [ChartDataLabels]
     });

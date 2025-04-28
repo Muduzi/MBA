@@ -1,4 +1,5 @@
 {%load static%}
+{%load enumerate_filter%}
 <link rel="stylesheet" type="text/css" href="{% static 'css/viewProduct.css'%}" xmlns="http://www.w3.org/1999/html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
@@ -14,13 +15,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="Navigation" id="Navigation">
-    <button type = 'button' onclick="showContact()">
-        <i class="fa fa-phone"></i>
-    </button>
-    <button type = 'button' onclick="window.location.href='/add_product/{{prod_obj.id}}/';">
-        <i class="material-icons" style="font-size:20px;">edit</i>
-    </button>
-    <button type = 'button' onclick="history.go(-1)">
+    <div class="contact_edit">
+        <button type ='button' onclick="showContact()">
+            <i class="fa fa-phone"></i>
+        </button>
+        {%if allowed%}
+            <button type ='button' onclick="window.location.href='/editProduct/{{prod_obj.id}}/';">
+                edit
+            </button>
+        {%endif%}
+    </div>
+    <button type ='button' onclick="window.history.go(-1)">
         <i class="material-icons" style="font-size:20px;">arrow_back</i>
     </button>
 </div>
@@ -32,15 +37,24 @@
                 <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_left</i>
             </button>
             <div class="product_image">
-
-                <img id="currentImage" src="{{images.0}}" alt="no more images to display">
-
+                <img id="currentImage" src="{{prod_obj.images.0}}" alt="no more images to display">
             </div>
             <button id="nextImage" type="button" class="prev_next">
                 <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_right</i>
             </button>
         </div>
-
+        <div class="image_list">
+            {%for index, image in prod_obj.images|enumerate_list%}
+                <div class="image_list_image">
+                    <img src="{{image}}" alt="no more images to display">
+                    {%if index == 0%}
+                        <div id="0" class="remove_curtain"></div>
+                    {%else%}
+                        <div id="{{index}}" class="image_curtain"></div>
+                    {%endif%}
+                </div>
+            {%endfor%}
+        </div>
         <text class="name">{{prod_obj.Name}}</text>
         <text class="price">K{{prod_obj.Price}}</text>
     </div>
@@ -56,7 +70,7 @@
                 </tr>
             </thead>
             <tbody>
-            {%for i in prod_features_obj%}
+            {%for i in prod_obj.features.values%}
                 <tr>
                     <td class="t1">{{i.Name}}</td>
                     <td class="t2">{{i.Description}}</td>
@@ -76,9 +90,9 @@
     <text>Phone: +265 {{bus_data.Contact1}}</text>
     <text>Email: <a href="mailto:{{bus_data.Email}}">{{bus_data.Email}}</a></text>
     <div class="links">
-        <a href="http://{{user.profile.Instagram}}" class="fa fa-instagram"></a>
-        <a href="http://{{user.profile.Facebook}}" class="fa fa-facebook"></a>
-        <a href="http://{{user.profile.Twitter}}" class="fa fa-twitter"></a>
+        <a href="https://{{bus_data.Instagram}}" class="fa fa-instagram"></a>
+        <a href="https://{{bus_data.Facebook}}" class="fa fa-facebook"></a>
+        <a href="https://wa.me/{{bus_data.Contact2}}/" class="fa fa-whatsapp"></a>
     </div>
 </div>
 
@@ -92,6 +106,7 @@
     let contact = document.getElementById("contact");
 
     let currentIndex = 0
+    let previousIndex = 0
 
 
     prevImg.addEventListener("click", previousImage);
@@ -99,25 +114,49 @@
 
 
     function nextImage(){
-        let List = [{%for i in images%} '{{i}}', {%endfor%}]
+        let List = [{%for i in prod_obj.images%} '{{i}}', {%endfor%}]
         let limit = List.length-1
         if (currentIndex < limit){
             currentIndex +=1
+            previousIndex = currentIndex - 1
             }else{
             }
         currentImage.src = List[currentIndex]
 
+        previousCurtain = document.getElementById(previousIndex);
+        previousCurtain.classList.remove("remove_curtain");
+        previousCurtain.classList.add("image_curtain");
+
+        currentCurtain = document.getElementById(currentIndex).classList.add("remove_curtain");
     }
     function previousImage(){
+    let List = [{%for i in prod_obj.images%} '{{i}}', {%endfor%}]
         if (currentIndex >= 1){
             currentIndex -=1
+            previousIndex = currentIndex + 1
             }else{
             currentIndex=currentIndex
             }
-        let List = [{%for i in images%} '{{i}}', {%endfor%}]
         currentImage.src = List[currentIndex]
 
+        previousCurtain = document.getElementById(previousIndex);
+        previousCurtain.classList.remove("remove_curtain");
+        previousCurtain.classList.add("image_curtain");
+        currentCurtain = document.getElementById(currentIndex).classList.add("remove_curtain");
+
     }
+
+    document.addEventListener('keydown', function(event){
+        if (event.key === 'ArrowLeft'){
+            previousImage();
+        }
+        if (event.key === 'ArrowRight'){
+            nextImage();
+        }
+        if (event.key === 'BackSpace'){
+            window.history.go(-1);
+        }
+    });
 
    function showContact(){
         contact.classList.add("showContact");

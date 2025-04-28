@@ -123,12 +123,13 @@ def daily_expenses_this_month(buss):
         suppliers[s.id]['Percentage'] = percentage
     suppliers = dict(sorted(suppliers.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
-    cache.set(str(buss) + 'total_m', total, 300)
-    cache.set(str(buss) + 'cash_m', cash, 300)
-    cache.set(str(buss) + 'credit_m', credit, 300)
-    cache.set(str(buss) + 'daily_totals', daily_totals, 300)
-    cache.set(str(buss) + 'suppliers_m', suppliers, 300)
-    cache.set(str(buss) + 'expenses_this_month', expenses_this_month, 300)
+    # daily_expenses_this_month -> d_e_t_m
+    cache.set(str(buss)+'d_e_t_m-total', total, 300)
+    cache.set(str(buss) + 'd_e_t_m-cash', cash, 300)
+    cache.set(str(buss) + 'd_e_t_m-credit', credit, 300)
+    cache.set(str(buss) + 'd_e_t_m-daily_totals', daily_totals, 300)
+    cache.set(str(buss) + 'd_e_t_m-suppliers_m', suppliers, 300)
+    cache.set(str(buss) + 'd_e_t_m-expenses_this_month', expenses_this_month, 300)
 
     return total, cash, credit, daily_totals, suppliers, expenses_this_month
 
@@ -169,10 +170,7 @@ def monthly_expenses_this_year(buss):
         if not credit:
             credit = 0
 
-        monthly_expense_records[start.month] = {}
-        monthly_expense_records[start.month]['Amount'] = amount
-        monthly_expense_records[start.month]['Cash'] = cash
-        monthly_expense_records[start.month]['Credit'] = credit
+        monthly_expense_records[start.month] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
 
         if start.month == 12:
             start = datetime(start.year+1, 1, start.day)
@@ -212,11 +210,7 @@ def monthly_expenses_this_year(buss):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_year[a] = {}
-        expenses_this_year[a]['Name'] = a.Name
-        expenses_this_year[a]['Quantity'] = quantity
-        expenses_this_year[a]['Percentage'] = percentage
-        expenses_this_year[a]['Amount'] = amount
+        expenses_this_year[a] = {'Name': a.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
 
     expenses = Expense.objects.filter(Business__id=buss, ExpenseAccount__isnull=True, Date__range=(start_, end_))
     for e in expenses:
@@ -224,11 +218,7 @@ def monthly_expenses_this_year(buss):
             percentage = round((e.Price / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_year[e] = {}
-        expenses_this_year[e]['Name'] = e.Name
-        expenses_this_year[e]['Quantity'] = e.Quantity
-        expenses_this_year[e]['Percentage'] = percentage
-        expenses_this_year[e]['Amount'] = e.Price
+        expenses_this_year[e] = {'Name': e.Name, 'Quantity': e.Quantity, 'Percentage': percentage, 'Amount': e.Price}
 
     expenses_this_year = dict(sorted(expenses_this_year.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
@@ -247,18 +237,17 @@ def monthly_expenses_this_year(buss):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        suppliers[s.id] = {}
-        suppliers[s.id]['Name'] = s.Name
-        suppliers[s.id]['Amount'] = amount
-        suppliers[s.id]['Percentage'] = percentage
+        suppliers[s.id] = {'Name': s.Name, 'Amount': amount, 'Percentage': percentage}
+
     suppliers = dict(sorted(suppliers.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
-    cache.set(str(buss) + 'total_y', total, 300)
-    cache.set(str(buss) + 'cash_y', cash, 300)
-    cache.set(str(buss) + 'credit_y', credit, 300)
-    cache.set(str(buss) + 'monthly_expense_records', monthly_expense_records, 300)
-    cache.set(str(buss) + 'suppliers_y', suppliers, 300)
-    cache.set(str(buss) + 'expenses_this_year', expenses_this_year, 300)
+    # monthly_expenses_this_year -> m_e_t_y
+    cache.set(str(buss) + 'm_e_t_y-total', total, 300)
+    cache.set(str(buss) + 'm_e_t_y-cash', cash, 300)
+    cache.set(str(buss) + 'm_e_t_y-credit', credit, 300)
+    cache.set(str(buss) + 'm_e_t_y-monthly_expense_records', monthly_expense_records, 300)
+    cache.set(str(buss) + 'm_e_t_y-suppliers_y', suppliers, 300)
+    cache.set(str(buss) + 'm_e_t_y-expenses_this_year', expenses_this_year, 300)
 
     return total, cash, credit, monthly_expense_records, suppliers, expenses_this_year
 
@@ -276,28 +265,30 @@ def expenses_dash(request):
         except ExpensesGeneralContent.DoesNotExist:
             general_content = None
 
+        # daily_expenses_this_month
         daily_expenses_this_month.delay(buss)
-        total_m = cache.get(str(buss) + 'total_m')
-        cash_m = cache.get(str(buss) + 'cash_m')
-        credit_m = cache.get(str(buss) + 'credit_m')
-        daily_totals = cache.get(str(buss) + 'daily_totals')
-        suppliers_m = cache.get(str(buss) + 'suppliers_m')
-        expenses_this_month = cache.get(str(buss) + 'expenses_this_month')
+        total_m = cache.get(str(buss) + 'd_e_t_m-total')
+        cash_m = cache.get(str(buss) + 'd_e_t_m-cash')
+        credit_m = cache.get(str(buss) + 'd_e_t_m-credit')
+        daily_totals = cache.get(str(buss) + 'd_e_t_m-daily_totals')
+        suppliers_m = cache.get(str(buss) + 'd_e_t_m-suppliers_m')
+        expenses_this_month = cache.get(str(buss) + 'd_e_t_m-expenses_this_month')
 
         if not total_m and cash_m and credit_m and daily_totals and expenses_this_month:
             total_m, cash_m, credit_m, daily_totals, suppliers_m, expenses_this_month = daily_expenses_this_month(buss)
 
+        # monthly_expenses_this_year
         monthly_expenses_this_year.delay(buss)
-        total_y = cache.get(str(buss) + 'total_y')
-        cash_y = cache.get(str(buss) + 'cash_y')
-        credit_y = cache.get(str(buss) + 'credit_y')
-        monthly_expense_records = cache.get(str(buss) + 'monthly_expense_records')
-        suppliers_y = cache.get(str(buss) + 'suppliers_y')
-        expenses_this_year = cache.get(str(buss) + 'expenses_this_year')
+        total_y = cache.get(str(buss) + 'm_e_t_y-total')
+        cash_y = cache.get(str(buss) + 'm_e_t_y-cash')
+        credit_y = cache.get(str(buss) + 'm_e_t_y-credit')
+        monthly_expense_records = cache.get(str(buss) + 'm_e_t_y-monthly_expense_records')
+        suppliers_y = cache.get(str(buss) + 'm_e_t_y-suppliers_y')
+        expenses_this_year = cache.get(str(buss) + 'm_e_t_y-expenses_this_year')
 
         if not total_y and cash_y and credit_y and monthly_expense_records and expenses_this_year:
-            total_y, cash_y, credit_y, monthly_expense_records, suppliers_y, expenses_this_year = (
-                monthly_expenses_this_year(buss))
+            total_y, cash_y, credit_y, monthly_expense_records, suppliers_y, expenses_this_year = \
+                (monthly_expenses_this_year(buss))
 
         if request.method == 'POST':
             if 'general_content' in request.POST:

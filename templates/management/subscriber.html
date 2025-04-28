@@ -11,20 +11,23 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<div class="Navigation">
-    <button type = 'button' onclick="window.location.href='http://127.0.0.1:8000/subscriptions/';">
-       <i class="material-icons" style="font-size:18px; border:hidden;">arrow_forward</i>
-    </button>
-</div>
-
 {%if messages%}
     {%for message in messages%}
-        <div class="messages" id="mssg">
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
             <button type="button"  class="close" onclick="closeMssg()">
                 <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
             </button>
             {%if 'info' in message.tags%}
                 <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="message_options">
+                    <button type="submit" name="confirm delete" value="{{delete_feature.feature.id}}">
+                        Yes
+                    </button>
+                    <button type="submit" name="don't delete" value="{{delete_feature.feature.id}}">
+                        No
+                    </button>
+                </div>
             {%elif 'warning' in message.tags%}
                 <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
             {%elif 'error' in message.tags%}
@@ -32,14 +35,23 @@
             {%elif 'success' in message.tags%}
                 <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
             {%endif%}
-        </div>
+        </form>
     {%endfor%}
 {%endif%}
 
+<div class="Navigation">
+     <button type="button" onclick="openSearch()">
+        <i class="material-icons" style="font-size:19px;">search</i>
+    </button>
+    <button type="button" onclick="window.location.href='/manager/';">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
 <div class="profile">
     <div class="profile_photo">
-        {%if bus.photo.url != None%}
-            <img src="{{bus.photo.url}}" id="profile-pic">
+        {%if bus.Photo.url != None%}
+            <img src="{{bus.Photo.url}}" id="profile-pic">
         {%else%}
             <img src="{%static '/appdefaults/add-photo4.png'%}">
         {%endif%}
@@ -56,7 +68,7 @@
         <text><span style="font-size:16px;">City:</span>{{bus.City}}</text>
         <text><span style="font-size:16px;">Country:</span>{{bus.Country}}</text>
     </div>
-    <form method="post" class="new_renew">
+    <form method="post" class="but">
         {%csrf_token%}
         <button type='submit' name="Renew">
             Renew
@@ -67,7 +79,6 @@
     </form>
 </div>
 <table>
-    <caption>Subscription History</caption>
     <thead>
         <tr>
             <th>Plan</th>
@@ -90,41 +101,60 @@
         </tr>
     {%endfor%}
     </tbody>
-    <tfoot>
-        <tr>
-            <td></td>
-            <td></td>
-            <td>==========</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </tfoot>
 </table>
 
 
-<form method="post" class="planForm" id="planForm">
+<form method="post" id="planForm">
     {%csrf_token%}
-    <button type="button" name="newPlan" class="close2" onclick="closeForm()">
-        <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
-    </button>
-    <select name="Plan">
+    <label>Select Plan</label>
+    <select name="Plan_id" size="60" style="width:100%;">
         {%for p in plans%}
-            <option value="{{p.Name}}">{{p.Name}}:{{p.Price}}</option>
+            <option value="{{p.id}}">
+                =>
+                {{p.Name}} @ {{p.Price}}
+            </option>
         {%endfor%}
     </select>
-    <button type="submit" name="newPlan" class="save">
-        Save
-    </button>
+    <div class="but">
+        <button type="submit" name="newPlan" class="save">
+            Save
+        </button>
+        <button type="button" name="newPlan" class="close2" onclick="closeForm()">
+            <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+        </button>
+    </div>
 </form>
 
-<script>
-    <!-- messages -->
-    let mssg = document.getElementById("mssg");
+<form method="post" id="search">
+    {%csrf_token%}
+    <label for="lookUpId">Look Up ID</label>
+    <input type="search" id="lookUpId" name="lookup_id" required placeholder="transaction id" maxlength="60">
+    <label for="transactionType">Transaction Type</label>
+    <select name="transaction_type" id="transactionType">
+        <option value="service income">Service Income</option>
+        <option value="product income">Product Income</option>
+        <option value="expense">Expense</option>
+    </select>
+    <div class="but">
+        <button type="submit" name="lookup transaction">
+           <i class="material-icons" style="font-size:20px;">search</i>
+        </button>
+        <button type="button" onclick="closeSearch()" class="close_search">
+            <i class="material-icons" style="font-size:19px;">close</i>
+        </button>
+    </div>
+</form>
 
-    function closeMssg(){
-        mssg.classList.add("hide");
-        window.location.href = "http://127.0.0.1:8000/addsubscription/{{bus.id}}/";
+
+<script>
+    <!-- open search -->
+    let search = document.getElementById("search");
+
+    function openSearch(){
+        search.classList.add("open_search");
+    }
+    function closeSearch(){
+        search.classList.remove("open_search");
     }
 
     <!--new plan-->
@@ -136,4 +166,13 @@
     function closeForm(){
         planForm.classList.remove("openPlanForm");
     }
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href="/subscriber/{{bus.id}}";
+    }
+
 </script>

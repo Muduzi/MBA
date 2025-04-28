@@ -1,8 +1,7 @@
 import random
 
 from django.shortcuts import render, redirect, HttpResponse
-from catalogue.models import (CatalogueCategories, CatalogueProduct, CatalogueProductPhoto, CatalogueProductFeature,
-                              Followers)
+from catalogue.models import (CatalogueCategories, CatalogueProduct, CatalogueProductPhoto, CatalogueProductFeature)
 from User.models import Employee, Business
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,16 +9,17 @@ from django.core.paginator import Paginator
 from django.db.models.functions import Random
 from User.decorator import allowed_users
 from inventory.models import InventoryCategory
-from fuzzywuzzy import fuzz, process
+from fuzzywuzzy import fuzz
 from django.contrib import messages
 from django.db.models import Q
-import time
-from django.contrib.gis.geoip2 import GeoIP2
 from django.core.cache import cache
 from celery import shared_task
+from django.core import serializers
 # Create your views here.
 
 
+
+@shared_task()
 def products_in_categories():
     options = [
         'Groceries',
@@ -58,11 +58,13 @@ def products_in_categories():
                     print(c.Name, c.id)
                     img = CatalogueProductPhoto.objects.filter(Product=c.id)
                     for p in img:
-                        images.append(p.Photo)
+                        images.append(p.Photo.url)
                         random.shuffle(images)
-                    example = {'Business': c.Business, 'Name': c.Name, 'Price': c.Price, 'Photo': images[0]}
+                    example = {'Business_id': c.Business.id, 'Business_Name': c.Business.Name, 'Product_Name': c.Name,
+                               'Product_Price': c.Price, 'Product_Photo': images[0]}
                     categories[i].append(example)
                     images = []
+    cache.set('categories', categories, 3600)
     return categories
 
 
@@ -118,43 +120,61 @@ def get_content(buss_type=''):
         photos = CatalogueProductPhoto.objects.filter(Product=i.id)
         if photos:
             for p in photos:
-                picture_li.append(p.Photo)
+                picture_li.append(p.Photo.url)
 
-        new_entry = {'store_name': i.Business.Name, 'store_photo': i.Business.Photo, 'product_id': i.id,
+        new_entry = {'store_name': i.Business.Name, 'store_photo': i.Business.Photo.url, 'product_id': i.id,
                      'product_name': i.Name, 'product_price': i.Price, 'product_photo': picture_li[0],
                      'product_description': i.Description}
 
         content.append(new_entry)
 
-    cache.set(buss_type, content, 3600)
+    if buss_type == '':
+        cache.set('content', content, 300)
+    else:
+        cache.set(buss_type, content, 300)
+
     return content
 
 
 @shared_task()
 def get_product(p_id):
-    images = []
-    bus_data = None
-    prod_obj = None
-    prod_photos_obj = None
-    prod_features_obj = None
+    business = {}
+    product = {}
 
     try:
-        prod_obj = CatalogueProduct.objects.get(pk=p_id)
-        prod_photos_obj = CatalogueProductPhoto.objects.filter(Product=prod_obj.id)
-        prod_features_obj = CatalogueProductFeature.objects.filter(Product=prod_obj.id)
-        bus_data = Business.objects.get(pk=prod_obj.Business.id)
+        prod = CatalogueProduct.objects.get(pk=p_id)
+        prod_photos_obj = CatalogueProductPhoto.objects.filter(Product=prod.id)
+        feat = CatalogueProductFeature.objects.filter(Product=prod.id)
+        buss = Business.objects.get(pk=prod.Business.id)
 
+        product = {'id': prod.id, 'Name': prod.Name, 'Price': prod.Price, 'Description': prod.Description}
+
+        images = []
         for i in prod_photos_obj:
             images.append(i.Photo.url)
 
-        cache.set('prod_obj'+str(p_id), prod_obj, 3600)
-        cache.set('images'+str(p_id), images, 3600)
-        cache.set('prod_features_obj'+str(p_id), prod_features_obj, 3600)
-        cache.set('bus_data' + str(p_id), bus_data, 3600)
+        features = {}
+        for f in feat:
+            features[f.id] = {'Name': f.Name, 'Description': f.Description}
+        product['images'] = images
+        product['features'] = features
 
-        return prod_obj, prod_photos_obj, prod_features_obj, bus_data
+        linkedin = buss.Linkedin.replace("http://", "")
+        linkedin = linkedin.replace("https://", "")
+        facebook = buss.Facebook.replace("http://", "")
+        facebook = facebook.replace("https://", "")
+        instagram = buss.Instagram.replace("http://", "")
+        instagram = instagram.replace("https://", "")
+
+        business = {'id': buss.id, 'Name': buss.Name, 'Email': buss.Email, 'Contact1': buss.Contact1,
+                    'Contact2': buss.Contact2, 'Instagram': instagram, 'Facebook': facebook, 'Linkedin': linkedin}
+
+        cache.set('product'+str(p_id), product, 3600)
+        cache.set('business'+str(p_id), business, 3600)
+
+        return business, product
     except CatalogueProduct.DoesNotExist:
-        return prod_obj, prod_photos_obj, prod_features_obj, bus_data
+        return business, product
 
 
 def market_view(request):
@@ -182,9 +202,13 @@ def market_view(request):
     group2 = dict(list(bus_types.items())[group_size:(group_size * 2)])
     group3 = dict(list(bus_types.items())[(group_size * 2):(group_size * 3)])
 
-    get_content.delay('')
-    data = cache.get('')
+    products_in_categories.delay()
+    categories = cache.get('categories')
+    if not categories:
+        categories = products_in_categories()
 
+    get_content.delay('')
+    data = cache.get('content')
     if not data:
         data = get_content('')
 
@@ -212,11 +236,14 @@ def market_view(request):
 
             return redirect(f'/viewBusinessTypeProducts/{view_type}/')
 
+        if 'goto' in request.POST:
+            goto = request.POST.get('goto')
+
+            goto = goto.replace(' ', '%')
+            return redirect(f'/catalogue/{goto}/')
     if request.method == 'GET':
         page_number = request.GET.get('page')
         content = pages.get_page(page_number)
-
-    categories = products_in_categories()
 
     context = {
         'client': client,
@@ -258,7 +285,20 @@ def query_item_by_letter(lookup_word):
     return search1, search2
 
 
-def catalogue_view(request, id=0):
+@shared_task()
+def get_catalogue_content(buss_id):
+    content = {}
+    cat_obj = CatalogueCategories.objects.filter(Business__id=buss_id)
+    for c in cat_obj:
+        product_count = CatalogueProduct.objects.filter(Category=c).count()
+
+        content[c.id] = {'Name': c.Name, 'Photo': c.Photo.url, 'Count': product_count}
+
+    cache.set(f'catalogue'+str(buss_id), content, 3600)
+    return content
+
+
+def catalogue_view(request, store_name=''):
     s_list = []
     categories = {}
     cat_obj = None
@@ -266,11 +306,9 @@ def catalogue_view(request, id=0):
     prod_obj = None
     prod_photos_obj = None
 
-    if id != 0:
-        buss = Business.objects.get(pk=id)
-        cat_obj = CatalogueCategories.objects.filter(Business=buss)
-        prod_obj = CatalogueProduct.objects.filter(Business=buss)
-        prod_photos_obj = CatalogueProductPhoto.objects.filter(Business=buss)
+    if store_name != '':
+        store_name = store_name.replace('%', ' ')
+        buss = Business.objects.get(Name=store_name)
 
     else:
         try:
@@ -279,21 +317,13 @@ def catalogue_view(request, id=0):
             staff_obj = Employee.objects.filter(Business=buss)
             for i in staff_obj:
                 s_list.append(i.User)
-
-            cat_obj = CatalogueCategories.objects.filter(Business=buss)
-            prod_obj = CatalogueProduct.objects.filter(Business=buss)
-            prod_photos_obj = CatalogueProductPhoto.objects.filter(Business=buss)
-
         except Employee.DoesNotExist:
             return redirect('/login/')
 
-    for c in cat_obj:
-        product_count = CatalogueProduct.objects.filter(Category=c).count()
-
-        categories[c.id] = {}
-        categories[c.id]['Name'] = c.Name
-        categories[c.id]['Photo'] = c.Photo
-        categories[c.id]['Count'] = product_count
+    get_catalogue_content.delay(buss.id)
+    content = cache.get(f'catalogue' + str(buss.id))
+    if not content:
+        content = get_catalogue_content(buss.id)
 
     if request.method == 'POST':
         lookup_word = request.POST.get('lookup_word')
@@ -307,12 +337,9 @@ def catalogue_view(request, id=0):
                 return redirect(f"/category/{i['id']}/")
 
     context = {
-        'id': id,
         's_list': s_list,
         'bus_data': buss,
-        'categories': categories,
-        'prod_obj': prod_obj,
-        'prod_photos_obj': prod_photos_obj
+        'content': content,
     }
     return render(request, 'catalogue.html', context)
 
@@ -396,29 +423,38 @@ def category(request, id=0):
 
 
 def view_product(request, id=0):
-
     get_product.delay(id)
 
-    prod_obj = cache.get('prod_obj' + str(id))
-    images = cache.get('images'+str(id))
-    prod_features_obj = cache.get('prod_features_obj'+str(id))
-    bus_data = cache.get('bus_data' + str(id))
+    allowed = False
+    if request.user.is_anonymous:
+        pass
+    else:
+        try:
+            employee = Employee.objects.get(User=request.user)
+            if employee.AccessLevel.id == 1:
+                allowed = True
+            elif employee.AccessLevel == 2:
+                allowed = True
+        except Employee.DoesNotExist:
+            pass
 
-    if not prod_obj and images and prod_features_obj and bus_data:
-        prod_obj, prod_photos_obj, prod_features_obj, bus_data = get_product(id)
+    product = cache.get('product' + str(id))
+    business = cache.get('business' + str(id))
+
+    if not product and business:
+        return redirect(f'/viewProduct/{id}/')
 
     context = {
-        'bus_data': bus_data,
-        'prod_obj': prod_obj,
-        'images': images,
-        'prod_features_obj': prod_features_obj
+        'bus_data': business,
+        'prod_obj': product,
+        'allowed': allowed
     }
     return render(request, 'viewProduct.html', context)
 
 
 @login_required(login_url="/login/")
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
-def add_product(request, id=0):
+def add_product(request):
     s_list = []
     view_image = None
     prod = None
@@ -434,13 +470,66 @@ def add_product(request, id=0):
 
         cat_obj = CatalogueCategories.objects.filter(Business=buss)
 
-        if id != 0:
-            try:
-                prod = CatalogueProduct.objects.get(pk=id)
-                prod_photos = CatalogueProductPhoto.objects.filter(Product__id=prod.id)
-                prod_features = CatalogueProductFeature.objects.filter(Product__id=prod.id)
-            except CatalogueProduct.DoesNotExist:
-                return redirect('/add_product/')
+        if request.method == 'POST':
+            if 'product' in request.POST:
+                product_name = request.POST.get("product_name")
+                product_category = request.POST.get("product_category")
+                price = request.POST.get("product_price")
+                images = request.FILES.getlist("product_images")
+                product_description = request.POST.get("product_description")
+
+                catalogue_category = CatalogueCategories.objects.get(Business=buss, pk=int(product_category))
+
+                prod = CatalogueProduct(Business=buss, Category=catalogue_category, Name=product_name, Price=price,
+                                        Description=product_description)
+                prod.save()
+
+                if len(images) > 10:
+                    images = images[0:9]
+                if images:
+                    for i in images:
+                        photo = CatalogueProductPhoto(Business=buss, Product=prod, Photo=i)
+                        photo.save()
+                return redirect(f'/editProduct/{prod.id}/')
+
+    except Employee.DoesNotExist:
+        return HttpResponse('Error *staff does not exist at create post* please contact developer')
+
+    context = {
+        'cat_obj': cat_obj,
+        's_list': s_list,
+        'view_image': view_image,
+        'prod': prod,
+        'prod_photos': prod_photos,
+        'prod_features': prod_features,
+    }
+    return render(request, 'addProduct.html', context)
+
+
+@login_required(login_url="/login/")
+@allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
+def edit_product(request, id=0):
+    s_list = []
+    view_image = None
+    prod = None
+    prod_photos = None
+    prod_features = None
+
+    try:
+        check = Employee.objects.get(User=request.user.id)
+        buss = check.Business
+        staff_obj = Employee.objects.filter(Business=buss)
+        for i in staff_obj:
+            s_list.append(i.User)
+
+        cat_obj = CatalogueCategories.objects.filter(Business=buss)
+
+        try:
+            prod = CatalogueProduct.objects.get(pk=id)
+            prod_photos = CatalogueProductPhoto.objects.filter(Product__id=prod.id)
+            prod_features = CatalogueProductFeature.objects.filter(Product__id=prod.id)
+        except CatalogueProduct.DoesNotExist:
+            return redirect(request.META.get('HTTP_REFERER'))
 
         if request.method == 'POST':
             if 'product' in request.POST:
@@ -452,32 +541,22 @@ def add_product(request, id=0):
 
                 catalogue_category = CatalogueCategories.objects.get(Business=buss, pk=int(product_category))
 
-                if not prod:
-                    prod = CatalogueProduct(Business=buss, Category=catalogue_category, Name=product_name, Price=price,
-                                            Description=product_description)
-                    prod.save()
-                    if images:
-                        for i in images:
-                            photo = CatalogueProductPhoto(Business=buss, Product=prod, Photo=i)
-                            photo.save()
-                    return redirect(f'/add_product/{prod.id}/')
-                elif prod:
-                    if prod.Name != product_name:
-                        prod.Name = product_name
-                    if prod.Category != catalogue_category:
-                        prod.Category = catalogue_category
-                    if prod.Price != price:
-                        prod.Price = price
-                    if prod.Description != product_description:
-                        prod.Description = product_description
-                    prod.save()
+                if prod.Name != product_name:
+                    prod.Name = product_name
+                if prod.Category != catalogue_category:
+                    prod.Category = catalogue_category
+                if prod.Price != price:
+                    prod.Price = price
+                if prod.Description != product_description:
+                    prod.Description = product_description
+                prod.save()
 
-                    if images:
-                        for i in images:
-                            photo = CatalogueProductPhoto(Business=buss, Product=prod, Photo=i)
-                            photo.save()
+                if images:
+                    for i in images:
+                        photo = CatalogueProductPhoto(Business=buss, Product=prod, Photo=i)
+                        photo.save()
 
-                    return redirect(f'/add_product/{prod.id}/')
+                return redirect(f'/editProduct/{prod.id}/')
             if 'add_feature' in request.POST:
                 feature_name = request.POST.get("feature_name")
                 feature_description = request.POST.get("feature_description")
@@ -510,6 +589,9 @@ def add_product(request, id=0):
                     view_image = CatalogueProductPhoto.objects.get(pk=photo_id)
                 except CatalogueProductPhoto.DoesNotExist:
                     messages.error(request, 'failed to process image')
+
+            if 'close' in request.POST:
+                view_image = None
 
     except Employee.DoesNotExist:
         return HttpResponse('Error *staff does not exist at create post* please contact developer')

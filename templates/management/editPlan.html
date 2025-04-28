@@ -1,0 +1,110 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/editPlan.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <button type="button"  class="close" onclick="closeMssg()">
+                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+            </button>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="message_options">
+                    <button type="submit" name="confirm delete" value="{{delete_feature.feature.id}}">
+                        Yes
+                    </button>
+                    <button type="submit" name="don't delete" value="{{delete_feature.feature.id}}">
+                        No
+                    </button>
+                </div>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}
+
+<div class="Navigation">
+    <button type="button" onclick="openAddFeature()">
+        <i class="material-icons" style="font-size:19px;">edit</i>
+    </button>
+    <button type="button" onclick="window.location.href='/subscriptionSettings/';">
+        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+    </button>
+</div>
+
+<table class="all_features">
+    <thead>
+        <tr>
+            <th>{{plan.Name}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for f in plan_features%}
+            <tr>
+                <td style="width:10%;">
+                    <i class="material-icons" style="font-size:30px;">arrow_right</i>
+                </td>
+                <td style="width:70%;">{{f.feature.Name}}</td>
+                <td style="width:20%;">
+                    <form method="post" style="cursor:hand;">
+                        {%csrf_token%}
+                        <button name="delete feature" value="{{f.feature.id}}">
+                            <i class="material-icons" style="font-size:16px; color:rgb(54, 69, 79);">delete</i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<form method="post" id="addFeature">
+    {%csrf_token%}
+    <label>Select Features to Add</label>
+    <select name="features" multiple size="50">
+        {%for f in features%}
+            <option value="{{f.id}}">{{f.Name}}</option>
+        {%endfor%}
+    </select>
+    <label>Change Price</label>
+    <input type="number" name="price" value="{{plan.Price}}" required>
+    <div class="but">
+        <button type="submit"  name="add features">Save</button>
+        <button type="button" onclick="closeAddFeature()">Close</button>
+    </div>
+</form >
+
+<script>
+    let addFeature = document.getElementById("addFeature");
+
+    function openAddFeature(){
+        addFeature.classList.add("open-addFeature");
+    }
+
+    function closeAddFeature(){
+        addFeature.classList.remove("open-addFeature");
+    }
+
+     <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>

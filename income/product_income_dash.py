@@ -42,10 +42,7 @@ def product_income_per_group_this_month(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        categories[c] = {}
-        categories[c]['Quantity'] = quantity
-        categories[c]['Percentage'] = percentage
-        categories[c]['Amount'] = amount
+        categories[c] = {'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
     categories = dict(sorted(categories.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per service"""
@@ -62,17 +59,13 @@ def product_income_per_group_this_month(buss):
             percentage = round((amount/grand_total)*100)
         except ZeroDivisionError:
             percentage = 0
-        products[p.id] = {}
-        products[p.id]['Name'] = p.Name
-        products[p.id]['Brand'] = p.Brand
-        products[p.id]['Size'] = p.Size
-        products[p.id]['Quantity'] = quantity
-        products[p.id]['Percentage'] = percentage
-        products[p.id]['Amount'] = amount
+        products[p.id] = {'Name': p.Name, 'Brand': p.Brand, 'Size': p.Size, 'Quantity': quantity,
+                          'Percentage': percentage, 'Amount': amount}
     products = dict(sorted(products.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
-    cache.set(str(buss)+'categories_m', categories, 300)
-    cache.set(str(buss)+'products_m', products, 300)
+    # product_income_per_group_this_month -> p_i_p_g_t_m
+    cache.set(str(buss) + 'p_i_p_g_t_m-categories_m', categories, 300)
+    cache.set(str(buss) + 'p_i_p_g_t_m-products_m', products, 300)
 
     return categories, products
 
@@ -105,10 +98,7 @@ def product_daily_records_this_month(buss):
         if not credit:
             credit = 0
 
-        income_this_month[i] = {}
-        income_this_month[i]['Amount'] = amount
-        income_this_month[i]['Cash'] = cash
-        income_this_month[i]['Credit'] = credit
+        income_this_month[i] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
 
     grand_total = ProductIncome.objects.filter(Business__id=buss, Date__range=(start, end))
     total = grand_total.aggregate(Sum('Amount'))
@@ -128,10 +118,11 @@ def product_daily_records_this_month(buss):
     if not credit:
         credit = 0
 
-    cache.set(str(buss) + 'total_m', total, 300)
-    cache.set(str(buss) + 'cash_m', cash, 300)
-    cache.set(str(buss) + 'credit_m', credit, 300)
-    cache.set(str(buss) + 'income_this_month', income_this_month, 300)
+    # product_daily_records_this_month -> p_d_r_t_m
+    cache.set(str(buss) + 'p_d_r_t_m-total', total, 300)
+    cache.set(str(buss) + 'p_d_r_t_m-cash', cash, 300)
+    cache.set(str(buss) + 'p_d_r_t_m-credit', credit, 300)
+    cache.set(str(buss) + 'p_d_r_t_m-income_this_month', income_this_month, 300)
 
     return total, cash, credit, income_this_month
 
@@ -195,8 +186,9 @@ def product_income_per_group_this_year(buss):
         products[p.id]['Amount'] = amount
     products = dict(sorted(products.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
-    cache.set(str(buss) + 'categories_y', categories, 300)
-    cache.set(str(buss) + 'products_y', products, 300)
+    # product_income_per_group_this_year -> p_i_p_g_t_y
+    cache.set(str(buss) + 'p_i_p_g_t_y-categories_y', categories, 300)
+    cache.set(str(buss) + 'p_i_p_g_t_y-products_y', products, 300)
 
     return categories, products
 
@@ -235,10 +227,7 @@ def product_monthly_records_this_year(buss):
         if not credit:
             credit = 0
 
-        product_income_this_year[start.month] = {}
-        product_income_this_year[start.month]['Amount'] = amount
-        product_income_this_year[start.month]['Cash'] = cash
-        product_income_this_year[start.month]['Credit'] = credit
+        product_income_this_year[start.month] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
 
         if start.month == 12:
             start = datetime(start.year+1, 1, start.day)
@@ -266,10 +255,13 @@ def product_monthly_records_this_year(buss):
     if not credit:
         credit = 0
 
-    cache.set(str(buss) + 'total_y', total, 300)
-    cache.set(str(buss) + 'cash_y', cash, 300)
-    cache.set(str(buss) + 'credit_y', credit, 300)
-    cache.set(str(buss) + 'product_income_this_year', product_income_this_year, 300)
+    total_cash_credit = {'total': total, 'cash': cash, 'credit': credit}
+
+    # product_monthly_records_this_year -> p_m_r_t_y
+    cache.set(str(buss) + 'p_m_r_t_y-total', total, 300)
+    cache.set(str(buss) + 'p_m_r_t_y-cash', cash, 300)
+    cache.set(str(buss) + 'p_m_r_t_y-credit', credit, 300)
+    cache.set(str(buss) + 'p_m_r_t_y-product_income_this_year', product_income_this_year, 300)
 
     return total, cash, credit, product_income_this_year
 
@@ -280,44 +272,44 @@ def product_income_dash(request):
     try:
         user_object = request.user
         check = Employee.objects.get(User=user_object.id)
-        buss = check.Business.id
+        buss_id = check.Business.id
 
         try:
             general_content = ProductGeneralContent.objects.get(Business=check.Business, Cashier=user_object)
         except ProductGeneralContent.DoesNotExist:
             general_content = None
 
-        product_daily_records_this_month.delay(buss)
-        total_m = cache.get(str(buss) + 'total_m')
-        cash_m = cache.get(str(buss) + 'cash_m')
-        credit_m = cache.get(str(buss) + 'credit_m')
-        income_this_month = cache.get(str(buss) + 'income_this_month')
+        product_daily_records_this_month.delay(buss_id)
+        total_m = cache.get(str(buss_id) + 'p_d_r_t_m-total')
+        cash_m = cache.get(str(buss_id) + 'p_d_r_t_m-cash')
+        credit_m = cache.get(str(buss_id) + 'p_d_r_t_m-credit')
+        income_this_month = cache.get(str(buss_id) + 'p_d_r_t_m-income_this_month')
 
         if not total_m and cash_m and credit_m and income_this_month:
-            total_m, cash_m, credit_m, income_this_month = product_daily_records_this_month(buss)
+            total_m, cash_m, credit_m, income_this_month = product_daily_records_this_month(buss_id)
 
-        product_income_per_group_this_month.delay(buss)
-        categories_m = cache.get(str(buss)+'categories_m')
-        products_m = cache.get(str(buss)+'products_m')
+        product_income_per_group_this_month.delay(buss_id)
+        categories_m = cache.get(str(buss_id) + 'p_i_p_g_t_m-categories_m')
+        products_m = cache.get(str(buss_id) + 'p_i_p_g_t_m-products_m')
 
         if not categories_m and products_m:
-            categories_m, products_m = product_income_per_group_this_month(buss)
+            categories_m, products_m = product_income_per_group_this_month(buss_id)
 
-        product_monthly_records_this_year.delay(buss)
-        total_y = cache.get(str(buss) + 'total_y')
-        cash_y = cache.get(str(buss) + 'cash_y')
-        credit_y = cache.get(str(buss) + 'credit_y')
-        income_this_year = cache.get(str(buss) + 'income_this_year')
+        product_monthly_records_this_year.delay(buss_id)
+        total_y = cache.get(str(buss_id) + 'p_m_r_t_y-total')
+        cash_y = cache.get(str(buss_id) + 'p_m_r_t_y-cash')
+        credit_y = cache.get(str(buss_id) + 'p_m_r_t_y-credit')
+        income_this_year = cache.get(str(buss_id) + 'p_m_r_t_y-product_income_this_year')
 
         if not total_y and cash_y and credit_y and income_this_year:
-            total_y, cash_y, credit_y, income_this_year = product_monthly_records_this_year(buss)
+            total_y, cash_y, credit_y, income_this_year = product_monthly_records_this_year(buss_id)
 
-        product_income_per_group_this_year.delay(buss)
-        categories_y = cache.get(str(buss) + 'categories_y')
-        products_y = cache.get(str(buss) + 'products_y')
+        product_income_per_group_this_year.delay(buss_id)
+        categories_y = cache.get(str(buss_id) + 'p_i_p_g_t_y-categories_y')
+        products_y = cache.get(str(buss_id) + 'p_i_p_g_t_y-products_y')
 
         if not categories_y and products_y:
-            categories_y, products_y = product_income_per_group_this_year(buss)
+            categories_y, products_y = product_income_per_group_this_year(buss_id)
 
         if request.method == 'POST':
             if 'general_content' in request.POST:

@@ -1,3 +1,5 @@
+import time
+
 from django.shortcuts import render, redirect
 from .models import *
 from User.decorator import check_superuser
@@ -7,213 +9,213 @@ from django.contrib import messages
 from django.db.models import Q, Sum
 from User.models import Business
 from fuzzywuzzy import fuzz, process
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from calendar import monthrange
+from django.core.cache import cache
+from celery import shared_task
+from django.core import serializers
 # Create your views here.
 
 
-def planFeatures():
-    pf_container = {}
-    pf_list = []
-    all_features = []
+def get_plan_features_and_rem_features(plan_id):
+    features = []
+    plan_features = PlanFeatures.objects.filter(plan__id=plan_id)
 
-    plans = SubscriptionPlan.objects.all()
-    features = Features.objects.all()
-    for f in features:
-        all_features.append(f)
-    for p in plans:
-        pf_container[p.Name] = {}
-        plan_features = PlanFeatures.objects.filter(plan=p.id)
+    features_obj = Features.objects.all()
+    if features_obj:
+        for f in features_obj:
+            features.append(f)
 
-        for pf in plan_features:
-            pf_list.append(pf.feature)
+    for i in plan_features:
+        if i in features:
+            try:
+                features.remove(i)
+            except Exception as e:
+                pass
 
-        for f in all_features:
-            if f in pf_list:
-                pf_container[p.Name][f.Name] = "yes"
-            else:
-                pf_container[p.Name][f.Name] = None
-        pf_list = []
-
-    return pf_container
+    return features, plan_features
 
 
-def planFeatures2():
-    pf_container = {}
-    pf_list = []
+def get_plans_and_features():
+    sub_plans = {}
+    plans_and_features = {}
 
     plans = SubscriptionPlan.objects.all()
 
-    for p in plans:
-        pf_container[p.Name] = {}
-        plan_features = PlanFeatures.objects.filter(plan=p.id)
+    features_obj = Features.objects.all()
 
-        for pf in plan_features:
-            pf_list.append(pf.feature)
+    for i in plans:
+        plan_feat = []
+        sub_plans[i.id] = {'Name': i.Name, 'Price': i.Price}
 
-        pf_container[p.Name] = pf_list
+        features = PlanFeatures.objects.filter(plan__id=i.id)
+        for f in features:
+            plan_feat.append(f.feature.Name)
 
-        pf_list = []
+        sub_plans[i.id]['features'] = plan_feat
 
-    return pf_container
+        plans_and_features[i.id] = {'Name': i.Name, 'Price': i.Price, 'Features': plan_feat}
+
+    return sub_plans, features_obj, plans_and_features
 
 
 def performance_this_year():
-    month = datetime.now().month
-    date = datetime.now()
+    month = datetime.now(timezone.utc).month
+    date = datetime.now(timezone.utc)
     m = 0
-    total = 0
     overall_monthly_record = {}
-    count = 0
     monthly_package_record = {}
-    average = 0
-    average_perc = {}
+    total_subscriptions_this_year = 0
     remainder = 100
-    average_active_perc = 0
-    packages = ['Bronze', 'Silver', 'Gold', 'Diamond', 'Platinum']
+    active_users_percentage = 0
+    total_revenue = 0
 
-    for i in range(month):
+    months = {1: 'Jan', 2: 'Feb', 3: 'March', 4: 'April', 5: 'May', 6: 'Jun',
+              7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+
+    subscription_plans = SubscriptionPlan.objects.all()
+
+    while month != 0:
+        month -= 1
         m += 1
         date_range = monthrange(datetime.now().year, m)
         start = datetime(date.year, m, 1)
         end = datetime(date.year, m, date_range[1])
 
         subs = Subscription.objects.filter(Start__range=(start, end), Status='Active')
-        if subs:
-            total = subs.aggregate(Sum('Plan__Price'))
-            total = total['Plan__Price__sum']
-            print('working')
-            count = subs.count()
-            average += count
-        overall_monthly_record[m] = {}
-        overall_monthly_record[m]['total'] = total
-        overall_monthly_record[m]['count'] = count
+        total = subs.aggregate(Sum('Plan__Price'))
+        total = total['Plan__Price__sum']
+        if not total:
+            total = 0
 
-        monthly_package_record[m] = {}
-        for p in packages:
-            sub = Subscription.objects.filter(Start__range=(start, end), Status='Active', Plan__Name=p)
+        total_revenue += total
+
+        count = subs.count()
+        if not count:
+            count = 0
+        total_subscriptions_this_year += count
+        overall_monthly_record[months[m]] = {'total':  total, 'count': count}
+
+        monthly_package_record[months[m]] = {}
+        for p in subscription_plans:
+            sub = Subscription.objects.filter(Start__range=(start, end), Status='Active', Plan__id=p.id)
             total = sub.aggregate(Sum('Plan__Price'))
             total = total['Plan__Price__sum']
-
             if not total:
                 total = 0
-
             count = sub.count()
-            monthly_package_record[m][p] = {}
-            monthly_package_record[m][p]['total'] = total
-            monthly_package_record[m][p]['count'] = count
+            monthly_package_record[months[m]][p.Name] = {'total': total, 'count': count}
 
-    bus_count = Business.objects.all().count()
+    active_users = Subscription.objects.filter(Status='Active').count()
+    total_users = Business.objects.all().count()
     try:
-        average /= month
-        average = round(average)
-        average_active_perc = (average/bus_count*100)
+        active_users_percentage = round((active_users/total_users)*100, 1)
     except ZeroDivisionError:
         pass
 
-    remainder -= average_active_perc
-    average_perc['average'] = average_active_perc
-    average_perc['remainder'] = remainder
-    print('==============================================================================================')
-    print(bus_count)
-    return average_perc, overall_monthly_record, monthly_package_record
+    remainder -= active_users_percentage
+    average_percentages = {'average': active_users_percentage, 'remainder': remainder}
+
+    # performance_this_year
+
+    return total_revenue, average_percentages, overall_monthly_record, monthly_package_record
+
+
+@shared_task()
+def get_subscription_stats():
+    active_businesses = 0
+    inactive_businesses = 0
+    upgrades = 0
+    downgrades = 0
+    maintaining = 0
+    non_renewal = 0
+
+    businesses = Business.objects.all()
+    for b in businesses:
+        try:
+            active_plan = Subscription.objects.get(Business__id=b.id, Status='Active',
+                                                   End__gte=datetime.now(timezone.utc).date())
+            active_businesses += 1
+        except Subscription.DoesNotExist:
+            inactive_businesses += 1
+            active_plan = None
+
+        if active_plan:
+            history = Subscription.objects.filter(Business__id=b.id, pk__gte=active_plan.id - 1).order_by('id')[:2]
+
+            if len(history) > 1:
+                if history[0].Plan.Price > history[1].Plan.Price:
+                    downgrades += 1
+                elif history[0].Plan.Price < history[1].Plan.Price:
+                    upgrades += 1
+                else:
+                    maintaining += 1
+        else:
+            non_renewal += 1
+
+    businesses_count = businesses.count()
+    try:
+        upgrades_percentage = round((upgrades / businesses_count) * 100)
+        downgrades_percentage = round((downgrades / businesses_count) * 100)
+        maintaining_percentage = round((maintaining / businesses_count) * 100)
+        non_renewal_percentage = round((non_renewal / businesses_count) * 100)
+    except ZeroDivisionError:
+        upgrades_percentage = 0
+        downgrades_percentage = 0
+        maintaining_percentage = 0
+        non_renewal_percentage = 0
+    subscription_stats = {'businesses_count': businesses_count, 'inactive_businesses': inactive_businesses,
+                          'active_businesses': active_businesses, 'upgrades': upgrades,
+                          'upgrades_percentage': upgrades_percentage, 'downgrades': downgrades,
+                          'downgrades_percentage': downgrades_percentage, 'maintaining': maintaining,
+                          'maintaining_percentage': maintaining_percentage, 'non_renewal': non_renewal,
+                          'non_renewal_percentage': non_renewal_percentage}
+
+    return subscription_stats
 
 
 @login_required(login_url="/login/")
 @check_superuser()
-def management_view(request):
+def manager(request):
     plans = SubscriptionPlan.objects.all()
     features = Features.objects.all()
-    pf_container = planFeatures2()
+    sub_plans, features_obj, pf_container = get_plans_and_features()
     active_customers = Subscription.objects.filter(Status='Active')
-    average_perc, overall_monthly_record, monthly_package_record = performance_this_year()
 
-    (businesses_count, inactive, active_businesses, total_amount, upgrades, upgrades_perc, downgrades,
-     downgrades_perc, maintaining, maintaining_perc, non_renewal, non_renewal_perc) = get_subscription_stats()
+    total_revenue, average_percentages, overall_monthly_record, monthly_package_record = performance_this_year()
+
+    subscription_stats = get_subscription_stats()
+
+    businesses_count = subscription_stats['businesses_count']
+    inactive_businesses = subscription_stats['inactive_businesses']
+    active_businesses = subscription_stats['active_businesses']
+    upgrades = subscription_stats['upgrades']
+    upgrades_percentage = subscription_stats['upgrades_percentage']
+    downgrades = subscription_stats['downgrades']
+    downgrades_percentage = subscription_stats['downgrades_percentage']
+    maintaining = subscription_stats['maintaining']
+    maintaining_percentage = subscription_stats['maintaining_percentage']
+    non_renewal = subscription_stats['non_renewal']
+    non_renewal_percentage = subscription_stats['non_renewal_percentage']
+
     context = {
         'plans': plans,
         'features': features,
         'pf_container':  pf_container,
-        'average_perc': average_perc,
+        'average_percentages': average_percentages,
         'overall_monthly_record': overall_monthly_record,
         'monthly_package_record': monthly_package_record,
         'active_customers': active_customers,
         'upgrades': upgrades,
-        'upgrades_perc': upgrades_perc,
+        'upgrades_percentage': upgrades_percentage,
         'downgrades': downgrades,
-        'downgrades_perc': downgrades_perc,
+        'downgrades_percentage': downgrades_percentage,
         'maintaining': maintaining,
-        'maintaining_perc': maintaining_perc,
+        'maintaining_percentage': maintaining_percentage,
         'non_renewal': non_renewal,
-        'non_renewal_perc': non_renewal_perc
+        'non_renewal_percentage': non_renewal_percentage
     }
-    return render(request, 'management/management.html', context)
-
-def subscriptionFeatures(plan):
-    ft = {}
-    f_li = []
-    existing = []
-
-    features = Features.objects.all()
-    pf = PlanFeatures.objects.filter(plan=plan.id)
-
-    for e in pf:
-        existing.append(e.feature)
-
-    for f in features:
-        f_li.append(f)
-
-    for f in f_li:
-        if f in existing:
-            ft[f] = "yes"
-        else:
-            ft[f] = None
-
-    return features, existing, ft
-
-
-@login_required(login_url="/login/")
-@check_superuser()
-def addfeature(request, id=0):
-    ft = {}
-    try:
-        plan = SubscriptionPlan.objects.get(pk=id)
-
-        features, existing, ft = subscriptionFeatures(plan)
-
-        if request.method == 'POST':
-            print('working1')
-            if plan.Name in request.POST:
-                for f in features:
-                    check = request.POST.get(f.Name)
-                    print(check)
-                    print('working2')
-                    if check:
-                        if f in existing:
-                            pass
-                        else:
-                            pf = PlanFeatures(plan=plan, feature=f)
-                            pf.save()
-
-                            features, existing, ft = subscriptionFeatures(plan)
-
-                            messages.success(request, 'feature added successfully')
-                    else:
-                        if f in existing:
-                            PlanFeatures.objects.get(feature=f).delete()
-
-                            features, existing, ft = subscriptionFeatures(plan)
-
-                            messages.info(request, 'feature removed successfully')
-
-    except SubscriptionPlan.DoesNotExist:
-        messages.error(request, 'failed to add feature')
-    context = {
-        'plan': plan,
-        'features': features,
-        'ft': ft
-    }
-    return render(request, 'management/addfeature.html', context)
+    return render(request, 'management/manager.html', context)
 
 
 def query_item_by_letter(lookup_word):
@@ -237,86 +239,30 @@ def query_item_by_letter(lookup_word):
     print(match)
     return search
 
-def get_subscription_stats():
-    inactive = {}
-    businesses_count = 0
-    active_businesses = 0
-    total_amount = 0
-    upgrades = 0
-    upgrades_perc = 0
-    downgrades = 0
-    downgrades_perc = 0
-    maintaining = 0
-    maintaining_perc = 0
-    non_renewal = 0
-    non_renewal_perc = 0
-    subs_li = []
-    businesses = Business.objects.all()
-    businesses_count += businesses.count()
-
-    for b in businesses:
-        try:
-            sub = Subscription.objects.get(Business=b.id, Status='Active')
-
-            active_businesses += 1
-            total_amount += sub.Plan.Price
-            subs = Subscription.objects.filter(Business=b.id).order_by('-End')[:2]
-
-            if len(subs_li) <= 2:
-                for s in subs:
-                    subs_li.append(s)
-
-            if subs_li[0].Plan.Price > subs_li[1].Plan.Price:
-                upgrades += 1
-
-            elif subs_li[0].Plan.Price < subs_li[1].Plan.Price:
-                downgrades += 1
-
-            else:
-                maintaining += 1
-            subs_li = []
-        except Subscription.DoesNotExist:
-            inactive[b.id] = b
-            non_renewal += 1
-
-    try:
-        upgrades_perc = (upgrades/active_businesses*100)
-        upgrades_perc = round(upgrades_perc)
-    except ZeroDivisionError:
-        pass
-
-    try:
-        downgrades_perc = (downgrades/active_businesses*100)
-        downgrades_perc = round(downgrades_perc)
-    except ZeroDivisionError:
-        pass
-
-    try:
-        maintaining_perc = (maintaining/active_businesses*100)
-        maintaining_perc = round(maintaining_perc)
-    except ZeroDivisionError:
-        pass
-
-    try:
-        non_renewal_perc = (non_renewal/businesses_count*100)
-        non_renewal_perc = round(non_renewal_perc)
-    except ZeroDivisionError:
-        pass
-
-    return (businesses_count, inactive, active_businesses, total_amount, upgrades, upgrades_perc, downgrades,
-            downgrades_perc, maintaining, maintaining_perc, non_renewal, non_renewal_perc)
-
 
 @login_required(login_url="/login/")
 @check_superuser()
 def subscriptions(request):
     search = {}
 
-    (businesses_count, inactive, active_businesses, total_amount, upgrades, upgrades_perc, downgrades,
-     downgrades_perc, maintaining, maintaining_perc, non_renewal, non_renewal_perc) = get_subscription_stats()
-
     active = Subscription.objects.filter(Status='Active').order_by('-End')
     pending = Subscription.objects.filter(Status='Pending').order_by('-End')
+
+    subscription_stats = get_subscription_stats()
+
+    businesses_count = subscription_stats['businesses_count']
+    inactive_businesses = subscription_stats['inactive_businesses']
+    active_businesses = subscription_stats['active_businesses']
+    upgrades = subscription_stats['upgrades']
+    upgrades_percentage = subscription_stats['upgrades_percentage']
+    downgrades = subscription_stats['downgrades']
+    downgrades_percentage = subscription_stats['downgrades_percentage']
+    maintaining = subscription_stats['maintaining']
+    maintaining_percentage = subscription_stats['maintaining_percentage']
+    non_renewal = subscription_stats['non_renewal']
+    non_renewal_percentage = subscription_stats['non_renewal_percentage']
+
+    total_revenue, average_perc, overall_monthly_record, monthly_package_record = performance_this_year()
 
     if request.method == 'POST':
         print('working1')
@@ -329,35 +275,38 @@ def subscriptions(request):
         'active': active,
         'pending': pending,
         'businesses_count': businesses_count,
-        'inactive': inactive,
-        'active_businesses': active_businesses,
-        'total_amount': total_amount,
+        'inactive_count': inactive_businesses,
+        'active_count': active_businesses,
+        'total_revenue': total_revenue,
         'upgrades': upgrades,
-        'upgrades_perc': upgrades_perc,
+        'upgrades_percentage': upgrades_percentage,
         'downgrades': downgrades,
-        'downgrades_perc': downgrades_perc,
+        'downgrades_percentage': downgrades_percentage,
         'maintaining': maintaining,
-        'maintaining_perc': maintaining_perc,
+        'maintaining_percentage': maintaining_percentage,
         'non_renewal': non_renewal,
-        'non_renewal_perc': non_renewal_perc
+        'non_renewal_percentage': non_renewal_percentage
     }
     return render(request, 'management/subscriptions.html', context)
 
 
 @login_required(login_url="/login/")
 @check_superuser()
-def addSubscription(request, id=0):
+def subscriber(request, id=0):
+    start = None
     delta = timedelta(days=31)
+
     bus = Business.objects.get(pk=id)
-    history = Subscription.objects.filter(Business=bus.id).order_by('End')
+    history = Subscription.objects.filter(Business__id=bus.id).order_by('End')
+
     plans = SubscriptionPlan.objects.all()
 
     if request.method == 'POST':
         if 'newPlan' in request.POST:
-            plan = request.POST.get('Plan')
-
+            plan_id = request.POST.get('Plan_id')
+            plan_id = int(plan_id)
             for i in plans:
-                if i.Name == plan:
+                if i.id == plan_id:
                     existing = (Subscription.objects.filter(Q(Business=bus.id) & Q(End__gte=datetime.now()) &
                                                            Q(Status='Active') | Q(Status='Pending')).order_by('-id')[:1])
                     if existing.exists():
@@ -365,22 +314,22 @@ def addSubscription(request, id=0):
                             start = e.End
                         end = start + delta
 
-                        newSubscription = Subscription(Business=bus, Plan=i, Start=start, End=end, Status='Pending')
-                        newSubscription.save()
+                        new_subscription = Subscription(Business=bus, Plan=i, Start=start, End=end, Status='Pending')
+                        new_subscription.save()
 
                         messages.success(request, f"New plan {i.Name} has been successfully added and will start from"
-                                                  f"{newSubscription.Start.date} will end on {newSubscription.End.date}")
+                                                  f"{new_subscription.Start.date()} will end on {new_subscription.End.date()}")
                     else:
                         start = datetime.now()
                         end = start + delta
-                        newSubscription = Subscription(Business=bus, Plan=i, Start=start, End=end, Status='Active')
-                        newSubscription.save()
+                        new_subscription = Subscription(Business=bus, Plan=i, Start=start, End=end, Status='Active')
+                        new_subscription.save()
 
                         messages.success(request, f"New plan {i.Name} has been successfully added and will start from"
-                                                  f"{newSubscription.Start.date} will end on {newSubscription.End.date}")
+                                                  f"{new_subscription.Start.date()} will end on {new_subscription.End.date()}")
         if 'Renew' in request.POST:
             active_plan = (Subscription.objects.filter(Q(Business=bus.id) & Q(End__gte=datetime.now()) &
-                                                      Q(Status='Active')| Q(Status='Inactive'))[:1])
+                                                       Q(Status='Active') | Q(Status='Inactive'))[:1])
             if active_plan.exists():
                 pending_plan = Subscription.objects.filter(Business=bus.id, Status='Pending')
                 if pending_plan.exists():
@@ -396,13 +345,21 @@ def addSubscription(request, id=0):
                     start = ap.End
                     end = start+delta
                     plan = ap.Plan
-                    newSubscription = Subscription(Business=bus, Plan=plan, Start=start, End=end, Status='Pending')
-                    newSubscription.save()
+                    new_subscription = Subscription(Business=bus, Plan=plan, Start=start, End=end, Status='Pending')
+                    new_subscription.save()
 
                     messages.success(request, f"The current plan {plan.Name} which is ends on"
-                                              f" {newSubscription.End.date} has been successfully renewed")
+                                              f" {new_subscription.End.date()} has been successfully renewed")
             else:
                 messages.error(request, f"No recent subscription found to renew")
+
+        if 'lookup transaction' in request.POST:
+            lookup_id = request.POST.get('lookup_id')
+            look_type = request.POST.get('transaction_type')
+
+            look_type = look_type.replace(' ', '%')
+            return redirect(f'/transactionInformation/{look_type}/{lookup_id}/')
+
     context = {
         'bus': bus,
         'history': history,
@@ -414,6 +371,7 @@ def addSubscription(request, id=0):
 @login_required(login_url="/login/")
 @check_superuser()
 def subscription(request, id=0):
+    old_plan = ''
     sub = Subscription.objects.get(pk=id)
     bus = Business.objects.get(pk=sub.Business.id)
     plans = SubscriptionPlan.objects.all()
@@ -427,7 +385,9 @@ def subscription(request, id=0):
                     if i.Price > sub.Plan.Price:
                         sub.Plan = i
                         sub.save()
-                        messages.success(request, f"subscription upgraded successfully from {plan} to {sub.Plan}")
+                        messages.success(request, f"subscription upgraded successfully from {old_plan} to {sub.Plan.Name}")
+                    elif i.Price == sub.Plan.Price:
+                        messages.info(request, "You can't upgrade to the same subscription, please choose a higher plan")
                     else:
                         messages.error(request, "subscription downgrades are not allowed")
 
@@ -452,7 +412,6 @@ def subscription(request, id=0):
                         sub.save()
 
                         messages.success(request, 'subscription activated successfully')
-
                     else:
                         messages.error(request, 'maximum number of days for the subscription reached')
 
@@ -463,3 +422,156 @@ def subscription(request, id=0):
     }
     return render(request, 'management/subscription.html', context)
 
+
+@login_required(login_url="/login/")
+@check_superuser()
+def subscription_settings(request):
+    edit_feature = None
+    delete_feature = None
+    f_id = None
+    plan_options = ['Basic', 'Standard', 'Advanced', 'Premium']
+
+    plans, features, plans_and_features = get_plans_and_features()
+    if request.method == 'POST':
+        if 'create plan' in request.POST:
+            name = request.POST.get('name')
+            price = request.POST.get('price')
+            f_li = request.POST.getlist('features')
+            price = int(price)
+            f_li = [int(f) for f in f_li]
+
+            try:
+                plan = SubscriptionPlan(Name=name, Price=price)
+                plan.save()
+                messages.success(request, f'{name} added successfully')
+
+                for f in f_li:
+                    feature = Features.objects.get(pk=f)
+                    try:
+                        PlanFeatures.objects.get(plan=plan, feature__id=feature.id)
+                    except PlanFeatures.DoesNotExist:
+                        PlanFeatures(plan=plan, feature=feature).save()
+            except Exception as e:
+                messages.error(request, f'{e}')
+
+            plans = get_plans_and_features()
+
+        if 'add features' in request.POST:
+            feature = request.POST.get('feature')
+
+            try:
+                Features.objects.get(Name=feature)
+            except Features.DoesNotExist:
+                Features(Name=feature).save()
+
+        if 'delete feature' in request.POST:
+            f_id = request.POST.get('delete feature')
+
+            try:
+                delete_feature = Features.objects.get(pk=int(f_id))
+                messages.info(request, f"Delete  '{delete_feature.Name}' ?")
+            except Exception as e:
+                messages.error(request, f'{e}')
+
+        if 'confirm delete' in request.POST:
+            f_id = request.POST.get('confirm delete')
+            try:
+                Features.objects.get(pk=int(f_id)).delete()
+                sub_plans, features, plans_and_features = get_plans_and_features()
+                messages.success(request, 'feature deleted successfully')
+            except Exception as e:
+                messages.error(request, f'{e}')
+
+        if "don't delete" in request.POST:
+            delete_feature = None
+
+        if 'edit feature' in request.POST:
+            f_id = request.POST.get('edit feature')
+            f_id = int(f_id)
+            try:
+                edit_feature = Features.objects.get(pk=f_id)
+            except Features.DoesNotExist:
+                messages.error(request, 'failed to get the feature')
+
+        if 'edited feature' in request.POST:
+            f_id = request.POST.get('edited feature')
+            feature = request.POST.get('feature')
+            f_id = int(f_id)
+            try:
+                edit_feature = Features.objects.get(pk=f_id)
+                edit_feature.Name = feature
+                edit_feature.save()
+                print(f'edited feature{feature}')
+                plans, features, plans_and_features = get_plans_and_features()
+                edit_feature = None
+                messages.success(request, 'feature edited successfully')
+            except Features.DoesNotExist:
+                messages.error(request, 'failed to get the feature')
+
+        if 'cancel edit' in request.POST:
+            edit_feature = None
+
+    context = {
+        'plans': plans,
+        'plan_options': plan_options,
+        'features': features,
+        'plan_and_features': plans_and_features,
+        'edit_feature': edit_feature,
+        'delete_feature': delete_feature,
+    }
+    return render(request, 'management/subscriptionSettings.html', context)
+
+
+def edit_plan(request, id=0):
+    plan = None
+    delete_feature = None
+    plan_features = None
+    features = None
+    try:
+        plan = SubscriptionPlan.objects.get(pk=id)
+
+        features, plan_features = get_plan_features_and_rem_features(plan.id)
+        if request.method == 'POST':
+            if 'add features' in request.POST:
+                new_features = request.POST.getlist('features')
+                new_features = [int(f) for f in new_features]
+                for f in new_features:
+                    try:
+                        feature = Features.objects.get(pk=f)
+
+                        PlanFeatures(plan=plan, feature=feature).save()
+                        features, plan_features = get_plan_features_and_rem_features(plan.id)
+                    except Exception as e:
+                        messages.error(request, f'{e}')
+
+            if 'delete feature' in request.POST:
+                f_id = request.POST.get('delete feature')
+
+                try:
+                    delete_feature = PlanFeatures.objects.get(plan__id=plan.id, feature__id=int(f_id))
+                    messages.info(request, f"Delete  '{delete_feature.feature.Name}' ?")
+                except Exception as e:
+                    messages.error(request, f'here{e}')
+
+            if 'confirm delete' in request.POST:
+                f_id = request.POST.get('confirm delete')
+                try:
+                    PlanFeatures.objects.get(plan__id=plan.id, feature__id=int(f_id)).delete()
+                    features, plan_features = get_plan_features_and_rem_features(plan.id)
+                    messages.success(request, 'feature deleted successfully')
+                except Exception as e:
+                    messages.error(request, f'{e}')
+
+            if "don't delete" in request.POST:
+                delete_feature = None
+
+    except Exception as e:
+        messages.error(request, f'{e}')
+
+    context = {
+        'plan': plan,
+        'plan_features': plan_features,
+        'features': features,
+        'delete_feature': delete_feature
+    }
+    return render(request, 'management/editPlan.html', context)

@@ -28,8 +28,12 @@ def inventory_data(buss):
     categories = InventoryCategory.objects.filter(Business__id=buss)
 
     cat_count = categories.count()
+    if not cat_count:
+        cat_count = 0
     stock_value = product_info.aggregate(Sum('CurrentValue'))
     stock_value = stock_value['CurrentValue__sum']
+    if not stock_value:
+        stock_value = 0
     for c in categories:
         for p in products:
             for pi in product_info:
@@ -57,12 +61,15 @@ def inventory_data(buss):
                     else:
                         available_prod += 1
                         stock_count += pi.CurrentQuantity
+    if not stock_count:
+        stock_count = 0
     if data:
         data = dict(sorted(data.items(), key=lambda item: item[1]['id'], reverse=True))
     prod_delta = unavailable_prod - available_prod
-    for i in product_info:
-        initial += i.InitialQuantity
-        current += i.CurrentQuantity
+    if product_info:
+        for i in product_info:
+            initial += i.InitialQuantity
+            current += i.CurrentQuantity
     stock_delta += current - initial
     try:
         current_percentage = current/initial*100
@@ -171,6 +178,9 @@ def inventory_view(request, id=0, r=''):
         prod_performance = cache.get(str(buss) + 'prod_performance')
         if not prod_performance:
             prod_performance = least_performing(buss)
+
+        if not stock_value:
+            stock_value = 0
 
         if request.method == 'POST':
             if 'save' in request.POST:

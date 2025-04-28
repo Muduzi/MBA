@@ -4,7 +4,7 @@ from .models import ServiceIncome, Service, Package, Category, PackageServices, 
 from .service_graphs import income_this_week, daily_total_this_week, cash_credit_this_week
 from User.models import Employee, Business
 from django.contrib import messages
-from User.decorator import allowed_users
+from User.decorator import allowed_users, check_active_subscription
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.db.models import Sum, Q
@@ -105,6 +105,7 @@ def services(request):
 
 @login_required(login_url="/login/")
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
+# @check_active_subscription(allowed_subscriptions=['Basic', 'Standard', 'Advanced', 'Premium'])
 def service_income(request):
     customer = None
     result = None
@@ -131,6 +132,8 @@ def service_income(request):
     return render(request, 'serviceIncome.html', context)
 
 
+@login_required(login_url="/login/")
+@allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
 def service_sale(request):
     paid = 0
     excess = 0

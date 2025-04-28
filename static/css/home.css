@@ -22,7 +22,7 @@ body{
     height:70px;
     border-radius:15px;
 }
-.logo text{
+.logo button{
     padding:10px;
     color:rgb(54, 69, 79);
     font-size:30px;
@@ -67,7 +67,7 @@ body{
     height:auto;
     color:gray;
 }
-button{
+.card button{
     display:flex;
     align-items:center;
     justify-content:center;
@@ -80,7 +80,7 @@ button{
     border-radius:10px;
 }
 
-button:hover{
+.card button:hover{
     color:white;
     background:#5D6166;
 }

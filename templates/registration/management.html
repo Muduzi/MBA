@@ -11,9 +11,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<div class="logo">
-    <text onclick="window.location.href='/';">MAT</text>
-</div>
+<form method="post" class="logo">
+    {%csrf_token%}
+    <button type="submit" name="refresh cache">MAT</button>
+</form>
 
 <div class="container1">
     <div class="card">

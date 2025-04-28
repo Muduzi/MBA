@@ -14,7 +14,7 @@
 
 <div class="Navigation" id="Navigation">
     {%if request.user in s_list%}
-        <button type = 'button' onclick="window.location.href = '/add_product/{{cat_obj.id}}/';">
+        <button type = 'button' onclick="window.location.href = '/addProduct/{{cat_obj.id}}/';">
             <i class="material-icons" style="font-size:20px;"></i>
             add Product
         </button>
@@ -27,7 +27,7 @@
 <p class="categories_title">{{cat_obj.Name}}</p>
 <div class="products" id="products">
     {%for v in products%}
-        <div class="product_card" onclick="window.location.href = '/view_product/{{v.id}}/';">
+        <div class="product_card" onclick="window.location.href = '/viewProduct/{{v.id}}/';">
             <div class="product_card_image">
                 <img src="{{v.Photo.url}}" alt="failed to load category image">
             </div>

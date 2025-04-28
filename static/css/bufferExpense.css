@@ -68,7 +68,7 @@ body{
     align-items:center;
     position:center;
     width:auto;
-    height:98%;
+    height:60%;
     color:#5D6166;
     padding:5px;
     background:transparent;
@@ -296,15 +296,16 @@ form textarea{
     background:#5D6166;
 }
 
-@media(max-width:768px){
+@media(max-width:1000px){
     body{
         row-gap:5px;
     }
     .Navigation{
+        width:90%;
         font-size:15px;
     }
     table{
-        width:100%;
+        width:90%;
         height:80%;
     }
     table button{
@@ -363,8 +364,11 @@ form textarea{
     body{
         row-gap:15px;
     }
+    .Navigation{
+        width:95%;
+    }
     table{
-        width:100%;
+        width:95%;
         height:78%;
     }
     table button{

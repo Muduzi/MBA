@@ -275,7 +275,7 @@ td{
     margin-left:5px;
 }
 
-form{
+.process_this_invoice{
     display:flex;
     flex-direction:column;
     align-items:flex-start;

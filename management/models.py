@@ -9,12 +9,11 @@ class Features(models.Model):
 
 
 class SubscriptionPlan(models.Model):
-    packages = [('Bronze', 'Bronze'),
-                ('Silver', 'Silver'),
-                ('Gold', 'Gold'),
-                ('Diamond', 'Diamond'),
-                ('Platinum', 'Platinum')]
-    Name = models.CharField(null=False, choices=packages, max_length=10, default='Bronze')
+    packages = [('Basic', 'Basic'),
+                ('Standard', 'Standard'),
+                ('Advanced', 'Advanced'),
+                ('Premium', 'Premium')]
+    Name = models.CharField(null=False, choices=packages, max_length=20, default='Bronze')
     Price = models.IntegerField(null=False)
 
 

@@ -58,7 +58,7 @@
     </div>
 </div>
 
-<form method="post" class="option">
+<form method="post" class="but">
     {%csrf_token%}
     {%if sub.Status == 'Active'%}
         <button type="submit" name="deactivate">
@@ -77,6 +77,7 @@
         Upgrade
     </button>
 </form>
+
 <form method="post" class="planForm" id="planForm">
     {%csrf_token%}
     <button type="button" name="newPlan" class="close2" onclick="closeForm()">
@@ -84,7 +85,11 @@
     </button>
     <select name="Plan">
         {%for p in plans%}
-            <option value="{{p.Name}}">{{p.Name}}:{{p.Price}}</option>
+            {%if p.Name == sub.Plan.Name%}
+                <option value="{{p.Name}}" selected>{{p.Name}}&nbsp;@&nbsp;{{p.Price}}</option>
+            {%else%}
+                <option value="{{p.Name}}">{{p.Name}}&nbsp;@&nbsp;{{p.Price}}</option>
+            {%endif%}
         {%endfor%}
     </select>
     <button type="submit" name="upgrade" class="save">

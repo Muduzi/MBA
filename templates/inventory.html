@@ -186,30 +186,24 @@
         <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
     </button>
     <p class="product_title">Product Details</p>
-    <text><span class="info_title">Date Created &nbsp; : &nbsp; </span>{{product.Date}}</text>
-    <text><span class="info_title">Name &nbsp; : &nbsp; </span>{{product.Name}}</text>
-    <text><span class="info_title">Brand &nbsp; : &nbsp; </span>{{product.Brand}}</text>
-    <text><span class="info_title">Size &nbsp; : &nbsp; </span>{{product.Size}}</text>
-    <text><span class="info_title">Expiry Date &nbsp; : &nbsp; </span>{{product.ExpiryDate}}</text>
-    <text><span class="info_title">Cost &nbsp; : &nbsp; </span>{{product_info.Cost}}</text>
-    {%if product_info.Location%}
-        <text><span class="info_title">Location &nbsp; : &nbsp; </span>{{product_info.Location}}</text>
-    {%endif%}
-    <text><span class="info_title">Initial Quantity &nbsp; : &nbsp; </span>{{product_info.InitialQuantity}}</text>
-    <text><span class="info_title">Current Quantity &nbsp; : &nbsp; </span>{{product_info.CurrentQuantity}}</text>
-    <text><span class="info_title">Initial Quantity &nbsp; : &nbsp; </span>{{product_info.InitialValue}}</text>
-    <text><span class="info_title">Current Quantity &nbsp; : &nbsp; </span>{{product_info.CurrentValue}}</text>
+    <div class="product_details">
+        <text><span class="info_title">Date Created &nbsp; : &nbsp; </span>{{product.Date}}</text>
+        <text><span class="info_title">Name &nbsp; : &nbsp; </span>{{product.Name}}</text>
+        <text><span class="info_title">Brand &nbsp; : &nbsp; </span>{{product.Brand}}</text>
+        <text><span class="info_title">Size &nbsp; : &nbsp; </span>{{product.Size}}</text>
+        <text><span class="info_title">Expiry Date &nbsp; : &nbsp; </span>{{product.ExpiryDate}}</text>
+        <text><span class="info_title">Cost &nbsp; : &nbsp; </span>{{product_info.Cost}}</text>
+        {%if product_info.Location%}
+            <text><span class="info_title">Location &nbsp; : &nbsp; </span>{{product_info.Location}}</text>
+        {%endif%}
+        <text><span class="info_title">Initial Quantity &nbsp; : &nbsp; </span>{{product_info.InitialQuantity}}</text>
+        <text><span class="info_title">Current Quantity &nbsp; : &nbsp; </span>{{product_info.CurrentQuantity}}</text>
+        <text><span class="info_title">Initial Value &nbsp; : &nbsp; </span>{{product_info.InitialValue}}</text>
+        <text><span class="info_title">Current Value &nbsp; : &nbsp; </span>{{product_info.CurrentValue}}</text>
+    </div>
 </div>
 
 <script>
-    <!-- messages -->
-    let mssg = document.getElementById("mssg");
-
-    function closeMssg(){
-        mssg.classList.add("hide");
-        window.location.href = "/inventory/";
-    }
-
     let popup = document.getElementById("popup");
 
     function openPopup(){
@@ -242,4 +236,12 @@
 
         }
     });
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+        window.location.href = "/inventory/";
+    }
 </script>

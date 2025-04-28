@@ -40,7 +40,113 @@
 {%endif%}
 
 <div class="Navigation">
-    <button type="button" onclick="window.location.href='/subscriptions/';">
+    <button type="button" onclick="window.history.go(-1);">
         <i class="material-icons" style="font-size:19px;">arrow_forward</i>
     </button>
 </div>
+
+{%if transaction%}
+    <div class="cashier">
+            <text><i class="material-icons" style="font-size:20px;">person</i>Cashier:&nbsp;{{transaction.Cashier.get_full_name}}</text>
+        </div>
+    {%if trans_type == 'product income'%}
+        <form method="post" class="sales_record">
+            {%csrf_token%}
+
+            <div class="inventory_info">
+                <label for="product">Product</label>
+                <input type="text" id="product" name="product" value="{{transaction.Product.Name}}"  disabled class="disabled">
+                <label>Code</label>
+                <input type="text" name="Code" value="{{inventory_info.Code}}" disabled  class="disabled">
+                <label>BPrice</label>
+                <input type="text" name="BPrice" value="{{inventory_info.BPrice}}" disabled  class="disabled">
+                <label>SPrice</label>
+                <input type="text" name="BPrice" value="{{inventory_info.SPrice}}" disabled  class="disabled">
+                <label>Current Quantity</label>
+                <input type="text" name="BPrice" value="{{inventory_info.CurrentQuantity}}" disabled  class="disabled">
+            </div>
+
+            <div class="debt_info">
+                <label for="customer">Customer</label>
+                <input id="customer" name="customer" value="{{debt_info.Customer}}" disabled class="disabled">
+                <label for="received">Received</label>
+                <input id="received" name="Received" value="{{debt_info.Received}}" disabled class="disabled">
+                <label>Due</label>
+                <input name="due" value="{{debt_info.Due}}" disabled class="disabled">
+            </div>
+
+            <div class="product_sales_info">
+                <label for="date">Date</label>
+                <input id="date" name="date" value="{{transaction.Date}}" disabled class="disabled">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" value="{{transaction.Quantity}}">
+                <label for="PMode">PMode</label>
+                <select id="PMode" name="PMode">
+                    <option value="{{transaction.PMode}}" selected>{{transaction.PMode}}</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" name="amount" value="{{transaction.Amount}}" disabled class="disabled">
+                <div class="but">
+                    <button type="submit" name="delete">
+                        <i class="material-icons" style="font-size:19px;">delete</i>
+                    </button>
+                    <button type="submit" name="undo">
+                        <i class="material-icons" style="font-size:19px;">undo</i>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    {%elif trans_type == 'service income'%}
+        <form method="post" class="sales_record">
+            {%csrf_token%}
+
+            <div class="service_sale_info">
+                <label for="date1">Date</label>
+                <input id="date1" name="date" value="{{transaction.Date}}" disabled class="disabled">
+                <label>Service</label>
+                <input type="text" name="service" {%if transaction.Package%} value="{{transaction.Package.Name}}" {%else%} value="{{transaction.Service.Name}}"{%endif%} disabled class="disabled">
+                <label for="quantity1">Quantity</label>
+                <input type="number" id="quantity1" name="quantity" value="{{transaction.Quantity}}">
+                <label for="PMode">PMode</label>
+                <select id="PMode1" name="PMode">
+                    <option value="{{transaction.PMode}}" selected>{{transaction.PMode}}</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <label for="amount1">Amount</label>
+                <input type="number" id="amount1" name="amount" value="{{transaction.Amount}}" disabled class="disabled">
+                <div class="but">
+                    <button type="submit" name="delete">
+                        <i class="material-icons" style="font-size:19px;">delete</i>
+                    </button>
+                    <button type="submit" name="undo">
+                        <i class="material-icons" style="font-size:19px;">undo</i>
+                    </button>
+                </div>
+            </div>
+            {%if debt_info%}
+                <div class="debt_info">
+                    <label for="customer1">Customer</label>
+                    <input id="customer1" name="customer" value="{{debt_info.Customer.Name}}" disabled class="disabled">
+                    <label for="received1">Received</label>
+                    <input id="received1" name="Received" value="{{debt_info.Received}}" disabled class="disabled">
+                    <label>Due</label>
+                    <input name="due" value="{{debt_info.Due}}" disabled class="disabled">
+                </div>
+            {%endif%}
+
+        </form>
+    {%endif%}
+{%endif%}
+
+<script>
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>
