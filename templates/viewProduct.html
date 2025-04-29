@@ -30,56 +30,57 @@
     </button>
 </div>
 
-<div class="content" id="content">
-    <div class="product_container">
-        <div class="product" id="lpv">
-            <button  type="button" id="previousImage" class="prev_next">
-                <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_left</i>
-            </button>
-            <div class="product_image">
-                <img id="currentImage" src="{{prod_obj.images.0}}" alt="no more images to display">
+<div class="product_container">
+    <div class="product" id="lpv">
+        <button  type="button" id="previousImage" class="prev_next">
+            <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_left</i>
+        </button>
+        <div class="product_image">
+            <img id="currentImage" src="{{prod_obj.images.0}}" alt="no more images to display">
+        </div>
+        <button id="nextImage" type="button" class="prev_next">
+            <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_right</i>
+        </button>
+    </div>
+    <div class="image_list">
+        {%for index, image in prod_obj.images|enumerate_list%}
+            <div class="image_list_image">
+                <img src="{{image}}" alt="no more images to display">
+                {%if index == 0%}
+                    <div id="0" class="remove_curtain"></div>
+                {%else%}
+                    <div id="{{index}}" class="image_curtain"></div>
+                {%endif%}
             </div>
-            <button id="nextImage" type="button" class="prev_next">
-                <i class="material-icons" style="font-size:25px; border:hidden;" >chevron_right</i>
-            </button>
-        </div>
-        <div class="image_list">
-            {%for index, image in prod_obj.images|enumerate_list%}
-                <div class="image_list_image">
-                    <img src="{{image}}" alt="no more images to display">
-                    {%if index == 0%}
-                        <div id="0" class="remove_curtain"></div>
-                    {%else%}
-                        <div id="{{index}}" class="image_curtain"></div>
-                    {%endif%}
-                </div>
-            {%endfor%}
-        </div>
-        <text class="name">{{prod_obj.Name}}</text>
-        <text class="price">K{{prod_obj.Price}}</text>
+        {%endfor%}
     </div>
-    <div class="details">
-        <text>
-            {{prod_obj.Description}}
-        </text>
-        <table>
-            <thead>
-                <tr>
-                    <th class="t1">Specification</th>
-                    <th class="t2">Detail</th>
-                </tr>
-            </thead>
-            <tbody>
-            {%for i in prod_obj.features.values%}
-                <tr>
-                    <td class="t1">{{i.Name}}</td>
-                    <td class="t2">{{i.Description}}</td>
-                </tr>
-            {%endfor%}
-            </tbody>
-        </table>
-    </div>
+    <text class="name">{{prod_obj.Name}}</text>
+    <text class="price">K{{prod_obj.Price}}</text>
 </div>
+
+<div class="details">
+    <div class="description">
+        <text class="description_title">Description</text>
+        <text class="description_content">{{prod_obj.Description}}</text>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="t1">Specification</th>
+                <th class="t2">Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for i in prod_obj.features.values%}
+            <tr>
+                <td class="t1">{{i.Name}}</td>
+                <td class="t2">{{i.Description}}</td>
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+
 
 <div class="contact" id="contact">
     <div class="close">
