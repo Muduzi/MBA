@@ -1,0 +1,235 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogue.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/footer.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+{%include 'catalogue/catalogueMessages.html'%}
+
+
+<div id="navigationBar"  class="Navigation">
+    <div class="store_name" id="store">
+        <p>{{bus_data.Name}}</p>
+    </div>
+    <div class="nav_but" id="nav_but">
+        <button type="button" onclick="window.location.href='/market/';">
+            Market
+        </button>
+        {%if request.user in s_list%}
+            <button type="button" onclick="window.location.href='/addCategory/';">
+                Add Category
+            </button>
+            <button type="button" onclick="window.location.href='/addProduct/';">
+                Add Product
+            </button>
+        {%endif%}
+        <button type="button" onclick="openSearch()">
+            <i class="material-icons" style="font-size:20px;">search</i>
+        </button>
+    </div>
+    <button type="button" onclick="openPhoneNavigation()" class="get_phone_navigation">
+        <i class="material-icons" style="font-size:25px;">list</i>
+    </button>
+</div>
+
+<div id="phoneNavigation" class="phone_navigation">
+    <div class="phone_navigation_buttons">
+        <div class="close_phone_navigation">
+            <button type="button" onclick="closePhoneNavigation()">
+                <i class="material-icons" style="font-size:17px;">close</i>
+            </button>
+        </div>
+        {%if request.user not in s_list%}
+            <button type="button" onclick="window.location.href='/market/';">
+                    Back
+                    <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+        {%elif request.user in s_list%}
+            <button type="button" onclick="window.location.href='/';">
+                    Back
+                    <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+            <button type="button" onclick="window.location.href='/market/';">
+                Market
+                <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+            <button type="button" onclick="window.location.href='/addCategory/';">
+                Add Category
+                <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+            <button type="button" onclick="window.location.href='/addProduct/';">
+                Add Product
+                <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+        {%endif%}
+    </div>
+    <div class="footer">
+        <p class="company_name">MTech</p>
+        <div class="links">
+            <text><i class="material-icons" style="font-size:21px;">mail</i><a href="mailto:{{bus_data.Email}}"></a></text>
+            <a href="http://{{bus_data.Instagram}}" class="fa fa-instagram"></a>
+            <a href="http://{{bus_data.Facebook}}" class="fa fa-facebook"></a>
+            <a href="http://{{bus_data.Linkedin}}" class="fa fa-linkedin"></a>
+            <a href="https://wa.me/{{bus_data.Contact2}}/" class="fa fa-whatsapp"></a>
+        </div>
+        <div class="copyright">
+            <text>copyright &copy; 2024 Muduzi Inc</text>
+            <p onclick="window.location.href='/terms/';">Terms of Service</p>
+            <p onclick="window.location.href='/company/';">Company</p>
+        </div>
+    </div>
+</div>
+
+<div class="profile" id="profile">
+    <img {%if bus_data.Photo%} src="{{bus_data.Photo.url}}" {%else%} alt="failed to load profile photo" {%endif%}>
+    <div class="about_us">
+        <button type="button" onclick="viewInfo()">
+            About Us
+        </button>
+    </div>
+</div>
+
+<p class="categories_title">Categories</p>
+{%for key, value in content.items%}
+    <div class="category_card" onclick="window.location.href = '/category/{{key}}/';">
+        <div class="category_card_image">
+            <img src="{{value.Photo}}" alt="failed to load category image">
+        </div>
+        <text class="item_name">{{value.Name}}</text>
+        <text class="prod_count">{{value.Count}}&nbsp;Items</text>
+    </div>
+{%endfor%}
+
+<!--businesses information-->
+<div class="compInfo_hide" id="compInfo">
+    <div class="name_about">
+        <h1>{{bus_data.Name}}</h1>
+        <text>{{bus_data.About}}</text>
+    </div>
+    <div class="contact_details">
+        <text><span class="contact_details_title">Phone:</span> +265 {{bus_data.Contact1}}&nbsp;&nbsp;</text>
+        <text><span class="contact_details_title">Email:</span> <a href="mailto:{{bus_data.Email}}">{{bus_data.Email}}</a>&nbsp;&nbsp;</text>
+        <text><span class="contact_details_title">City:</span> {{bus_data.City}}&nbsp;&nbsp;</text>
+        <text><span class="contact_details_title">Country:</span> {{bus_data.Country}}&nbsp;&nbsp;</text>
+        <text><span class="contact_details_title">Zipcode:</span> {{bus_data.ZipCode}}&nbsp;&nbsp;</text>
+        <div class="find_us">
+            <a href="http://{{bus_data.Instagram}}" class="fa fa-instagram"></a>
+            <a href="http://{{bus_data.Facebook}}" class="fa fa-facebook"></a>
+            <button type="button" class="close_info" onclick="closeInfo()">
+                <i class="material-icons" style="font-size:30px;">keyboard_arrow_down</i>
+            </button>
+            <a href="http://{{bus_data.Linkedin}}" class="fa fa-linkedin"></a>
+            <a href="https://wa.me/{{bus_data.Contact2}}/" class="fa fa-whatsapp"></a>
+        </div>
+    </div>
+</div>
+
+<!--forms-->
+<form method="post" id="search" {%if search1 and search2 or search1 or search2%} class="open_search" {%else%} class="search" {%endif%}>
+    {%csrf_token%}
+    <button type="button" onclick="closeSearch()" class="close_search">
+        <i class="material-icons" style="font-size:19px;">close</i>
+    </button>
+    <div class="search_input">
+        <input type="search" name="lookup_word" required placeholder="search......" maxlength="60">
+        <button type="submit" name="lookup"  onclick="getLocation()">
+           <i class="material-icons" style="font-size:22px;">search</i>
+        </button>
+    </div>
+    <div class="results">
+        {%if search1%}
+            {%for i in search1%}
+                <div class="result" onclick="window.location.href='/viewProduct/{{i.id}}/';">
+                    <img src="{{i.photo.url}}" alt="unavailable">
+                    <text>{{i.name}}</text>
+                </div>
+            {%endfor%}
+        {%endif%}
+        {%if search2%}
+            {%for i in search2%}
+                <div class="result" onclick="window.location.href='/category/{{i.id}}/';">
+                    <img src="{{i.photo.url}}" alt="unavailable">
+                    <text>{{i.name}}</text>
+                </div>
+            {%endfor%}
+        {%endif%}
+    </div>
+</form>
+
+{%include 'catalogue/footer.html'%}
+<script>
+    navigationBar = document.getElementById("navigationBar");
+
+    let lastScrollPosition = 0
+    window.addEventListener('scroll', function(){
+        const currentScrollPosition = window.scrollY;
+
+        if (currentScrollPosition > lastScrollPosition && currentScrollPosition > 55){
+            navigationBar.classList.add('hide_navigation_bar');
+            nav_but.classList.add('hide_navigation_bar');
+        }else {
+            navigationBar.classList.remove('hide_navigation_bar');
+            nav_but.classList.remove('hide_navigation_bar');
+        }
+
+        lastScrollPosition = currentScrollPosition ;
+    });
+
+
+    <!--phone navigation-->
+    let phoneNavigation =  document.getElementById("phoneNavigation");
+    let Navigation =  document.getElementById("Navigation");
+
+    function openPhoneNavigation(){
+        phoneNavigation.classList.add("open_phone_navigation");
+        Navigation.classList.add("hide");
+    }
+
+    function closePhoneNavigation(){
+        phoneNavigation.classList.remove("open_phone_navigation");
+        Navigation.classList.remove("hide");
+    }
+
+
+    <!--bring in-out company information -->
+    let compInfo =  document.getElementById("compInfo");
+
+    function viewInfo(){
+        compInfo.classList.add("compInfo");
+    }
+
+    function closeInfo(){
+        compInfo.classList.remove("compInfo");
+    }
+
+
+    <!--click on company name-->
+    let store = document.getElementById("store");
+    store.addEventListener('click', goTo);
+
+    function goTo(){
+        window.location.href='/catalogue/{{goto_business}}/';
+    }
+
+    <!--search-->
+    let search = document.getElementById("search");
+
+    function openSearch(){
+        search.classList.add("open_search");
+    }
+    function closeSearch(){
+        search.classList.remove("open_search");
+    }
+</script>

@@ -161,7 +161,7 @@ urlpatterns = [
     path("addProduct/", add_product, name="addProduct"),
     path("editProduct/<int:id>/", edit_product, name="editProduct"),
     path("viewProduct/<int:id>/", view_product, name="view_product"),
-    path("viewBusinessTypeProducts/<str:business_type>/", view_buss_type_products, name="viewBusinessTypeProducts")
+    path("marketSection/<str:business_type>/", view_buss_type_products, name="viewBusinessTypeProducts")
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

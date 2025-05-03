@@ -1,5 +1,4 @@
 import random
-
 from django.shortcuts import render, redirect, HttpResponse
 from catalogue.models import (CatalogueCategories, CatalogueProduct, CatalogueProductPhoto, CatalogueProductFeature)
 from User.models import Employee, Business
@@ -16,7 +15,6 @@ from django.core.cache import cache
 from celery import shared_task
 from django.core import serializers
 # Create your views here.
-
 
 
 @shared_task()
@@ -52,7 +50,7 @@ def products_in_categories():
             content = CatalogueProduct.objects.filter(Business__id=selected_business).order_by('id')
             if content:
                 if len(content) > 4:
-                    content = list(content)[:4]
+                    content = list(content)[:3]
                 categories[i] = []
                 for c in content:
                     print(c.Name, c.id)
@@ -147,7 +145,7 @@ def get_product(p_id):
         feat = CatalogueProductFeature.objects.filter(Product=prod.id)
         buss = Business.objects.get(pk=prod.Business.id)
 
-        product = {'id': prod.id, 'Name': prod.Name, 'Price': prod.Price, 'Description': prod.Description}
+        product = {'id': prod.id, 'Category': prod.Category.id, 'Name': prod.Name, 'Price': prod.Price, 'Description': prod.Description}
 
         images = []
         for i in prod_photos_obj:
@@ -212,7 +210,7 @@ def market_view(request):
     if not data:
         data = get_content('')
 
-    pages = Paginator(data, 5)
+    pages = Paginator(data, 30)
 
     if request.method == 'POST':
         if 'lookup_word' in request.POST:
@@ -234,7 +232,7 @@ def market_view(request):
             view_type = request.POST.get('view_type')
             view_type.replace(' ', '%')
 
-            return redirect(f'/viewBusinessTypeProducts/{view_type}/')
+            return redirect(f'/marketSection/{view_type}/')
 
         if 'goto' in request.POST:
             goto = request.POST.get('goto')
@@ -257,6 +255,81 @@ def market_view(request):
         'group3': group3,
     }
     return render(request, 'market.html', context)
+
+
+def view_buss_type_products(request, business_type=''):
+    content = None
+    search1 = None
+    search2 = None
+    lookup_word = None
+    try:
+        client = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        client = {}
+
+    bus_types = {
+        'School & Office supplies': 'books', 'Furniture': 'chair', 'Home appliances': 'tv',
+        'Consumer Electronics': 'devices', 'Food & Beverages': 'liquor', 'Security & Safety': 'lock_open',
+        'Cars, spare parts & accessories': 'car_repair', 'Construction': 'roofing', 'Tools & Hardware': 'handyman',
+        'Farm equipment & chemicals': 'agriculture', 'Health & Personal Care': 'monitor_heart',
+        'Hotel and Lodging': ' hotel', 'Entertainment': 'sports_kabaddi', 'Sports': 'sports_soccer',
+        'Real Estate': 'real_estate_agent'
+    }
+    dict_size = len(bus_types)
+    group_size = dict_size // 3
+
+    group1 = dict(list(bus_types.items())[:group_size])
+    group2 = dict(list(bus_types.items())[group_size:(group_size * 2)])
+    group3 = dict(list(bus_types.items())[(group_size * 2):(group_size * 3)])
+
+    business_type.replace('%', ' ')
+
+    get_content.delay(business_type)
+    products = cache.get(business_type)
+
+    if not products:
+        products = get_content(business_type)
+
+    pages = Paginator(products, 30)
+
+    if request.method == 'POST':
+        if 'lookup_word' in request.POST:
+            lookup_word = request.POST.get('lookup_word')
+            search1, search2 = query_item_by_letter1(lookup_word)
+
+            page_number = request.GET.get('page')
+            content = pages.get_page(page_number)
+
+        if 'close_search' in request.POST:
+            if search1 and search2 or search1 or search2:
+                search1 = None
+                search2 = None
+
+            page_number = request.GET.get('page')
+            content = pages.get_page(page_number)
+
+        if 'view_type' in request.POST:
+            view_type = request.POST.get('view_type')
+            view_type.replace(' ', '%')
+
+            return redirect(f'/marketSection/{view_type}/')
+
+    if request.method == 'GET':
+        page_number = request.GET.get('page')
+        content = pages.get_page(page_number)
+
+    context = {
+        'content': content,
+        'client': client,
+        'business_type': business_type,
+        'search1': search1,
+        'search2': search2,
+        'lookup_word': lookup_word,
+        'group1': group1,
+        'group2': group2,
+        'group3': group3,
+    }
+    return render(request, 'catalogue/viewBusinessTypeProducts.html', context)
 
 
 def query_item_by_letter(lookup_word):
@@ -306,19 +379,22 @@ def catalogue_view(request, store_name=''):
     prod_obj = None
     prod_photos_obj = None
 
-    if store_name != '':
-        store_name = store_name.replace('%', ' ')
-        buss = Business.objects.get(Name=store_name)
+    try:
+        check = Employee.objects.get(User=request.user.id)
+        buss = check.Business
+        staff_obj = Employee.objects.filter(Business=buss)
+        for i in staff_obj:
+            s_list.append(i.User)
+    except Employee.DoesNotExist:
+        if store_name != '':
+            store_name = store_name.replace('%', ' ')
+            buss = Business.objects.get(Name=store_name)
 
-    else:
-        try:
-            check = Employee.objects.get(User=request.user.id)
-            buss = check.Business
-            staff_obj = Employee.objects.filter(Business=buss)
-            for i in staff_obj:
-                s_list.append(i.User)
-        except Employee.DoesNotExist:
+        else:
             return redirect('/login/')
+
+    goto_business = buss.Name
+    goto_business = goto_business.replace(' ', '%')
 
     get_catalogue_content.delay(buss.id)
     content = cache.get(f'catalogue' + str(buss.id))
@@ -339,9 +415,10 @@ def catalogue_view(request, store_name=''):
     context = {
         's_list': s_list,
         'bus_data': buss,
+        'goto_business': goto_business,
         'content': content,
     }
-    return render(request, 'catalogue.html', context)
+    return render(request, 'catalogue/catalogue.html', context)
 
 
 @shared_task()
@@ -354,7 +431,7 @@ def get_category_product(category_id):
         prod_photos_obj = CatalogueProductPhoto.objects.filter(Product__id=i.id)
         for x in prod_photos_obj:
             if x.Product == i:
-                product_image.append(x.Photo)
+                product_image.append(x.Photo.url)
 
         new_entry = {'id': i.id, 'Name': i.Name, 'Photo': product_image[0], 'Price': i.Price}
         products.append(new_entry)
@@ -397,7 +474,7 @@ def add_category(request):
     context = {
         'categories': inv
     }
-    return render(request, 'addcategory.html', context)
+    return render(request, 'catalogue/addCategory.html', context)
 
 
 def category(request, id=0):
@@ -405,6 +482,11 @@ def category(request, id=0):
         cat_obj = CatalogueCategories.objects.get(pk=id)
 
         bus_data = Business.objects.filter(pk=cat_obj.Business.id)
+
+        try:
+            employee = Employee.objects.get(Business__id=bus_data[0].id, User=request.user.id)
+        except Employee.DoesNotExist:
+            employee = None
 
         get_category_product.delay(cat_obj.id)
         products = cache.get('categoryProduct' + str(cat_obj.id))
@@ -418,12 +500,12 @@ def category(request, id=0):
         'cat_obj': cat_obj,
         'bus_data': bus_data,
         'products': products,
+        'employee': employee
     }
-    return render(request, 'category.html', context)
+    return render(request, 'catalogue/category.html', context)
 
 
 def view_product(request, id=0):
-    get_product.delay(id)
 
     allowed = False
     if request.user.is_anonymous:
@@ -438,18 +520,40 @@ def view_product(request, id=0):
         except Employee.DoesNotExist:
             pass
 
+    get_product.delay(id)
     product = cache.get('product' + str(id))
     business = cache.get('business' + str(id))
 
-    if not product and business:
+    if product is None:
         return redirect(f'/viewProduct/{id}/')
+
+    if request.method == 'POST':
+        if 'edit' in request.POST:
+            return redirect(f"/editProduct/{product['id']}/")
+
+        if 'delete' in request.POST:
+            messages.warning(request, 'do you really want to delete this product')
+
+        if 'confirm deletion' in request.POST:
+            try:
+                CatalogueProduct.objects.get(pk=product['id']).delete()
+                cache.delete('product' + str(id))
+                product = cache.get('product' + str(id))
+                if product is None:
+                    return redirect(request.META.get('HTTP_REFERER'))
+                else:
+                    messages.error(request, f'failed to delete product')
+            except Exception as e:
+                messages.error(request, f'failed to delete product; {e}')
+        if "don't deletion" in request.POST:
+            list(messages.get_messages(request))
 
     context = {
         'bus_data': business,
-        'prod_obj': product,
+        'product': product,
         'allowed': allowed
     }
-    return render(request, 'viewProduct.html', context)
+    return render(request, 'catalogue/viewProduct.html', context)
 
 
 @login_required(login_url="/login/")
@@ -457,7 +561,7 @@ def view_product(request, id=0):
 def add_product(request):
     s_list = []
     view_image = None
-    prod = None
+    product = None
     prod_photos = None
     prod_features = None
 
@@ -480,17 +584,17 @@ def add_product(request):
 
                 catalogue_category = CatalogueCategories.objects.get(Business=buss, pk=int(product_category))
 
-                prod = CatalogueProduct(Business=buss, Category=catalogue_category, Name=product_name, Price=price,
+                product = CatalogueProduct(Business=buss, Category=catalogue_category, Name=product_name, Price=price,
                                         Description=product_description)
-                prod.save()
+                product.save()
 
                 if len(images) > 10:
                     images = images[0:9]
                 if images:
                     for i in images:
-                        photo = CatalogueProductPhoto(Business=buss, Product=prod, Photo=i)
+                        photo = CatalogueProductPhoto(Business=buss, Product=product, Photo=i)
                         photo.save()
-                return redirect(f'/editProduct/{prod.id}/')
+                return redirect(f'/editProduct/{product.id}/')
 
     except Employee.DoesNotExist:
         return HttpResponse('Error *staff does not exist at create post* please contact developer')
@@ -499,11 +603,11 @@ def add_product(request):
         'cat_obj': cat_obj,
         's_list': s_list,
         'view_image': view_image,
-        'prod': prod,
+        'prod': product,
         'prod_photos': prod_photos,
         'prod_features': prod_features,
     }
-    return render(request, 'addProduct.html', context)
+    return render(request, 'catalogue/addCatalogueProduct.html', context)
 
 
 @login_required(login_url="/login/")
@@ -511,9 +615,9 @@ def add_product(request):
 def edit_product(request, id=0):
     s_list = []
     view_image = None
-    prod = None
-    prod_photos = None
-    prod_features = None
+    product = None
+    product_photos = None
+    product_features = None
 
     try:
         check = Employee.objects.get(User=request.user.id)
@@ -525,9 +629,9 @@ def edit_product(request, id=0):
         cat_obj = CatalogueCategories.objects.filter(Business=buss)
 
         try:
-            prod = CatalogueProduct.objects.get(pk=id)
-            prod_photos = CatalogueProductPhoto.objects.filter(Product__id=prod.id)
-            prod_features = CatalogueProductFeature.objects.filter(Product__id=prod.id)
+            product = CatalogueProduct.objects.get(pk=id)
+            product_photos = CatalogueProductPhoto.objects.filter(Product__id=product.id)
+            product_features = CatalogueProductFeature.objects.filter(Product__id=product.id)
         except CatalogueProduct.DoesNotExist:
             return redirect(request.META.get('HTTP_REFERER'))
 
@@ -541,35 +645,35 @@ def edit_product(request, id=0):
 
                 catalogue_category = CatalogueCategories.objects.get(Business=buss, pk=int(product_category))
 
-                if prod.Name != product_name:
-                    prod.Name = product_name
-                if prod.Category != catalogue_category:
-                    prod.Category = catalogue_category
-                if prod.Price != price:
-                    prod.Price = price
-                if prod.Description != product_description:
-                    prod.Description = product_description
-                prod.save()
+                if product.Name != product_name:
+                    product.Name = product_name
+                if product.Category != catalogue_category:
+                    product.Category = catalogue_category
+                if product.Price != price:
+                    product.Price = price
+                if product.Description != product_description:
+                    product.Description = product_description
+                product.save()
 
                 if images:
                     for i in images:
-                        photo = CatalogueProductPhoto(Business=buss, Product=prod, Photo=i)
+                        photo = CatalogueProductPhoto(Business=buss, Product=product, Photo=i)
                         photo.save()
 
-                return redirect(f'/editProduct/{prod.id}/')
+                return redirect(f'/editProduct/{product.id}/')
             if 'add_feature' in request.POST:
                 feature_name = request.POST.get("feature_name")
                 feature_description = request.POST.get("feature_description")
 
-                CatalogueProductFeature(Business=buss, Product=prod, Name=feature_name, Description=feature_description).save()
-                prod_features = CatalogueProductFeature.objects.filter(Product__id=prod.id)
+                CatalogueProductFeature(Business=buss, Product=product, Name=feature_name, Description=feature_description).save()
+                product_features = CatalogueProductFeature.objects.filter(Product__id=product.id)
 
             if 'delete_photo' in request.POST:
                 photo_id = request.POST.get('delete_photo')
                 photo_id = int(photo_id)
                 try:
                     CatalogueProductPhoto.objects.get(pk=photo_id).delete()
-                    prod_photos = CatalogueProductPhoto.objects.filter(Product__id=prod.id)
+                    product_photos = CatalogueProductPhoto.objects.filter(Product__id=product.id)
                 except Exception as e:
                     messages.error(request, f'{e}')
 
@@ -578,7 +682,7 @@ def edit_product(request, id=0):
                 feature_id = int(feature_id)
                 try:
                     CatalogueProductFeature.objects.get(pk=feature_id).delete()
-                    prod_features = CatalogueProductFeature.objects.filter(Product__id=prod.id)
+                    product_features = CatalogueProductFeature.objects.filter(Product__id=product.id)
                 except Exception as e:
                     messages.error(request, f'{e}')
 
@@ -600,78 +704,9 @@ def edit_product(request, id=0):
         'cat_obj': cat_obj,
         's_list': s_list,
         'view_image': view_image,
-        'prod': prod,
-        'prod_photos': prod_photos,
-        'prod_features': prod_features,
+        'product': product,
+        'product_photos': product_photos,
+        'product_features': product_features,
     }
-    return render(request, 'addProduct.html', context)
+    return render(request, 'catalogue/editCatalogueProduct.html', context)
 
-
-def view_buss_type_products(request, business_type=''):
-    content = None
-    search1 = None
-    search2 = None
-    lookup_word = None
-
-    bus_types = {
-        'School & Office supplies': 'books', 'Furniture': 'chair', 'Home appliances': 'tv',
-        'Consumer Electronics': 'devices', 'Food & Beverages': 'liquor', 'Security & Safety': 'lock_open',
-        'Cars, spare parts & accessories': 'car_repair', 'Construction': 'roofing', 'Tools & Hardware': 'handyman',
-        'Farm equipment & chemicals': 'agriculture', 'Health & Personal Care': 'monitor_heart',
-        'Hotel and Lodging': ' hotel', 'Entertainment': 'sports_kabaddi', 'Sports': 'sports_soccer',
-        'Real Estate': 'real_estate_agent'
-    }
-    dict_size = len(bus_types)
-    group_size = dict_size // 3
-
-    group1 = dict(list(bus_types.items())[:group_size])
-    group2 = dict(list(bus_types.items())[group_size:(group_size * 2)])
-    group3 = dict(list(bus_types.items())[(group_size * 2):(group_size * 3)])
-
-    business_type.replace('%', ' ')
-
-    get_content.delay(business_type)
-    products = cache.get(business_type)
-
-    if not products:
-        products = get_content(business_type)
-
-    pages = Paginator(products, 8)
-
-    if request.method == 'POST':
-        if 'lookup_word' in request.POST:
-            lookup_word = request.POST.get('lookup_word')
-            search1, search2 = query_item_by_letter1(lookup_word)
-
-            page_number = request.GET.get('page')
-            content = pages.get_page(page_number)
-
-        if 'close_search' in request.POST:
-            if search1 and search2 or search1 or search2:
-                search1 = None
-                search2 = None
-
-            page_number = request.GET.get('page')
-            content = pages.get_page(page_number)
-
-        if 'view_type' in request.POST:
-            view_type = request.POST.get('view_type')
-            view_type.replace(' ', '%')
-
-            return redirect(f'/viewBusinessTypeProducts/{view_type}/')
-
-    if request.method == 'GET':
-        page_number = request.GET.get('page')
-        content = pages.get_page(page_number)
-
-    context = {
-        'content': content,
-        'business_type': business_type,
-        'search1': search1,
-        'search2': search2,
-        'lookup_word': lookup_word,
-        'group1': group1,
-        'group2': group2,
-        'group3': group3,
-    }
-    return render(request, 'viewBusinessTypeProducts.html', context)

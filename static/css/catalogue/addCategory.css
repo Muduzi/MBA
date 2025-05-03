@@ -1,0 +1,241 @@
+body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    row-gap:10%;
+    width:100vw;
+    height:100vh;
+    margin:0;
+    background:white;
+    overflow:hidden;
+}
+
+.Navigation{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-end;
+    position:sticky;
+    z-index:5;
+    top:0;
+    width:100%;
+    height:55px;
+    background:rgb(43, 56, 86);
+    backdrop-filter:blur(30px);
+    border:hidden;
+}
+.Navigation button{
+    width:auto;
+    height:32px;
+    color:white;
+    font-size:17px;
+    padding:5px;
+    margin-right:10px;
+    margin-left:3px;
+    background:transparent;
+    border:hidden;
+    border-radius:10px;
+}
+.Navigation button:hover{
+    cursor:hand;
+    background:rgba(10, 10, 10, 0.2);
+    backdrop-filter:blur(5px);
+    border-bottom:1px solid white;
+    border-radius:15px;
+}
+
+
+.container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:400px;
+    height:300px;
+    overflow:hidden;
+}
+.title{
+    font-size:18px;
+    color:#2B3856;
+    padding:5px;
+}
+.instructions{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    width:auto;
+    height:auto;
+    color:gray;
+}
+.import_create{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:280px;
+    height:32px;
+    padding:10px;
+}
+.import_create button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:60px;
+    height:100%;
+    color:#2B3856;
+    padding:10px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.import_create button:hover{
+    color:white;
+    background:#2B3856;
+    border:hidden;
+}
+
+form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:relative;
+    width:25%;
+    height:70%;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.openForm{
+    display:flex;
+    visibility:visible;
+    flex-direction:column;
+    align-items:flex-start;
+    align-self:center;
+    justify-content:space-between;
+    position:relative;
+    z-index:1;
+    width:300px;
+    height:350px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:15px;
+    padding-bottom:15px;
+    background:rgba(248, 244, 255, 0.6);
+    box-shadow:5px 10px 10px rgba(18, 62, 102, 0.3);
+    border-radius:10px;
+}
+.imageLabel{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:60%;
+    background:white;
+    backdrop-filter: blur(20px);
+    border-radius:10px;
+}
+.imageLabel:hover{
+    border:1px solid white;
+}
+label img{
+    width:70%;
+    height:70%;
+    object-fit:cover;
+}
+input[type="file"]{
+    display:none;
+    visibility:hidden;
+}
+input[type="text"]{
+    width:100%;
+    height:30px;
+    color:#2B3856;
+    background:white;
+    border:hidden;
+    border-radius:10px;
+}
+label{
+    color:#2B3856;
+}
+select{
+    width:auto;
+    height:30px;
+    color:#5D6166;
+    background:white;
+    border:hidden;
+    border-radius:10px;
+}
+.select::options{
+    color:white;
+}
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:30px;
+    border:hidden;
+}
+.but button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:center;
+    width:20%;
+    height:95%;
+    color:#2B3856;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+
+.but button:hover{
+    color:white;
+    background:#2B3856;
+}
+@media(max-width:1000px){
+    body{
+        height:auto;
+        overflow-y:scroll;
+    }
+    .title{
+        font-size:20px;
+    }
+   .instruction{
+        font-text:10px;
+   }
+}
+@media(max-width:430px){
+    body{
+        height:100vh;
+        overflow-y:hidden;
+    }
+    .container{
+        top:30%;
+        width:96%;
+        height:300px;
+    }
+    .import_create{
+        width:80%;
+    }
+    .import_create button{
+        width:25%;
+        height:70%;
+    }
+    .instructions{
+        font-size:14px;
+    }
+    .openForm{
+        width:80%;
+        height:60%;
+    }
+    .import_create button{
+        font-size:13px;
+    }
+}

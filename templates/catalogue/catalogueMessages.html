@@ -1,0 +1,29 @@
+{%if messages%}
+    {%for message in messages%}
+        <form class="messages" id="mssg" method="post">
+            {%csrf_token%}
+            <div class="close">
+                 <button type="button" onclick="closeMssg()">
+                    <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
+                </button>
+            </div>
+            {%if 'info' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+            {%elif 'warning' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
+                <div class="yes_no">
+                    <button type="submit" name="confirm">
+                        Yes
+                    </button>
+                    <button type="submit" name="un-confirm">
+                        No
+                    </button>
+                </div>
+            {%elif 'error' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
+            {%elif 'success' in message.tags%}
+                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
+            {%endif%}
+        </form>
+    {%endfor%}
+{%endif%}

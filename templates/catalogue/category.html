@@ -1,0 +1,67 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/category.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/footer.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!--navigation bar-->
+<div class="Navigation" id="navigationBar">
+    {%if employee%}
+        <button type='button' onclick="window.location.href='/addProduct/';">
+            <i class="material-icons" style="font-size:20px;">add</i>
+            product
+        </button>
+    {%endif%}
+    <button type = 'button' onclick="window.location.href='/catalogue/{{bus_data.Name}}';">
+        <i class="material-icons" style="font-size:20px;">arrow_forward</i>
+    </button>
+</div>
+
+
+<!--title-->
+<div class="title">
+    <text>{{cat_obj.Name}}</text>
+</div>
+
+<!--products-->
+{%for v in products%}
+    <div class="product_card" onclick="window.location.href='/viewProduct/{{v.id}}/';">
+        <div class="product_card_image">
+            <img src="{{v.Photo}}" alt="failed to load category image">
+        </div>
+        <text class="product_name">{{v.Name}}</text>
+        <text class="product_price">K{{v.Price}}</text>
+    </div>
+{%endfor%}
+
+<script>
+    navigationBar = document.getElementById("navigationBar");
+
+    let lastScrollPosition = 0
+    window.addEventListener('scroll', function(){
+        const currentScrollPosition = window.scrollY;
+
+        if (currentScrollPosition > lastScrollPosition && currentScrollPosition > 55){
+            navigationBar.classList.add('hide_navigation_bar');
+        }else {
+            navigationBar.classList.remove('hide_navigation_bar');
+        }
+
+        lastScrollPosition = currentScrollPosition ;
+    });
+</script>
+
+
+
+

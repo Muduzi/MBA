@@ -1,0 +1,45 @@
+<div class="about" id="aboutContainer">
+    <img src="{{bus_data.photo.url}}" alt="failed to load profile">
+    <div class="back">
+        <button type="button" id="exitAbout">
+            <i class="fa fa-remove" style="font-size:18px;"></i>
+        </button>
+    </div>
+    <div class="information">
+        <div class="name">
+            <p>{{bus_data.Name}}</p>
+        </div>
+        <div class="Description">
+            <text>{{bus_data.About}}</text>
+        </div>
+        <div class="contact_details">
+            <text>Phone: +{{bus_data.Contact}}</text>
+            <text>Email: {{bus_data.Email}}</text>
+            <text>City: {{bus_data.City}}</text>
+            <text>Country: {{bus_data.Country}}</text>
+            <text>Zipcode: {{bus_data.ZipCode}}</text>
+        </div>
+        <div class="social_media">
+            <div class="links">
+                <a href="http://{{user.profile.Instagram}}" class="fa fa-instagram"></a>
+                <a href="http://{{user.profile.Facebook}}}" class="fa fa-facebook"></a>
+                <a href="http://{{user.profile.Twitter}}" class="fa fa-twitter"></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="search" id="searchContainer">
+    <img src="{{bus_data.photo.url}}" alt="failed to load profile">
+    <div class="back">
+        <button type="button" id="exitSearch">
+            <i class="fa fa-remove" style="font-size:18px;"></i>
+        </button>
+    </div>
+    <form method="post">
+        {%csrf_token%}
+        <input type="search" name="search" required placeholder="Search for products">
+        <button type="submit">
+            <i class="material-icons" style="font-size:30px;">search</i>
+        </button>
+    </form>
+</div>

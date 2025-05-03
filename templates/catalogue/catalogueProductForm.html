@@ -1,0 +1,99 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueProductForm.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<form method="post"  enctype="multipart/form-data" class="main_form">
+    {%csrf_token%}
+    <div class="container">
+        <label>Product</label>
+        <input type="text" name="product_name" maxlength="20" required {%if product%} value="{{product.Name}}" {%else%} placeholder="product name"{%endif%}>
+        <label>Price</label>
+        <input type="number" name="product_price" maxlength="20" required {%if product%} value="{{product.Price}}" {%else%} placeholder="product price" {%endif%}>
+        <label>Category</label>
+        <select name="product_category">
+            {%for c in cat_obj%}
+                {%if c == product.Category%}
+                    <option value="{{c.id}}" selected>{{c.Name}}</option>
+                {%else%}
+                {%endif%}
+                <option value="{{c.id}}">{{c.Name}}</option>
+            {%endfor%}
+        </select>
+        <label>Description</label>
+        <textarea name="product_description" placeholder="Description" required maxlength="159">{%if product%}{{product.Description}}{%endif%}</textarea>
+    </div>
+
+    <div class="img_container">
+        <label for="AssetImage">
+            <img src="{% static '/appdefaults/add-photo1.png' %}" alt="add image">
+        </label>
+        <input type="file" id="AssetImage" name="product_images" multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+        {%if product_photos%}
+            {%for p in product_photos%}
+                <button type="submit" class="saved_images" name="view_image" value="{{p.id}}">
+                    <img src="{{p.Photo.url}}" alt="product photo">
+                </button>
+            {%endfor%}
+        {%endif%}
+    </div>
+
+    <div class="but">
+        <button type='submit' name="product">Save</button>
+    </div>
+</form>
+
+<div class="specifications">
+    <table>
+        <thead>
+            <tr>
+                <th class="th1">Specification</th>
+                <th class="th2">Description</th>
+                <th class="th3"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for i in product_features%}
+            <tr>
+                <td class="th1">{{i.Name}}</td>
+                <td class="th2">{{i.Description}}</td>
+                <th class="th3">
+                    <form method="post">
+                        {%csrf_token%}
+                        <button type="submit"  name="delete_feature" value="{{i.id}}" class="delete_feature">
+                            <i class="material-icons" style="font-size:19px;">delete</i>
+                        </button>
+                    </form>
+                </th>
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+    <form method="post">
+        {%csrf_token%}
+        <div class="asset_specifications">
+            <input type="text" name="feature_name" maxlength="20" required placeholder="specification name">
+            <textarea name="feature_description" required  maxlength="98" placeholder="detail"></textarea>
+        </div>
+        <button type="submit" name="add_feature" class="add_feature">
+            <i class="material-icons" style="font-size:23px;">add</i>
+        </button>
+    </form>
+</div>
+
+{%if view_image%}
+    <form method="post" enctype="multipart/form-data" class="view_image">
+        {%csrf_token%}
+        <button type="submit" name="delete_photo" value="{{view_image.id}}">
+            <i class="material-icons" style="font-size:19px;">delete</i>
+        </button>
+        <button type="submit" name="close">
+            <i class="material-icons" style="font-size:19px;">close</i>
+        </button>
+        <img src="{{view_image.Photo.url}}" alt="image not available">
+    </form>
+{%endif%}
+
+<script>
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>
