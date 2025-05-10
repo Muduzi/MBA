@@ -35,10 +35,36 @@ class CatalogueProductFeature(models.Model):
 class Followers(models.Model):
     Date = models.DateTimeField(auto_now=True)
     Business = models.ForeignKey(Business, on_delete=models.CASCADE, blank=True, null=True)
-    User = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
 
-class Likes(models.Model):
+class LikeProduct(models.Model):
     Date = models.DateTimeField(auto_now=True)
     Product = models.ForeignKey(CatalogueProduct, on_delete=models.CASCADE, blank=True, null=True)
-    User = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+
+
+class UnLikeProduct(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Product = models.ForeignKey(CatalogueProduct, on_delete=models.CASCADE, blank=True, null=True)
+    User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+
+
+class Comments(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Product = models.ForeignKey(CatalogueProduct, on_delete=models.CASCADE, null=False, blank=False)
+    User = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+    Root = models.ForeignKey('self', null=True, on_delete=models.CASCADE, related_name='trailRoot')
+    Comment = models.CharField(max_length=500, null=False, blank=False)
+
+
+class LikeComment(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Comment = models.ForeignKey(Comments, on_delete=models.CASCADE, blank=True, null=True)
+    User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+
+
+class UnLikeComment(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Comment = models.ForeignKey(Comments, on_delete=models.CASCADE, blank=True, null=True)
+    User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

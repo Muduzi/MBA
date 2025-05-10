@@ -1,5 +1,8 @@
 {%load static%}
 <link rel="stylesheet" type="text/css" href="{% static 'css/registration/login.css'%}" xmlns="http://www.w3.org/1999/html">
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,24 +14,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-{%if messages%}
-    {%for message in messages%}
-        <div class="messages" id="mssg">
-            <button type="button"  class="close" onclick="closeMssg()">
-                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
-            </button>
-            {%if 'info' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
-            {%elif 'warning' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
-            {%elif 'error' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
-            {%elif 'success' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
-            {%endif%}
-        </div>
-    {%endfor%}
-{%endif%}
+{%include 'catalogue/catalogueMessages.html'%}
 
 
 <h1>MAT</h1>
@@ -55,6 +41,5 @@
 
     function closeMssg(){
         mssg.classList.add("hide");
-        window.location.href = "/login/";
     }
 </script>

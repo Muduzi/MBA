@@ -36,8 +36,13 @@
             </button>
         {%endif%}
         <button type="button" onclick="openSearch()">
-            <i class="material-icons" style="font-size:20px;">search</i>
+            <i class="material-icons" style="font-size:18px;">search</i>
         </button>
+        {%if request.user in s_list%}
+            <button type="button" onclick="window.location.href='/';">
+                <i class="material-icons" style="font-size:18px;">arrow_forward</i>
+            </button>
+        {%endif%}
     </div>
     <button type="button" onclick="openPhoneNavigation()" class="get_phone_navigation">
         <i class="material-icons" style="font-size:25px;">list</i>

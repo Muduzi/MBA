@@ -9,6 +9,14 @@
             </div>
             {%if 'info' in message.tags%}
                 <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
+                <div class="yes_no">
+                    <button type="submit" name="yes">
+                        Yes
+                    </button>
+                    <button type="submit" name="No">
+                        No
+                    </button>
+                </div>
             {%elif 'warning' in message.tags%}
                 <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
                 <div class="yes_no">

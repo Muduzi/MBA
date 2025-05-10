@@ -4,6 +4,9 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
 
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueSignupForm.css'%}" xmlns="http://www.w3.org/1999/html">
+
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,6 +22,8 @@
 
 
 {%include 'catalogue/catalogueMessages.html'%}
+
+{%include 'catalogue/catalogueSignupForm.html'%}
 
 
 <form method="post" class="Navigation" id="Navigation">
@@ -71,9 +76,60 @@
             </div>
         {%endfor%}
     </div>
-    <div class="name_price">
-        <text class="name">{{product.Name}}</text>
-        <text class="price">K{{product.Price}}</text>
+    <div class="name_price_likes_comments">
+        <div class="name_price">
+            <text class="name">{{product.Name}}</text>
+            <text class="price">K{{product.Price}}</text>
+        </div>
+        <form method="post" id="likeComment" class="likes_comments">
+            {%csrf_token %}
+            {%if registration_form%}
+                <button type="button" onclick="openSignupForm()" class="likes_count">
+                    {% if product.user_liked%}
+                        <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                    {%else%}
+                        <i class="material-icons" style="font-size:15px; color:gray;">thumb_up</i>
+                    {%endif%}
+                    &nbsp;{{product.likes}}
+                </button>
+
+                <button type="button" onclick="openSignupForm()" class="likes_count">
+                    {% if product.user_unliked%}
+                        <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                    {%else%}
+                        <i class="material-icons" style="font-size:15px; color:gray;">thumb_down</i>
+                    {%endif%}
+                    &nbsp;{{product.unlikes}}
+                </button>
+
+                <button type="button" name="comment" onclick="openSignupForm()" class="comments_count">
+                     <i class="material-icons" style="font-size:18px;">comment</i>&nbsp;{{product.comment_count}}
+                </button>
+            {%else%}
+                <button type="submit" name="like" class="likes_count">
+                    {% if product.user_liked%}
+                        <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                    {%else%}
+                        <i class="material-icons" style="font-size:15px; color:gray;">thumb_up</i>
+                    {%endif%}
+                    &nbsp;{{product.likes}}
+                </button>
+
+                <button type="submit" name="unlike" class="likes_count">
+                    {% if product.user_unliked%}
+                        <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                    {%else%}
+                        <i class="material-icons" style="font-size:15px; color:gray;">thumb_down</i>
+                    {%endif%}
+                    &nbsp;{{product.unlikes}}
+                </button>
+
+                <button type="button" name="comment" onclick="openCommentsForm()" class="comments_count">
+                     <i class="material-icons" style="font-size:18px;">comment</i>&nbsp;{{product.comment_count}}
+                </button>
+            {%endif%}
+
+        </form>
     </div>
 </div>
 
@@ -100,7 +156,6 @@
     </table>
 </div>
 
-
 <div class="contact" id="contact">
     <div class="close">
         <button type="button" onclick="hideContact()" style="font-size:20px;">
@@ -116,7 +171,205 @@
     </div>
 </div>
 
+<form method="post" id="comments" class="comments">
+    {%csrf_token%}
+    <div class="close_blured_curtain">
+        <button type="button" onclick="closeCommentsForm()">
+            <i class="material-icons" style="font-size:20px;">close</i>
+        </button>
+    </div>
+
+    <div class="comment_list">
+        {%for key, c in product.comments.items%}
+            {%if c.sub_comments%}
+                <div class="thread">
+                    <div class="comment">
+                        <div class="comment_user_and_date">
+                            <div class="user_image_and_name">
+                                {%if c.photo%}
+                                    <img src="{{c.photo}}">
+                                {%else%}
+                                    <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+                                {%endif%}
+                                <text>{{c.user_name}}</text>
+                            </div>
+                            <text class="date">{{c.date.date}}</text>
+                        </div>
+                        <text class="comment_text">{{c.comment}}</text>
+
+                        <div class="like_reply_comment">
+                            {%if c.user_name == request.user.get_full_name%}
+                                <button type="submit" name="delete comment" value="{{key}}">
+                                    <i class="material-icons" style="font-size:15px;">delete</i>
+                                </button>
+                            {%endif%}
+                            {%if c.user_liked_comment%}
+                                <button type="submit" name="like comment" value="{{key}}">
+                                    <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                                    {{c.comment_like_count}}
+                                </button>
+                            {%else%}
+                                <button type="submit" name="like comment" value="{{key}}">
+                                    <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                                    {{c.comment_like_count}}
+                                </button>
+                            {%endif%}
+                            {%if c.user_unliked_comment%}
+                                <button type="submit" name="unlike comment" value="{{key}}">
+                                    <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                                    {{c.comment_unlike_count}}
+                                </button>
+                            {%else%}
+                                <button type="submit" name="unlike comment" value="{{key}}">
+                                    <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                                    {{c.comment_unlike_count}}
+                                </button>
+                            {%endif%}
+                            <button type="button" name="reply to comment" value="{{key}}" onclick="replyTo('{{key}}', '{{c.user_name}}')">
+                                <i class="material-icons" style="font-size:15px;">reply</i>reply
+                            </button>
+                        </div>
+                    </div>
+                    {%for sub_key, s in c.sub_comments.items%}
+                        <div class="sub_comment">
+                            <div class="comment_user_and_date">
+                                <div class="user_image_and_name">
+                                    {%if s.photo%}
+                                        <img src="{{s.photo}}">
+                                    {%else%}
+                                        <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+                                    {%endif%}
+                                    <text>{{s.user_name}}</text>
+                                </div>
+                                <text class="date">{{s.date.date}}</text>
+                            </div>
+                            <text class="comment_text">{{s.comment}}</text>
+
+                            <div class="like_reply_comment">
+                                {%if s.user_name == request.user.get_full_name%}
+                                    <button type="submit" name="delete comment" value="{{sub_key}}">
+                                        <i class="material-icons" style="font-size:15px;">delete</i>
+                                    </button>
+                                {%endif%}
+                                {%if s.user_liked_comment%}
+                                    <button type="submit" name="like comment" value="{{sub_key}}">
+                                        <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                                        {{s.comment_like_count}}
+                                    </button>
+                                {%else%}
+                                    <button type="submit" name="like comment" value="{{sub_key}}">
+                                        <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                                        {{s.comment_like_count}}
+                                    </button>
+                                {%endif%}
+                                {%if s.user_unliked_comment%}
+                                    <button type="submit" name="unlike comment" value="{{sub_key}}">
+                                        <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                                        {{s.comment_unlike_count}}
+                                    </button>
+                                {%else%}
+                                    <button type="submit" name="unlike comment" value="{{sub_key}}">
+                                        <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                                        {{s.comment_unlike_count}}
+                                    </button>
+                                {%endif%}
+                            </div>
+                        </div>
+                    {%endfor%}
+                </div>
+            {%else%}
+                <div class="comment">
+                    <div class="comment_user_and_date">
+                        <div class="user_image_and_name">
+                            {%if c.photo%}
+                                <img src="{{c.photo}}">
+                            {%else%}
+                                <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
+                            {%endif%}
+                            <text>{{c.user_name}}</text>
+                        </div>
+                        <text class="date">{{c.date.date}}</text>
+                    </div>
+                    <text class="comment_text">{{c.comment}}</text>
+
+                    <div class="like_reply_comment">
+                        {%if c.user_name == request.user.get_full_name%}
+                            <button type="submit" name="delete comment" value="{{key}}">
+                                <i class="material-icons" style="font-size:15px;">delete</i>
+                            </button>
+                        {%endif%}
+                        {%if c.user_liked_comment%}
+                            <button type="submit" name="like comment" value="{{key}}">
+                                <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                                {{c.comment_like_count}}
+                            </button>
+                        {%else%}
+                            <button type="submit" name="like comment" value="{{key}}">
+                                <i class="material-icons" style="font-size:15px;">thumb_up</i>
+                                {{c.comment_like_count}}
+                            </button>
+                        {%endif%}
+                        {%if c.user_unliked_comment%}
+                            <button type="submit" name="unlike comment" value="{{key}}">
+                                <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                                {{c.comment_unlike_count}}
+                            </button>
+                        {%else%}
+                            <button type="submit" name="unlike comment" value="{{key}}">
+                                <i class="material-icons" style="font-size:15px;">thumb_down</i>
+                                {{c.comment_unlike_count}}
+                            </button>
+                        {%endif%}
+                        <button type="button" name="reply to comment" value="{{key}}"  onclick="replyTo('{{key}}', '{{c.user_name}}')">
+                            <i class="material-icons" style="font-size:15px;">reply</i>reply
+                        </button>
+                    </div>
+                </div>
+            {%endif%}
+        {%endfor%}
+    </div>
+    <div class="comment_input">
+        <text id="replyingTo">Add Comment</text>
+        <input type="text" name="new comment" maxlength="4590" placeholder="comment........">
+        <button type="submit" id="addComment" name="add comment" value="{{comment_id}}">
+                <i class="material-icons" style="font-size:20px;">send</i>
+        </button>
+    </div>
+</form>
+
+<!--
+<form method="post" id="commentReplyForm" class="comment_reply_form">
+    {%csrf_token%}
+    <div class="close_comment_reply_form">
+        <button type="button" onclick="closeCommentReplyForm()">
+            <i class="material-icons" style="font-size:20px;">close</i>
+        </button>
+    </div>
+    <label id="displayText">Add Comment</label>
+    <input type="text" required name="new_comment" maxlength="4590" placeholder="comment........">
+    <button type="submit" id="commentId" name="add comment" value="{{comment_id}}">
+            <i class="material-icons" style="font-size:20px;">send</i>
+    </button>
+</form>
+-->
+
 <script>
+    <!--comment form-->
+    let commentsForm = document.getElementById("comments");
+
+    function openCommentsForm(){
+        commentsForm.classList.add("open_comments");
+    }
+    function closeCommentsForm(){
+        commentsForm.classList.remove("open_comments");
+    }
+
+    <!-- reply to comment-->
+
+    function replyTo(rootId, rootName){
+        document.getElementById("addComment").value = rootId;
+        document.getElementById("replyingTo").textContent = `Replying To:  ${rootName}`;
+    }
 
     let lpv = document.getElementById("lpv");
     let currentImage = document.getElementById("currentImage");
@@ -179,11 +432,11 @@
     });
 
    function showContact(){
-        contact.classList.add("showContact");
-    }
-    function hideContact(){
-        contact.classList.remove("showContact");
-    }
+       contact.classList.add("showContact");
+   }
+   function hideContact(){
+       contact.classList.remove("showContact");
+   }
 
     <!-- messages -->
     let mssg = document.getElementById("mssg");

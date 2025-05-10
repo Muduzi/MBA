@@ -1,7 +1,7 @@
 import random
 from django.shortcuts import render, redirect, HttpResponse
-from catalogue.models import (CatalogueCategories, CatalogueProduct, CatalogueProductPhoto, CatalogueProductFeature)
-from User.models import Employee, Business
+from catalogue.models import *
+from User.models import Employee, Business, Profile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -14,6 +14,9 @@ from django.db.models import Q
 from django.core.cache import cache
 from celery import shared_task
 from django.core import serializers
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
 
@@ -104,8 +107,113 @@ def query_item_by_letter1(lookup_word):
     return search1, search2
 
 
+def get_user_profile(user_id):
+    try:
+        profile = Profile.objects.get(User__id=user_id)
+    except Profile.DoesNotExist:
+        profile = None
+
+    return profile
+
+
+def comment_likes_unlikes(user_id, comment_id):
+    comment_like_count = LikeComment.objects.filter(Comment__id=comment_id).count()
+    if not comment_like_count:
+        comment_like_count = 0
+
+    try:
+        LikeComment.objects.get(Comment__id=comment_id, User__id=user_id)
+        user_liked_comment = True
+    except LikeComment.DoesNotExist:
+        user_liked_comment = False
+
+    try:
+        UnLikeComment.objects.get(Comment__id=comment_id, User__id=user_id)
+        user_unliked_comment = True
+    except UnLikeComment.DoesNotExist:
+        user_unliked_comment = False
+
+    comment_unlike_count = UnLikeComment.objects.filter(Comment__id=comment_id).count()
+    if not comment_unlike_count:
+        comment_unlike_count = 0
+
+    return user_liked_comment, user_unliked_comment, comment_like_count, comment_unlike_count
+
+
+def get_likes_and_comments(product_id, user_id):
+    product_likes = LikeProduct.objects.filter(Product__id=product_id)
+    if product_likes.exists():
+        likes = product_likes.count()
+    else:
+        likes = 0
+    if user_id != 0:
+        try:
+            LikeProduct.objects.get(Product__id=product_id, User=user_id)
+            user_liked = True
+        except LikeProduct.DoesNotExist:
+            user_liked = False
+    else:
+        user_liked = False
+
+    product_unlikes = UnLikeProduct.objects.filter(Product__id=product_id)
+    if product_unlikes.exists():
+        unlikes = product_unlikes.count()
+    else:
+        unlikes = 0
+    if user_id != 0:
+        try:
+            UnLikeProduct.objects.get(Product__id=product_id, User=user_id)
+            user_unliked = True
+        except UnLikeProduct.DoesNotExist:
+            user_unliked = False
+    else:
+        user_unliked = False
+
+    comments_obj = Comments.objects.filter(Product__id=product_id, Root__isnull=True)
+    comments = {}
+    comment_count = 0
+    if comments_obj.exists():
+        comment_count = comments_obj.count()
+        for i in comments_obj:
+            profile = get_user_profile(i.User.id)
+            if not profile.Photo:
+                photo = None
+            else:
+                photo = profile.Photo.url
+            user_liked_comment, user_unliked_comment, comment_like_count, comment_unlike_count = comment_likes_unlikes(
+                user_id, i.id)
+            comments[i.id] = {'user_name': i.User.get_full_name(), 'date': i.Date, 'photo': photo, 'comment': i.Comment,
+                              'user_liked_comment': user_liked_comment, 'user_unliked_comment': user_unliked_comment,
+                              'comment_like_count': comment_like_count, 'comment_unlike_count': comment_unlike_count,
+                              'sub_comments': {}}
+
+            sub_comments = Comments.objects.filter(Product__id=product_id, Root__id=i.id)
+            if sub_comments.exists():
+                for s in sub_comments:
+                    profile_ = get_user_profile(s.User.id)
+                    if not profile_.Photo:
+                        photo_ = None
+                    else:
+                        photo_ = profile_.Photo.url
+                    user_liked_comment, user_unliked_comment, comment_like_count, comment_unlike_count = (
+                        comment_likes_unlikes(user_id, s.id))
+                    comments[i.id]['sub_comments'][s.id] = {'user_name': s.User.get_full_name(), 'date': s.Date,
+                                                            'photo': photo_, 'comment': s.Comment,
+                                                            'user_liked_comment': user_liked_comment,
+                                                            'user_unliked_comment': user_unliked_comment,
+                                                            'comment_like_count': comment_like_count,
+                                                            'comment_unlike_count': comment_unlike_count}
+                sub_comments_count = sub_comments.count()
+            else:
+                sub_comments_count = 0
+
+            comments[i.id]['sub_comments_count'] = sub_comments_count
+            comment_count += sub_comments_count
+    return likes, user_liked, unlikes, user_unliked, comment_count, comments
+
+
 @shared_task()
-def get_content(buss_type=''):
+def get_content(buss_type='', user_id=0):
     content = []
 
     if buss_type != '':
@@ -114,15 +222,20 @@ def get_content(buss_type=''):
         prod_obj = CatalogueProduct.objects.all().order_by('id')
 
     for i in prod_obj:
+        # product pictures
         picture_li = []
         photos = CatalogueProductPhoto.objects.filter(Product=i.id)
         if photos:
             for p in photos:
                 picture_li.append(p.Photo.url)
 
+        # get likes and comments
+        likes, user_liked, unlikes, user_unliked, comment_count, comments = get_likes_and_comments(i.id, user_id)
+
         new_entry = {'store_name': i.Business.Name, 'store_photo': i.Business.Photo.url, 'product_id': i.id,
                      'product_name': i.Name, 'product_price': i.Price, 'product_photo': picture_li[0],
-                     'product_description': i.Description}
+                     'product_description': i.Description, 'likes': likes, 'user_liked': user_liked, 'unlikes': unlikes,
+                     'user_unliked': user_unliked, 'comment_count': comment_count, 'comments': comments}
 
         content.append(new_entry)
 
@@ -135,7 +248,7 @@ def get_content(buss_type=''):
 
 
 @shared_task()
-def get_product(p_id):
+def get_product(p_id, user_id=0):
     business = {}
     product = {}
 
@@ -145,7 +258,12 @@ def get_product(p_id):
         feat = CatalogueProductFeature.objects.filter(Product=prod.id)
         buss = Business.objects.get(pk=prod.Business.id)
 
-        product = {'id': prod.id, 'Category': prod.Category.id, 'Name': prod.Name, 'Price': prod.Price, 'Description': prod.Description}
+        # get likes and comments
+        likes, user_liked, unlikes, user_unliked, comment_count, comments = get_likes_and_comments(p_id, user_id)
+
+        product = {'id': prod.id, 'Category': prod.Category.id, 'Name': prod.Name, 'Price': prod.Price,
+                   'Description': prod.Description, 'likes': likes, 'user_liked': user_liked, 'unlikes': unlikes,
+                   'user_unliked': user_unliked, 'comment_count': comment_count,  'comments': comments}
 
         images = []
         for i in prod_photos_obj:
@@ -180,38 +298,64 @@ def market_view(request):
     search1 = None
     search2 = None
     lookup_word = None
-    try:
-        client = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
-        client = {}
+    user_ = None
+
+    if request.user.is_anonymous:
+        registration_form = True
+    else:
+        registration_form = False
+        try:
+            user_ = User.objects.get(pk=request.user.id)
+            try:
+                employee = Employee.objects.get(User__id=user_.id)
+                if employee.AccessLevel.id == 1:
+                    allowed = True
+                elif employee.AccessLevel == 2:
+                    allowed = True
+            except Employee.DoesNotExist:
+                pass
+        except User.DoesNotExist:
+            pass
+
 
     bus_types = {
-        'School & Office supplies': 'books', 'Furniture': 'chair', 'Home appliances': 'tv',
+        'Groceries': 'shopping_basket', 'School & Office supplies': 'library_books', 'Furniture': 'chair', 'Home appliances': 'tv',
         'Consumer Electronics': 'devices', 'Food & Beverages': 'liquor', 'Security & Safety': 'lock_open',
         'Cars, spare parts & accessories': 'car_repair', 'Construction': 'roofing', 'Tools & Hardware': 'handyman',
         'Farm equipment & chemicals': 'agriculture', 'Health & Personal Care': 'monitor_heart',
         'Hotel and Lodging': ' hotel', 'Entertainment': 'sports_kabaddi', 'Sports': 'sports_soccer',
-        'Real Estate': 'real_estate_agent'
+        'Real Estate': 'real_estate_agent', 'Fashion(Apparel, shoes, Jewerly)': 'checkroom', 'Cosmetics': 'spa'
     }
     dict_size = len(bus_types)
     group_size = dict_size // 3
 
     group1 = dict(list(bus_types.items())[:group_size])
     group2 = dict(list(bus_types.items())[group_size:(group_size * 2)])
-    group3 = dict(list(bus_types.items())[(group_size * 2):(group_size * 3)])
+    group3 = dict(list(bus_types.items())[(group_size * 2):])
 
     products_in_categories.delay()
     categories = cache.get('categories')
     if not categories:
         categories = products_in_categories()
 
-    get_content.delay('')
+    if user_:
+        get_content.delay('', user_.id)
+    else:
+        get_content.delay('', 0)
     data = cache.get('content')
     if not data:
-        data = get_content('')
+        if user_:
+            data = get_content('', user_.id)
+        else:
+            data = get_content('', 0)
 
     pages = Paginator(data, 30)
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if 'like' in request.POST:
+            return JsonResponse({"message", "liked"})
+        elif 'comment' in request.POST:
+            return JsonResponse({"message", "commented"})
     if request.method == 'POST':
         if 'lookup_word' in request.POST:
             lookup_word = request.POST.get('lookup_word')
@@ -239,12 +383,30 @@ def market_view(request):
 
             goto = goto.replace(' ', '%')
             return redirect(f'/catalogue/{goto}/')
+
+        if 'signup' in request.POST:
+            result = catalogue_signup(request)
+
+            if result == 'user already exists':
+                messages.error(request, 'user already exists')
+            if result == 'success':
+                messages.info(request, "Would you like to set up your own Business Catalogue")
+            if result == 'passwords dont match':
+                messages.error(request, 'passwords do not match')
+
+        if "yes" in request.POST:
+            return redirect('/edit_business_profile')
+
+        if "no" in request.POST:
+            # gets all messages for the current request session and consumes them; messages are
+            # stored in sessions until they're viewed
+            list(messages.get_messages(request))
+
     if request.method == 'GET':
         page_number = request.GET.get('page')
         content = pages.get_page(page_number)
 
     context = {
-        'client': client,
         'content': content,
         'search1': search1,
         'search2': search2,
@@ -253,6 +415,7 @@ def market_view(request):
         'group1': group1,
         'group2': group2,
         'group3': group3,
+        'registration_form': registration_form
     }
     return render(request, 'market.html', context)
 
@@ -505,26 +668,63 @@ def category(request, id=0):
     return render(request, 'catalogue/category.html', context)
 
 
-def view_product(request, id=0):
+def catalogue_signup(request):
+    username = request.POST.get('username')
+    firstname = request.POST.get('first name')
+    lastname = request.POST.get('last name')
+    email = request.POST.get('email')
+    password1 = request.POST.get('password1')
+    password2 = request.POST.get('password2')
 
-    allowed = False
-    if request.user.is_anonymous:
-        pass
-    else:
+    if password1 == password2:
         try:
-            employee = Employee.objects.get(User=request.user)
-            if employee.AccessLevel.id == 1:
-                allowed = True
-            elif employee.AccessLevel == 2:
-                allowed = True
-        except Employee.DoesNotExist:
+            u = User.objects.get(username=username)
+            return 'user already exists'
+        except User.DoesNotExist:
+            new_user = User.objects.create_user(username=username, first_name=firstname, last_name=lastname,
+                                                email=email, password=password2)
+            new_user.save()
+
+            new_profile = Profile(User=new_user)
+            new_profile.save()
+
+            user = authenticate(request, username=username, password=password2)
+            login(request, user)
+
+            # messages.info(request, "Would you like to set up your own Business Catalogue")
+            return 'success'
+    else:
+        # messages.error(request, 'passwords do not match')
+        return 'password do not match'
+
+
+def view_product(request, id=0):
+    allowed = False
+    reply_to_comment = None
+    user_id = 0
+    if request.user.is_anonymous:
+        registration_form = True
+    else:
+        registration_form = False
+        try:
+            user_id = User.objects.get(pk=request.user.id).id
+            try:
+                employee = Employee.objects.get(User__id=user_id)
+                if employee.AccessLevel.id == 1:
+                    allowed = True
+                elif employee.AccessLevel == 2:
+                    allowed = True
+            except Employee.DoesNotExist:
+                pass
+        except User.DoesNotExist:
             pass
 
-    get_product.delay(id)
+    get_product.delay(id, user_id)
     product = cache.get('product' + str(id))
     business = cache.get('business' + str(id))
 
     if product is None:
+        product, business = get_product(id, user_id)
         return redirect(f'/viewProduct/{id}/')
 
     if request.method == 'POST':
@@ -534,7 +734,7 @@ def view_product(request, id=0):
         if 'delete' in request.POST:
             messages.warning(request, 'do you really want to delete this product')
 
-        if 'confirm deletion' in request.POST:
+        if 'confirm' in request.POST:
             try:
                 CatalogueProduct.objects.get(pk=product['id']).delete()
                 cache.delete('product' + str(id))
@@ -545,13 +745,147 @@ def view_product(request, id=0):
                     messages.error(request, f'failed to delete product')
             except Exception as e:
                 messages.error(request, f'failed to delete product; {e}')
-        if "don't deletion" in request.POST:
+
+        if "un-confirm" in request.POST:
+            list(messages.get_messages(request))
+
+        if 'like' in request.POST:
+            try:
+                LikeProduct.objects.get(User__id=request.user.id).delete()
+            except LikeProduct.DoesNotExist:
+                try:
+                    try:
+                        UnLikeProduct.objects.get(User__id=request.user.id).delete()
+                    except UnLikeProduct.DoesNotExist:
+                        pass
+                    LikeProduct(Product=CatalogueProduct.objects.get(pk=id), User=request.user).save()
+                except Exception as e:
+                    messages.error(request, f'{e}')
+
+            product, business = get_product(id, user_id)
+            return redirect(f'/viewProduct/{id}/')
+
+        if 'unlike' in request.POST:
+            try:
+                UnLikeProduct.objects.get(User__id=request.user.id).delete()
+            except UnLikeProduct.DoesNotExist:
+                try:
+                    try:
+                        LikeProduct.objects.get(User__id=request.user.id).delete()
+                    except LikeProduct.DoesNotExist:
+                        pass
+                    UnLikeProduct(Product=CatalogueProduct.objects.get(pk=id), User=request.user).save()
+                except Exception as e:
+                    messages.error(request, f'{e}')
+
+            product, business = get_product(id, user_id)
+            return redirect(f'/viewProduct/{id}/')
+
+        if 'add comment' in request.POST:
+            comment_id = request.POST.get("add comment")
+            new_comment = request.POST.get("new comment")
+
+            try:
+                if comment_id:
+                    record_comment = Comments(Product=CatalogueProduct.objects.get(pk=id), User=request.user,
+                                              Root=Comments.objects.get(pk=int(comment_id)), Comment=new_comment)
+                    record_comment.save()
+                    messages.success(request, "delivered")
+                else:
+                    record_comment = Comments(Product=CatalogueProduct.objects.get(pk=id), User=request.user,
+                                              Comment=new_comment)
+                    record_comment.save()
+                    messages.success(request, "delivered")
+            except Exception as e:
+                messages.error(request, f'{e}')
+
+            product, business = get_product(id, user_id)
+            return redirect(f'/viewProduct/{id}/')
+
+        if "like comment" in request.POST:
+            comment_id = request.POST.get("like comment")
+
+            try:
+                LikeComment.objects.get(Comment__id=Comments.objects.get(pk=int(comment_id)).id,
+                                        User=request.user).delete()
+            except LikeComment.DoesNotExist:
+                try:
+                    try:
+                        UnLikeComment.objects.get(Comment__id=Comments.objects.get(pk=int(comment_id)).id,
+                                                  User=request.user).delete()
+                    except UnLikeComment.DoesNotExist:
+                        pass
+                    LikeComment(Comment=Comments.objects.get(pk=int(comment_id)), User=request.user).save()
+                except Exception as e:
+                    messages.error(request, f'{e}')
+
+            product, business = get_product(id, user_id)
+            return redirect(f'/viewProduct/{id}/')
+
+        if "unlike comment" in request.POST:
+            comment_id = request.POST.get("unlike comment")
+            try:
+                UnLikeComment.objects.get(Comment__id=Comments.objects.get(pk=int(comment_id)).id,
+                                          User=request.user).delete()
+            except UnLikeComment.DoesNotExist:
+                try:
+                    try:
+                        LikeComment.objects.get(Comment__id=Comments.objects.get(pk=int(comment_id)).id,
+                                                User=request.user).delete()
+                    except LikeComment.DoesNotExist:
+                        pass
+                    UnLikeComment(Comment=Comments.objects.get(pk=int(comment_id)), User=request.user).save()
+                except Exception as e:
+                    messages.error(request, f'{e}')
+
+            product, business = get_product(id, user_id)
+            return redirect(f'/viewProduct/{id}/')
+
+        if "reply comment" in request.POST:
+            root_id = request.POST.get("root_id")
+            new_comment = request.POST.get("new_comment")
+            try:
+                root = Comments.objects.get(pk=int(root_id), Root_isnull=True)
+
+                Comments(Product=root.Product, User=request.user, Root=root, Comment=new_comment).save()
+            except Exception as e:
+                messages.error(request, f"{e}")
+
+        if "delete comment" in request.POST:
+            comment_id = request.POST.get("delete comment")
+
+            try:
+                Comments.objects.get(pk=int(comment_id)).delete()
+            except Comments.DoesNotExist:
+                messages.error(request, f'failed to delete the comment')
+
+            product, business = get_product(id, user_id)
+            return redirect(f'/viewProduct/{id}/')
+
+        if 'signup' in request.POST:
+            result = catalogue_signup(request)
+
+            if result == 'user already exists':
+                messages.error(request, 'user already exists')
+            if result == 'success':
+                messages.info(request, "Would you like to set up your own Business Catalogue")
+            if result == 'passwords dont match':
+                messages.error(request, 'passwords do not match')
+
+        if "yes" in request.POST:
+            return redirect('/edit_business_profile')
+
+        if "no" in request.POST:
+            # gets all messages for the current request session and consumes them; messages are
+            # stored in sessions until they're viewed
             list(messages.get_messages(request))
 
     context = {
         'bus_data': business,
         'product': product,
-        'allowed': allowed
+        'allowed': allowed,
+        'registration_form': registration_form,
+        "reply_to_comment": reply_to_comment
     }
     return render(request, 'catalogue/viewProduct.html', context)
 

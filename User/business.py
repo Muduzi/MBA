@@ -487,7 +487,11 @@ def edit_business_profile(request):
         if request.method == 'POST':
             (photo, name, Type, about, address, email, contact1, contact2, address, postbox, city,
              country, zipcode, instagram, facebook, linkedin) = form_data(request)
-            ini
+
+            ini = {'Photo': photo, 'Name': name, 'Type': Type, 'About': about, 'Address': address, 'Email ': email,
+                   'Contact1': contact1, 'Contact2': contact2, 'PostBox': postbox, 'City': city, 'Country': country,
+                   'ZipCode': zipcode, 'Instagram': instagram, 'Facebook': facebook, 'Linkedin': linkedin}
+
             try:
                 Business.objects.get(Name=name)
                 messages.error(request, f'A user by the name {name} already exists, please chose a different name')

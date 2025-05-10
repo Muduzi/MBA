@@ -85,7 +85,9 @@
     height:100%;
     padding-left:10px;
     padding-right:10px;
+    background:transparent;
     border:1px solid #2B3856;
+    border-radius:10px;
 }
 
 .yes_no button:hover{
@@ -93,3 +95,8 @@
     background:#2B3856;
 }
 
+@media(max-width:430px;){
+    .messages{
+        width:97%;
+    }
+}

@@ -17,7 +17,8 @@
 
 {%include 'catalogue/catalogueMessages.html'%}
 
-<div class="Navigation">
+
+<div class="Navigation" id="navigationBar">
     <div class="store_name" id="store">
         <p>MTech</p>
     </div>
@@ -28,12 +29,12 @@
         <button type="button" onclick="openSearch()">
             <i class="material-icons" style="font-size:18px;">search</i>
         </button>
-        {%if client%}
-        {%else%}
-            <button type="button" class="sign_up" onclick="window.location.href='/login/';">
+        {%if registration_form%}
+            <button type="button" class="sign_up" onclick="openSignupForm();">
                 <i class="material-icons" style="font-size:18px;">person</i>
                 Sign up
             </button>
+        {%else%}
         {%endif%}
     </div>
     <button type="button" class="open_nav" onclick="openPhoneNav()" id="open_nav">
@@ -81,7 +82,7 @@
     <div class="cat_list">
         {%for name, icon in group1.items%}
             <button type="submit" name="view_type" value="{{name}}">
-                <i class="material-icons">{{icon}}</i>
+                <i class="material-icons">{{icon}}</i>&nbsp;
                 {{name}}
             </button>
         {%endfor%}
@@ -89,7 +90,7 @@
     <div class="cat_list">
         {%for name, icon in group2.items%}
             <button type="submit" name="view_type" value="{{name}}">
-                <i class="material-icons" >{{icon}}</i>
+                <i class="material-icons" >{{icon}}</i>&nbsp;
                 {{name}}
             </button>
         {%endfor%}
@@ -97,7 +98,7 @@
     <div class="cat_list">
         {%for name, icon in group3.items%}
             <button type="submit" name="view_type" value="{{name}}">
-                <i class="material-icons" >{{icon}}</i>
+                <i class="material-icons" >{{icon}}</i>&nbsp;
                 {{name}}
             </button>
         {%endfor%}
@@ -161,8 +162,35 @@
             <img src="{{product.product_photo}}" alt="add image">
         </div>
         <div class="product_detail">
-            <text class="name">{{product.product_name}}</text>
-            <text class="price">{{product.product_price}}</text>
+            <div class="name_price_likes_comments">
+                <div class="name_price">
+                    <text class="name">{{product.product_name}}</text>
+                    <text class="price">K{{product.product_price}}</text>
+                </div>
+                <form id="likeComment" class="likes_comments">
+                    {%csrf_token %}
+                    <button type="button" onclick="openSignupForm()" class="likes_count">
+                        {% if product.user_liked%}
+                            <i class="material-icons" style="font-size:16px;">thumb_up</i>
+                        {%else%}
+                            <i class="material-icons" style="font-size:16px; color:gray;">thumb_up</i>
+                        {%endif%}
+                        {{product.likes}}
+                    </button>
+
+                    <button type="button" onclick="openSignupForm()" class="likes_count">
+                        {% if product.user_unliked%}
+                            <i class="material-icons" style="font-size:16px;">thumb_down</i>
+                        {%else%}
+                            <i class="material-icons" style="font-size:16px; color:gray;">thumb_down</i>
+                        {%endif%}
+                        {{product.unlikes}}
+                    </button>
+                    <button type="button" name="comment" onclick="openSignupForm()" class="comments_count">
+                         <i class="material-icons" style="font-size:16px;">comment</i>{{product.comment_count}}
+                    </button>
+                </form>
+            </div>
             <text class="cut_description" id="cut">
                 {{product.product_description|slice:":65"}}
                 {%if product.product_description|length|add:0 > 65 %}
@@ -173,6 +201,7 @@
     </div>
 {%endfor%}
 
+<!--page navigation-->
 <div class="page_nav">
     <div class="prev_next">
         <!--Previous Page-->
@@ -279,6 +308,4 @@
         categories.classList.remove("open_categories");
         open_nav.classList.remove("hide");
     }
-
-    <!--product-->
 </script>

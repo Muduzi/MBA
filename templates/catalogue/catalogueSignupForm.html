@@ -1,0 +1,43 @@
+{%if registration_form%}
+    <form method="post" id="signup" class="blured_curtain">
+        {%csrf_token%}
+        <div class="close_blured_curtain">
+            <button type="button" onclick="closeSignupForm()">
+                <i class="material-icons" style="font-size:20px;">close</i>
+            </button>
+        </div>
+        <div class="signup_form">
+            <div class="duo_input">
+                <input type="text" id="first name" name="first name" required minlength="4" maxlength="15" placeholder="first name">
+                <input type="text" id="last name" name="last name" required minlength="4" maxlength="15" placeholder="last name">
+            </div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required minlength="4" maxlength="15" placeholder="username">
+            <label for="email">
+                <i class="material-icons" style="font-size:18px;">mail</i>
+            </label>
+            <input type="email" id="email" name="email" required minlength="4" maxlength="30" placeholder="email address">
+            <label for="email">
+                <i class="material-icons" style="font-size:18px;">lock</i>
+            </label>
+            <input type="password" id="password1" name="password1" required minlength="5" maxlength="15" placeholder="password">
+            <label for="email">
+                <i class="material-icons" style="font-size:18px;">key</i>
+            </label>
+            <input type="password" id="password2" name="password2" required minlength="5" maxlength="15" placeholder="repeat password">
+            <button type="submit" name="signup">SignUp</button>
+        </div>
+    </form>
+{%endif%}
+
+<script>
+    <!--signup form-->
+    let signupForm = document.getElementById("signup");
+
+    function openSignupForm(){
+        signupForm.classList.add("open_blured_curtain");
+    }
+    function closeSignupForm(){
+        signupForm.classList.remove("open_blured_curtain");
+    }
+</script>
