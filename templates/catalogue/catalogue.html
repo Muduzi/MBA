@@ -2,6 +2,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogue.css'%}" xmlns="http://www.w3.org/1999/html">
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueSearch.css'%}" xmlns="http://www.w3.org/1999/html">
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/footer.css'%}" xmlns="http://www.w3.org/1999/html">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -58,13 +59,21 @@
         </div>
         {%if request.user not in s_list%}
             <button type="button" onclick="window.location.href='/market/';">
-                    Back
-                    <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+                Back
+                <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+            <button type="button" onclick="openSearch()">
+                Search
+                <i class="material-icons" style="font-size:19px;">search</i>
             </button>
         {%elif request.user in s_list%}
             <button type="button" onclick="window.location.href='/';">
-                    Back
-                    <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+                Back
+                <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+            <button type="button" onclick="openSearch()">
+                Search
+                <i class="material-icons" style="font-size:19px;">search</i>
             </button>
             <button type="button" onclick="window.location.href='/market/';">
                 Market
@@ -142,36 +151,8 @@
 </div>
 
 <!--forms-->
-<form method="post" id="search" {%if search1 and search2 or search1 or search2%} class="open_search" {%else%} class="search" {%endif%}>
-    {%csrf_token%}
-    <button type="button" onclick="closeSearch()" class="close_search">
-        <i class="material-icons" style="font-size:19px;">close</i>
-    </button>
-    <div class="search_input">
-        <input type="search" name="lookup_word" required placeholder="search......" maxlength="60">
-        <button type="submit" name="lookup"  onclick="getLocation()">
-           <i class="material-icons" style="font-size:22px;">search</i>
-        </button>
-    </div>
-    <div class="results">
-        {%if search1%}
-            {%for i in search1%}
-                <div class="result" onclick="window.location.href='/viewProduct/{{i.id}}/';">
-                    <img src="{{i.photo.url}}" alt="unavailable">
-                    <text>{{i.name}}</text>
-                </div>
-            {%endfor%}
-        {%endif%}
-        {%if search2%}
-            {%for i in search2%}
-                <div class="result" onclick="window.location.href='/category/{{i.id}}/';">
-                    <img src="{{i.photo.url}}" alt="unavailable">
-                    <text>{{i.name}}</text>
-                </div>
-            {%endfor%}
-        {%endif%}
-    </div>
-</form>
+<!--search-->
+{%include 'catalogue/catalogueSearch.html'%}
 
 {%include 'catalogue/footer.html'%}
 <script>
@@ -228,13 +209,4 @@
         window.location.href='/catalogue/{{goto_business}}/';
     }
 
-    <!--search-->
-    let search = document.getElementById("search");
-
-    function openSearch(){
-        search.classList.add("open_search");
-    }
-    function closeSearch(){
-        search.classList.remove("open_search");
-    }
 </script>

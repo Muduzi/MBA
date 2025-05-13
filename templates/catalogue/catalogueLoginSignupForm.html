@@ -1,0 +1,77 @@
+{%if registration_form%}
+    <div id="signupLogin" class="blured_curtain">
+        <div class="close_blured_curtain">
+            <button type="button" onclick="closeSignupLogin()">
+                <i class="material-icons" style="font-size:20px;">close</i>
+            </button>
+        </div>
+        <form method="post" id="signup" class="signup_form">
+            {%csrf_token%}
+            <div class="duo_input">
+                <input type="text" id="first name" name="first name" required minlength="4" maxlength="15" placeholder="first name">
+                <input type="text" id="last name" name="last name" required minlength="4" maxlength="15" placeholder="last name">
+            </div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required minlength="4" maxlength="15" placeholder="username">
+            <label for="email">
+                <i class="material-icons" style="font-size:18px;">mail</i>
+            </label>
+            <input type="email" id="email" name="email" required minlength="4" maxlength="30" placeholder="email address">
+            <label for="email">
+                <i class="material-icons" style="font-size:18px;">lock</i>
+            </label>
+            <input type="password" id="password1" name="password1" required minlength="5" maxlength="15" placeholder="password">
+            <label for="email">
+                <i class="material-icons" style="font-size:18px;">key</i>
+            </label>
+            <input type="password" id="password2" name="password2" required minlength="5" maxlength="15" placeholder="repeat password">
+            <button type="submit" name="signup">SignUp</button>
+            <div class="login_signup">
+                <text>Do you already have an account?</text>
+                <button type="button" id="inLogin" onclick="openLogin();">Login</button>
+            </div>
+        </form >
+        <form method="post" id="login" class="login_form">
+            {%csrf_token%}
+            <label for="username">
+                <i class="material-icons" style="font-size:18px;">person</i>
+            </label>
+            <input type="text" name="username" placeholder="username....">
+            <label for="loginPassword">
+                <i class="material-icons" style="font-size:18px;">key</i>
+            </label>
+            <input type="password" id="loginPassword" name="password" placeholder="password......">
+            <button type="submit" name="login">Login</button>
+            <div class="login_signup">
+                <text>Don't have an account?</text>
+                <button type="button" id="inSignup1" onclick="openSignup()">SignUp</button>
+            </div>
+        </form>
+
+    </div>
+{%endif%}
+
+<script>
+    <!--signup form-->
+    let signupLogin = document.getElementById("signupLogin");
+    let login = document.getElementById("login");
+    let signup = document.getElementById("signup");
+
+    function openSignupLogin(){
+        signupLogin.classList.add("open_blured_curtain");
+        login.classList.add("reveal_form");
+        signup.classList.remove("reveal_form");
+    }
+    function closeSignupLogin(){
+        signupLogin.classList.remove("open_blured_curtain");
+    }
+
+    function openLogin(){
+        login.classList.add("reveal_form");
+        signup.classList.remove("reveal_form");
+    }
+    function openSignup(){
+        login.classList.remove("reveal_form");
+        signup.classList.add("reveal_form");
+    }
+</script>

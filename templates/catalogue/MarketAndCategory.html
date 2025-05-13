@@ -2,6 +2,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/MarketCategory.css'%}" xmlns="http://www.w3.org/1999/html">
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueSearch.css'%}" xmlns="http://www.w3.org/1999/html">
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/footer.css'%}" xmlns="http://www.w3.org/1999/html">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +20,7 @@
 
 
 <div class="Navigation" id="navigationBar">
+    {%csrf_token%}
     <div class="store_name" id="store">
         <p>MTech</p>
     </div>
@@ -30,38 +32,56 @@
             <i class="material-icons" style="font-size:18px;">search</i>
         </button>
         {%if registration_form%}
-            <button type="button" class="sign_up" onclick="openSignupForm();">
+            <button type="button" onclick="openSignupLogin()">
                 <i class="material-icons" style="font-size:18px;">person</i>
-                Sign up
+                Login
+                <i class="material-icons" style="font-size:20px;">keyboard_arrow_down</i>
             </button>
-        {%else%}
+        {%endif%}
+        {%if business_type%}
+            <button type="button" onclick="window.location.href='/market/';">
+                <i class="material-icons" style="font-size:18px;">arrow_forward</i>
+            </button>
         {%endif%}
     </div>
-    <button type="button" class="open_nav" onclick="openPhoneNav()" id="open_nav">
+    <button type="button" onclick="openPhoneNavigation()" class="get_phone_navigation">
         <i class="material-icons" style="font-size:25px;">list</i>
     </button>
 </div>
 
-<div class="phone_nav" id="phone_nav">
-    <button type="button" onclick="closePhoneNav()" id="close_nav">
-        <i class="material-icons" style="font-size:20px;">close</i>
-    </button>
-    <button type="button" onclick="window.location.href='/';">
-        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
-    </button>
-    <button type="button" onclick="openSearch()">
-        <i class="material-icons" style="font-size:19px;">search</i>
-    </button>
-    <button type="button" onpointerover="openCategories()">
-        Categories
-    </button>
-    {%if client%}
-    {%else%}
-        <button type="button" class="sign_up" onclick="window.location.href='/login/';">
-            <i class="material-icons" style="font-size:20px;">person</i>
-            Sign up
+
+<div id="phoneNavigation" class="phone_navigation">
+    <div class="phone_navigation_buttons">
+        <div class="close_phone_navigation">
+            <button type="button" onclick="closePhoneNavigation()">
+                <i class="material-icons" style="font-size:17px;">close</i>
+            </button>
+        </div>
+        {%if business_type%}
+            <button type="button" onclick="window.location.href='/market/';">
+                Back
+                <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
+            </button>
+        {%endif%}
+        <button type="button" onclick="openCategories()">
+            Categories
+            <i class="material-icons" style="font-size:17px;">arrow_forward_ios</i>
         </button>
-    {%endif%}
+        <button type="button" onclick="openSearch()">
+            Search
+            <i class="material-icons" style="font-size:18px;">search</i>
+        </button>
+        {%if registration_form%}
+            <button type="button" onclick="openSignupLogin()">
+                <span style="display:flex; ali">
+                    <i class="material-icons" style="font-size:18px;">person</i>
+                    Login
+                </span>
+                <i class="material-icons" style="font-size:20px;">keyboard_arrow_down</i>
+            </button>
+        {%endif%}
+    </div>
+    {%include 'catalogue/footer.html'%}
 </div>
 
 <div class="opening">
@@ -119,37 +139,8 @@
     </form>
 {%endfor%}
 
-
-<form method="post" id="search" {%if search1 and search2 or search1 or search2%} class="open_search" {%else%} class="search" {%endif%}>
-    {%csrf_token%}
-    <button type="submit" {%if lookup_word%} name="close_search" {%else%} onclick="closeSearch()" {%endif%} class="close_search">
-        <i class="material-icons" style="font-size:19px;">close</i>
-    </button>
-    <div class="search_input">
-        <input type="search" name="lookup_word" {%if lookup_word%} value="{{lookup_word}}" {%endif%} placeholder="search......" maxlength="60">
-        <button type="submit" name="lookup_word"  onclick="getLocation()">
-           <i class="material-icons" style="font-size:22px;">search</i>
-        </button>
-    </div>
-    <div class="results">
-        {%if search1%}
-            {%for i in search1%}
-                <div class="result" onclick="window.location.href='/view_product/{{i.id}}/';">
-                    <img src="{{i.photo.url}}" alt="unavailable">
-                    <text>{{i.name}}</text>
-                </div>
-            {%endfor%}
-        {%endif%}
-        {%if search2%}
-            {%for i in search2%}
-                <div class="result" onclick="window.location.href='/category/{{i.id}}/';">
-                    <img src="{{i.photo.url}}" alt="unavailable">
-                    <text>{{i.name}}</text>
-                </div>
-            {%endfor%}
-        {%endif%}
-    </div>
-</form>
+<!--search-->
+{%include 'catalogue/catalogueSearch.html'%}
 
 <p class="title">Latest Products</p>
 {%for product in content%}
@@ -248,20 +239,17 @@
 
 
     <!--phone navigation-->
-    let phone_nav =  document.getElementById("phone_nav");
-    let open_nav =  document.getElementById("open_nav");
-    let close_nav =  document.getElementById("close_nav");
+    let phoneNavigation =  document.getElementById("phoneNavigation");
+    let Navigation =  document.getElementById("Navigation");
 
-    function openPhoneNav(){
-        phone_nav.classList.add("open_phone_nav");
-        open_nav.classList.add("hide");
-        close_nav.classList.add("open_nav");
+    function openPhoneNavigation(){
+        phoneNavigation.classList.add("open_phone_navigation");
+        Navigation.classList.add("hide");
     }
 
-    function closePhoneNav(){
-        phone_nav.classList.remove("open_phone_nav");
-        open_nav.classList.remove("hide");
-        close_nav.classList.remove("open_nav");
+    function closePhoneNavigation(){
+        phoneNavigation.classList.remove("open_phone_navigation");
+        Navigation.classList.remove("hide");
     }
 
 
@@ -285,27 +273,15 @@
         window.location.href='/catalogue/{{goto_business}}/';
     }
 
-    <!--search-->
-    let search = document.getElementById("search");
-
-    function openSearch(){
-        search.classList.add("open_search");
-    }
-    function closeSearch(){
-        search.classList.remove("open_search");
-    }
-
     <!--view categories-->
     let categories = document.getElementById("Categories");
 
     function openCategories(){
-        phone_nav.classList.remove("open_phone_nav");
-        close_nav.classList.remove("open_nav");
-        search.classList.remove("open_search");
+        phoneNavigation.classList.remove("open_phone_navigation");
         categories.classList.add("open_categories");
     }
     function closeCategories(){
         categories.classList.remove("open_categories");
-        open_nav.classList.remove("hide");
+        phoneNavigation.classList.add("open_phone_navigation");
     }
 </script>

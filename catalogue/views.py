@@ -20,6 +20,123 @@ from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
 
+# lookup this product name in this business profile
+def query_item_by_letter(lookup_word, buss_id):
+    """
+    search1 = Products.objects.filter(Q(name__icontains=lookup_word))
+    search2 = Categories.objects.filter(Q(name__icontains=lookup_word))
+    """
+    match1 = []
+    match2 = []
+    img_li = []
+    photo = None
+    lookup1 = CatalogueProduct.objects.filter(Business__id=buss_id).order_by('-id')
+    for i in lookup1:
+        img_li = []
+        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
+
+        if ratio > 60:
+            try:
+                photos = CatalogueProductPhoto.objects.filter(Product=i.id)
+                if photos:
+                    for x in photos:
+                        img_li.append(x.Photo)
+
+                photo = img_li[0]
+            except CatalogueProductPhoto.DoesNotExist:
+                photos = None
+            match1.append({'id': i.id, 'name': i.Name, 'photo': photo, 'ratio': ratio})
+    search1 = sorted(match1, key=lambda x: x['ratio'], reverse=True)
+
+    lookup2 = CatalogueCategories.objects.all()
+    for i in lookup2:
+        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
+
+        if ratio > 60:
+            match2.append({'id': i.id, 'name': i.Name, 'photo': i.Photo, 'ratio': ratio})
+    search2 = sorted(match2, key=lambda x: x['ratio'], reverse=True)
+
+    return search1, search2
+
+
+# lookup this product name
+def query_item_by_letter1(lookup_word):
+    """
+    search1 = Products.objects.filter(Q(name__icontains=lookup_word))
+    search2 = Categories.objects.filter(Q(name__icontains=lookup_word))
+    """
+    match1 = []
+    match2 = []
+    img_li = []
+    photo = None
+    lookup1 = CatalogueProduct.objects.all().order_by('-id')
+    for i in lookup1:
+        img_li = []
+        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
+
+        if ratio > 60:
+            try:
+                photos = CatalogueProductPhoto.objects.filter(Product=i.id)
+                if photos:
+                    for x in photos:
+                        img_li.append(x.Photo)
+
+                photo = img_li[0]
+            except CatalogueProductPhoto.DoesNotExist:
+                photos = None
+            match1.append({'id': i.id, 'name': i.Name, 'photo': photo, 'ratio': ratio})
+    search1 = sorted(match1, key=lambda x: x['ratio'], reverse=True)
+
+    lookup2 = CatalogueCategories.objects.all()
+    for i in lookup2:
+        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
+
+        if ratio > 60:
+            match2.append({'id': i.id, 'name': i.Name, 'photo': i.Photo, 'ratio': ratio})
+    search2 = sorted(match2, key=lambda x: x['ratio'], reverse=True)
+
+    return search1, search2
+
+
+# lookup this product name in this business type
+def query_item_by_letter2(lookup_word, business_type):
+    """
+    search1 = Products.objects.filter(Q(name__icontains=lookup_word))
+    search2 = Categories.objects.filter(Q(name__icontains=lookup_word))
+    """
+    match1 = []
+    match2 = []
+    img_li = []
+    photo = None
+    lookup1 = CatalogueProduct.objects.filter(Business__Type=business_type).order_by('-id')
+    for i in lookup1:
+        img_li = []
+        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
+
+        if ratio > 60:
+            try:
+                photos = CatalogueProductPhoto.objects.filter(Product=i.id)
+                if photos:
+                    for x in photos:
+                        img_li.append(x.Photo)
+
+                photo = img_li[0]
+            except CatalogueProductPhoto.DoesNotExist:
+                photos = None
+            match1.append({'id': i.id, 'name': i.Name, 'photo': photo, 'ratio': ratio})
+    search1 = sorted(match1, key=lambda x: x['ratio'], reverse=True)
+
+    lookup2 = CatalogueCategories.objects.all()
+    for i in lookup2:
+        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
+
+        if ratio > 60:
+            match2.append({'id': i.id, 'name': i.Name, 'photo': i.Photo, 'ratio': ratio})
+    search2 = sorted(match2, key=lambda x: x['ratio'], reverse=True)
+
+    return search1, search2
+
+
 @shared_task()
 def products_in_categories():
     options = [
@@ -67,44 +184,6 @@ def products_in_categories():
                     images = []
     cache.set('categories', categories, 3600)
     return categories
-
-
-def query_item_by_letter1(lookup_word):
-    """
-    search1 = Products.objects.filter(Q(name__icontains=lookup_word))
-    search2 = Categories.objects.filter(Q(name__icontains=lookup_word))
-    """
-    match1 = []
-    match2 = []
-    img_li = []
-    photo = None
-    lookup1 = CatalogueProduct.objects.all()
-    for i in lookup1:
-        img_li = []
-        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
-
-        if ratio > 60:
-            try:
-                photos = CatalogueProductPhoto.objects.filter(Product=i.id)
-                if photos:
-                    for x in photos:
-                        img_li.append(x.Photo)
-
-                photo = img_li[0]
-            except CatalogueProductPhoto.DoesNotExist:
-                photos = None
-            match1.append({'id': i.id, 'name': i.Name, 'photo': photo, 'ratio': ratio})
-    search1 = sorted(match1, key=lambda x: x['ratio'], reverse=True)
-
-    lookup2 = CatalogueCategories.objects.all()
-    for i in lookup2:
-        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
-
-        if ratio > 60:
-            match2.append({'id': i.id, 'name': i.Name, 'photo': i.Photo, 'ratio': ratio})
-    search2 = sorted(match2, key=lambda x: x['ratio'], reverse=True)
-
-    return search1, search2
 
 
 def get_user_profile(user_id):
@@ -293,6 +372,15 @@ def get_product(p_id, user_id=0):
         return business, product
 
 
+def catalogue_login(request):
+    name = request.POST.get('username')
+    password = request.POST.get('password')
+
+    user = authenticate(request, username=name, password=password)
+
+    return user
+
+
 def market_view(request):
     content = None
     search1 = None
@@ -317,9 +405,9 @@ def market_view(request):
         except User.DoesNotExist:
             pass
 
-
     bus_types = {
-        'Groceries': 'shopping_basket', 'School & Office supplies': 'library_books', 'Furniture': 'chair', 'Home appliances': 'tv',
+        'Groceries': 'shopping_basket', 'School & Office supplies': 'library_books', 'Furniture': 'chair',
+        'Home appliances': 'tv',
         'Consumer Electronics': 'devices', 'Food & Beverages': 'liquor', 'Security & Safety': 'lock_open',
         'Cars, spare parts & accessories': 'car_repair', 'Construction': 'roofing', 'Tools & Hardware': 'handyman',
         'Farm equipment & chemicals': 'agriculture', 'Health & Personal Care': 'monitor_heart',
@@ -357,12 +445,20 @@ def market_view(request):
         elif 'comment' in request.POST:
             return JsonResponse({"message", "commented"})
     if request.method == 'POST':
-        if 'lookup_word' in request.POST:
-            lookup_word = request.POST.get('lookup_word')
+        lookup_word = request.POST.get('lookup_word')
+        if lookup_word:
             search1, search2 = query_item_by_letter1(lookup_word)
 
             page_number = request.GET.get('page')
             content = pages.get_page(page_number)
+
+        if 'login' in request.POST:
+            user_obj = catalogue_login(request)
+            if not user_obj:
+                messages.error(request, 'Enter a valid username and password!')
+            else:
+                login(request, user_obj)
+                return redirect('/market/')
 
         if 'close_search' in request.POST:
             if search1 and search2 or search1 or search2:
@@ -456,12 +552,20 @@ def view_buss_type_products(request, business_type=''):
     pages = Paginator(products, 30)
 
     if request.method == 'POST':
-        if 'lookup_word' in request.POST:
-            lookup_word = request.POST.get('lookup_word')
-            search1, search2 = query_item_by_letter1(lookup_word)
+        lookup_word = request.POST.get('lookup_word')
+        if lookup_word:
+            search1, search2 = query_item_by_letter2(lookup_word, business_type)
 
             page_number = request.GET.get('page')
             content = pages.get_page(page_number)
+
+        if 'login' in request.POST:
+            user_obj = catalogue_login(request)
+            if not user_obj:
+                messages.error(request, 'Enter a valid username and password!')
+            else:
+                login(request, user_obj)
+                return redirect('/market/')
 
         if 'close_search' in request.POST:
             if search1 and search2 or search1 or search2:
@@ -495,32 +599,6 @@ def view_buss_type_products(request, business_type=''):
     return render(request, 'catalogue/viewBusinessTypeProducts.html', context)
 
 
-def query_item_by_letter(lookup_word):
-    """
-    search1 = Products.objects.filter(Q(name__icontains=lookup_word))
-    search2 = Categories.objects.filter(Q(name__icontains=lookup_word))
-    """
-    match1 = []
-    match2 = []
-    lookup1 = CatalogueProduct.objects.all()
-    for i in lookup1:
-        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
-
-        if ratio > 60:
-            match1.append({'id': i.id, 'ratio': ratio})
-    search1 = sorted(match1, key=lambda x: x['ratio'], reverse=True)
-
-    lookup2 = CatalogueCategories.objects.all()
-    for i in lookup2:
-        ratio = fuzz.partial_ratio(lookup_word.lower(), i.Name.lower())
-
-        if ratio > 60:
-            match2.append({'id': i.id, 'ratio': ratio})
-    search2 = sorted(match2, key=lambda x: x['ratio'], reverse=True)
-
-    return search1, search2
-
-
 @shared_task()
 def get_catalogue_content(buss_id):
     content = {}
@@ -541,6 +619,8 @@ def catalogue_view(request, store_name=''):
     buss = None
     prod_obj = None
     prod_photos_obj = None
+    search1 = None
+    search2 = None
 
     try:
         check = Employee.objects.get(User=request.user.id)
@@ -551,7 +631,10 @@ def catalogue_view(request, store_name=''):
     except Employee.DoesNotExist:
         if store_name != '':
             store_name = store_name.replace('%', ' ')
-            buss = Business.objects.get(Name=store_name)
+            try:
+                buss = Business.objects.get(Name=store_name)
+            except Business.DoesNotExist:
+                return redirect(request.META.get('HTTP_REFERER'))
 
         else:
             return redirect('/login/')
@@ -566,20 +649,16 @@ def catalogue_view(request, store_name=''):
 
     if request.method == 'POST':
         lookup_word = request.POST.get('lookup_word')
-
-        search1, search2 = query_item_by_letter(lookup_word)
-        if search1:
-            for i in search1:
-                return redirect(f"/view_product/{i['id']}/")
-        elif search2:
-            for i in search2:
-                return redirect(f"/category/{i['id']}/")
+        if lookup_word:
+            search1, search2 = query_item_by_letter(lookup_word, buss.id)
 
     context = {
         's_list': s_list,
         'bus_data': buss,
         'goto_business': goto_business,
         'content': content,
+        'search1': search1,
+        'search2': search2,
     }
     return render(request, 'catalogue/catalogue.html', context)
 
@@ -728,6 +807,14 @@ def view_product(request, id=0):
         return redirect(f'/viewProduct/{id}/')
 
     if request.method == 'POST':
+        if 'login' in request.POST:
+            user_obj = catalogue_login(request)
+            if not user_obj:
+                messages.error(request, 'Enter a valid username and password!')
+            else:
+                login(request, user_obj)
+                return redirect(f'/viewProduct/{id}/')
+
         if 'edit' in request.POST:
             return redirect(f"/editProduct/{product['id']}/")
 

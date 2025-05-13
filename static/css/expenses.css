@@ -3,10 +3,11 @@ body{
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    row-gap:15px;
+    row-gap:10px;
     position:relative;
     width:100vw;
     height:auto;
+    margin:0;
     background:#EDEADE;
     border-radius:10px;
     overflow:hidden;
@@ -78,7 +79,7 @@ body{
     position:relative;
     top:0%;
     width:90%;
-    height:32px;
+    height:30px;
     border:hidden;
     border-radius:10px;
 }
@@ -202,7 +203,7 @@ table{
     width:90%;
     height:50%;
     background:#F9F6EE;
-    border-radius:10px;
+    border-radius:0px;
     box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
     overflow-y:scroll;
 }
@@ -274,6 +275,7 @@ td{
     position:relative;
     width:91%;
     height:40%;
+    margin-bottom:5px;
     border-radius:10px;
 }
 
@@ -432,11 +434,15 @@ td{
     }
     .bottom_nav{
         display:flex;
+        visibility:visible;
         align-items:center;
         justify-content:space-evenly;
-        visibility:visible;
-        width:98%;
-        height:32px;
+        position:fixed;
+        z-index:3;
+        width:100%;
+        height:35px;
+        bottom:0;
+        background:#5D6166;
     }
     .bottom_nav button{
         display:flex;
@@ -444,23 +450,25 @@ td{
         justify-content:center;
         position:relative;
         width:auto;
-        height:auto;
+        height:25px;
         color:white;
         background:#5D6166;
         padding:3px;
         border:hidden;
         border-radius:10px;
+    }
+    .bottom_nav button:focus{
+        background:transparent;
         box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
     }
-    .bottom_nav button:hover{
-        color:#5D6166;
-        background:transparent;
-        border:1px solid #5D6166;
+    .bottom_nav button:active{
+        background:rgb(230, 230, 250, 0.8);
+        box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
     }
     /*table*/
     table{
         width:100%;
-        height:94%;
+        height:100%;
     }
     .sth4{
         display:none;
@@ -492,8 +500,8 @@ td{
         visibility:visible;
         position:absolute;
         z-index:3;
-        width:100vw;
-        height:100vh;
+        width:100%;
+        height:100%;
         background:#EDEADE;
         border-radius:10px;
         border:hidden;
@@ -536,7 +544,7 @@ td{
         height:40%;
     }
     .bar_graph{
-        width:98%;
+        width:95%;
         height:50%;
     }
     .remove_container{

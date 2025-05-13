@@ -48,13 +48,15 @@
 
 /*signup form*/
 .signup_form{
-    display:flex;
+    display:none;
+    visibility:hidden;
     flex-direction:column;
     align-items:flex-start;
-    justify-content:space-evenly;
+    justify-content:flex-start;
+    row-gap:20px;
     position:relative;
     width:350px;
-    height:450px;
+    height:500px;
     border-radius:10px;
     padding:10px;
     background:#2B3856;
@@ -64,7 +66,6 @@
     color:white;
     font-size:16px;
 }
-
 .signup_form input{
     width:100%;
     height:35px;
@@ -85,11 +86,11 @@
     position:relative;
     width:100%;
     height:auto;
+    margin-top:10px;
 }
 .duo_input input{
     width:45%;
 }
-
 .signup_form button{
     display:flex;
     align-items:center;
@@ -108,4 +109,102 @@
 .signup_form button:hover{
     color:white;
     background:#5D6166;
+}
+
+/*login form*/
+.login_form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:flex-start;
+    row-gap:20px;
+    position:relative;
+    width:350px;
+    height:250px;
+    border-radius:10px;
+    padding:10px;
+    background:#2B3856;
+}
+
+.login_form label{
+    color:white;
+    font-size:16px;
+}
+
+.login_form input{
+    width:100%;
+    height:35px;
+    font-size:13.5px;
+    color:#F9F6EE;
+    background:rgb(54, 69, 79);
+    border:hidden;
+    border-radius:10px;
+}
+.login_form input:focus{
+    outline:none;
+    border:1px solid #F9F6EE;
+}
+
+.login_form button{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    align-self:center;
+    position:relative;
+    width:90px;
+    height:25px;
+    color:white;
+    font-size:14px;
+    font-weight:400;
+    margin-bottom:10px;
+    background:transparent;
+    border:1px solid white;
+    border-radius:10px;
+}
+.login_form button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.login_signup{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+    position:absolute;
+    width:100%;
+    height:25px;
+    bottom:0;
+    margin-bottom:5px;
+}
+
+.login_signup button{
+    width:auto;
+    height:25px;
+    padding:3px;
+    border:hidden;
+}
+
+.login_signup text{
+    display:flex;
+    width:auto;
+    color:teal;
+    font-size:13px;
+    margin-bottom:3px;
+}
+
+
+.reveal_form{
+    display:flex;
+    visibility:visible;
+}
+
+@media(max-width:430px){
+    .login_form{
+        width:90%;
+    }
+    .signup_form{
+        width:90%;
+    }
 }

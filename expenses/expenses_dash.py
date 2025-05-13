@@ -275,7 +275,9 @@ def expenses_dash(request):
         expenses_this_month = cache.get(str(buss) + 'd_e_t_m-expenses_this_month')
 
         if not total_m and cash_m and credit_m and daily_totals and expenses_this_month:
-            total_m, cash_m, credit_m, daily_totals, suppliers_m, expenses_this_month = daily_expenses_this_month(buss)
+            # total_m, cash_m, credit_m, daily_totals, suppliers_m, expenses_this_month
+            # = daily_expenses_this_month(buss)
+            return redirect('/expenses_dash/')
 
         # monthly_expenses_this_year
         monthly_expenses_this_year.delay(buss)
@@ -287,15 +289,17 @@ def expenses_dash(request):
         expenses_this_year = cache.get(str(buss) + 'm_e_t_y-expenses_this_year')
 
         if not total_y and cash_y and credit_y and monthly_expense_records and expenses_this_year:
-            total_y, cash_y, credit_y, monthly_expense_records, suppliers_y, expenses_this_year = \
-                (monthly_expenses_this_year(buss))
+            # total_y, cash_y, credit_y, monthly_expense_records, suppliers_y, expenses_this_year = \
+            #   (monthly_expenses_this_year(buss))
+            return redirect('/expenses_dash/')
 
         if request.method == 'POST':
             if 'general_content' in request.POST:
                 content = request.POST.get('content')
 
                 if not general_content:
-                    general_content = ExpensesGeneralContent(Business=check.Business, Cashier=user_object, Choice=content).save()
+                    general_content = ExpensesGeneralContent(Business=check.Business, Cashier=user_object,
+                                                             Choice=content).save()
                 else:
                     general_content.Choice = content
                     general_content.save()

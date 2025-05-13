@@ -7,10 +7,11 @@ body{
     position:relative;
     width:100vw;
     height:auto;
+    margin:0;
     background:#EDEADE;
     border-radius:10px;
+    overflow:hidden;
     overflow-y:scroll;
-    overflow-x:hidden;
 }
 
 /*messages*/
@@ -63,7 +64,8 @@ body{
     gap:10px;
     position:relative;
     width:93%;
-    height:30px;
+    height:32px;
+    margin-top:2px;
     border-radius:10px;
 }
 .Navigation form{
@@ -121,8 +123,9 @@ body{
     justify-content:space-evenly;
     position:relative;
     width:93%;
-    height:45%;
+    height:300px;
     background:#F9F6EE;
+    margin-bottom:10px;
     transition: width 2s, height 3s;
     box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
     border-radius:10px;
@@ -207,7 +210,8 @@ table{
 }
 .customers{
     width:26%;
-    height:50%;
+    height:350px;
+    margin-bottom:5px;
 }
 
 .cth1{
@@ -225,7 +229,8 @@ table{
 
 .sales{
     width:64%;
-    height:50%;
+    height:350px;
+    margin-bottom:10px;
 }
 .tableTitle{
     display:flex;

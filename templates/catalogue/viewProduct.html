@@ -4,7 +4,7 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueSignupForm.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueLoginSignupForm.css'%}" xmlns="http://www.w3.org/1999/html">
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,10 +23,10 @@
 
 {%include 'catalogue/catalogueMessages.html'%}
 
-{%include 'catalogue/catalogueSignupForm.html'%}
+{%include 'catalogue/catalogueLoginSignupForm.html'%}
 
 
-<form method="post" class="Navigation" id="Navigation">
+<form method="post" class="Navigation" id="navigationBar">
     {%csrf_token%}
     <div class="contact_edit">
         <button type ='button' onclick="showContact()">
@@ -84,7 +84,7 @@
         <form method="post" id="likeComment" class="likes_comments">
             {%csrf_token %}
             {%if registration_form%}
-                <button type="button" onclick="openSignupForm()" class="likes_count">
+                <button type="button" onclick="openSignupLogin()" class="likes_count">
                     {% if product.user_liked%}
                         <i class="material-icons" style="font-size:15px;">thumb_up</i>
                     {%else%}
@@ -93,7 +93,7 @@
                     &nbsp;{{product.likes}}
                 </button>
 
-                <button type="button" onclick="openSignupForm()" class="likes_count">
+                <button type="button" onclick="openSignupLogin()" class="likes_count">
                     {% if product.user_unliked%}
                         <i class="material-icons" style="font-size:15px;">thumb_down</i>
                     {%else%}
@@ -102,7 +102,7 @@
                     &nbsp;{{product.unlikes}}
                 </button>
 
-                <button type="button" name="comment" onclick="openSignupForm()" class="comments_count">
+                <button type="button" name="comment" onclick="openSignupLogin()" class="comments_count">
                      <i class="material-icons" style="font-size:18px;">comment</i>&nbsp;{{product.comment_count}}
                 </button>
             {%else%}
@@ -354,6 +354,23 @@
 -->
 
 <script>
+    navigationBar = document.getElementById("navigationBar");
+
+    let lastScrollPosition = 0
+    window.addEventListener('scroll', function(){
+        const currentScrollPosition = window.scrollY;
+
+        if (currentScrollPosition > lastScrollPosition && currentScrollPosition > 55){
+            navigationBar.classList.add('hide_navigation_bar');
+            nav_but.classList.add('hide_navigation_bar');
+        }else {
+            navigationBar.classList.remove('hide_navigation_bar');
+            nav_but.classList.remove('hide_navigation_bar');
+        }
+
+        lastScrollPosition = currentScrollPosition ;
+    });
+
     <!--comment form-->
     let commentsForm = document.getElementById("comments");
 
