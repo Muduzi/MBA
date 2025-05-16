@@ -1,0 +1,385 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/productIncome/productIncomeDash.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<div class="Navigation">
+    <form method="post" class="NavForm">
+        {%csrf_token%}
+        <label for="GeneralContent">Content:</label>
+        <select id="GeneralContent" name="content">
+            {%if general_content%}
+                <option value="{{general_content.Choice}}" selected>{{general_content.Choice}}</option>
+            {%endif%}
+            <option value="This Month">This Month</option>
+            <option value="This Year">This Year</option>
+        </select>
+        <button type="submit" name="general_content">Ok</button>
+    </form>
+    <button type="button" onclick="window.location.href='/product_income/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+{%if general_content.Choice == 'This Year'%}
+    <!--Section A(This Year) -->
+    <div class="section">
+        <text>Sales this Year</text>
+    </div>
+    <div class="graph">
+        <div class="information">
+            <div class="pieChart">
+                <canvas id="doughnutA"></canvas>
+            </div>
+            <div class="info">
+                <text class="content">
+                    {{total_y}}
+                </text>
+                <text class="title">
+                    Total Sales
+                </text>
+            </div>
+        </div>
+        <div class="linearGraph">
+            <canvas id="myLChartA"></canvas>
+        </div>
+    </div>
+
+    <div class="customers">
+        <div class="tableTitle">
+            <text style="filter: drop-shadow(1px 1px 20px 50px red);">Categories</text>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="cth1">Category</th>
+                    <th class="cth2">Total</th>
+                    <th class="cth3">Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for a, b in categories_y.items%}
+                    <tr>
+                        <td class="cth1">{{a.Name}}</td>
+                        <td class="cth2">{{b.Amount}}</td>
+                        <td class="cth3">{{b.Percentage}}%</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+    <div class="sales">
+        <div class="tableTitle">
+            <text style="margin-bottom:15px;">Products</text>
+        </div>
+        <table>
+                <thead>
+                    <tr>
+                        <th class="sth1">Product</th>
+                        <th class="sth1">Brand</th>
+                        <th class="sth2">Size</th>
+                        <th class="sth2">Qnt</th>
+                        <th class="sth1">Total</th>
+                        <th class="sth2">Perc</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {%for a, b in products_y.items%}
+                    <tr>
+                        <td class="sth1">{{b.Name}}</td>
+                        <td class="sth1">{{b.Brand}}</td>
+                        <td class="sth2">{{b.Size}}</td>
+                        <td class="sth2">{{b.Quantity}}</td>
+                        <td class="sth1">{{b.Amount}}</td>
+                        <td class="sth2">{{b.Percentage}}%</td>
+                    </tr>
+                {%endfor%}
+                </tbody>
+            </table>
+    </div>
+{%else%}
+    <!--Section B(This Month) -->
+    <div class="section">
+        <text>Sales this month</text>
+    </div>
+    <div class="graph">
+        <div class="information">
+            <div class="pieChart">
+                <canvas id="doughnutB"></canvas>
+            </div>
+            <div class="info">
+                <text class="content">
+                    {{total_m}}
+                </text>
+                <text class="title">
+                    Total Sales
+                </text>
+            </div>
+        </div>
+        <div class="linearGraph">
+            <canvas id="myLChartB"></canvas>
+        </div>
+    </div>
+
+    <div class="customers">
+        <div class="tableTitle">
+            <text style="filter: drop-shadow(1px 1px 20px 50px red);">Categories</text>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="cth1">Category</th>
+                    <th class="cth2">Total</th>
+                    <th class="cth3">Perc(%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for a, b in categories_m.items%}
+                    <tr>
+                        <td class="cth1">{{a.Name}}</td>
+                        <td class="cth2">{{b.Amount}}</td>
+                        <td class="cth3">{{b.Percentage}}%</td>
+                    </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+    <div class="sales">
+        <div class="tableTitle">
+            <text style="margin-bottom:15px;">Products</text>
+        </div>
+        <table>
+                <thead>
+                    <tr>
+                        <th class="sth1">Product</th>
+                        <th class="sth11">Brand</th>
+                        <th class="sth22">Size</th>
+                        <th class="sth2">Qnt</th>
+                        <th class="sth1">Total</th>
+                        <th class="sth2">Perc(%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {%for a, b in products_m.items%}
+                    <tr>
+                        <td class="sth1">{{b.Name}}</td>
+                        <td class="sth1">{{b.Brand}}</td>
+                        <td class="sth2">{{b.Size}}</td>
+                        <td class="sth2">{{b.Quantity}}</td>
+                        <td class="sth1">{{b.Amount}}</td>
+                        <td class="sth2">{{b.Percentage}}%</td>
+                    </tr>
+                {%endfor%}
+                </tbody>
+            </table>
+    </div>
+{%endif%}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    {%if general_content.Choice == 'This Year'%}
+
+        <!-- Graphs (This Year)-->
+
+        const lChartA = document.getElementById('myLChartA');
+
+        new Chart(lChartA, {
+            type: 'bar',
+            data: {
+                labels: [{%for i in income_y.keys%} '{{i}}', {%endfor%}],
+                datasets: [{
+                                label: 'Sales this Year',
+                                data: [{%for i in income_y.values%} '{{i.Amount}}', {%endfor%}],
+                                borderWidth: 0,
+                                borderColor: 'Teal',
+                                backgroundColor: 'Teal',
+                            },
+                            {
+                                label: 'Sales in Cash',
+                                data: [{%for i in income_y.values%} '{{i.Cash}}', {%endfor%}],
+                                borderWidth: 0,
+                                borderColor: '#5D6166',
+                                backgroundColor: '#5D6166',
+                            },
+                            {
+                                label: 'Sales on Credit',
+                                data: [{%for i in income_y.values%} '{{i.Credit}}', {%endfor%}],
+                                borderWidth: 0,
+                                borderColor: 'black',
+                                backgroundColor: 'black',
+                            },
+
+                ],
+
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                      beginAtZero: true
+                    },
+                },
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) =>{
+                            if (value>1000,000,000){
+                                return(value/1000,000,0000) + 'B';
+                            }if (value>1000,000){
+                                return(value/1000,000) + 'M';
+                            }if (value>1000){
+                                return(value/1000) + 'k';
+                            }return value;
+
+                            console.log(value);
+
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            // This more specific font property overrides the global property
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+
+        const doughnutA = document.getElementById('doughnutA');
+
+        new Chart(doughnutA, {
+            type: 'doughnut',
+            data: {
+                labels: ['Cash', 'Credit'],
+                datasets: [{
+                    label: 'Sales this week',
+                    data: [{{cash_y}}, {{credit_y}}],
+                    borderWidth: 1,
+                    borderColor: '#EDEADE',
+                    backgroundColor:['#5D6166', 'black'],
+                    radius: 60,
+                    },
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+
+            }
+        });
+
+    {%else%}
+
+        <!-- Graphs (This Month)-->
+
+
+        const lChartB = document.getElementById('myLChartB');
+
+        new Chart(lChartB, {
+            type: 'bar',
+            data: {
+                labels: [{%for i in income_m.keys%} '{{i}}', {%endfor%}],
+                datasets: [{
+                                label: 'Sales this Month',
+                                data: [{%for i in income_m.values%} '{{i.Amount}}', {%endfor%}],
+                                borderWidth: 0,
+                                borderColor: 'Teal',
+                                backgroundColor: 'Teal',
+                            },
+                            {
+                                label: 'Sales in Cash',
+                                data: [{%for i in income_m.values%} '{{i.Cash}}', {%endfor%}],
+                                borderWidth: 0,
+                                borderColor: '#5D6166',
+                                backgroundColor: '#5D6166',
+                            },
+                            {
+                                label: 'Sales on Credit',
+                                data: [{%for i in income_m.values%} '{{i.Credit}}', {%endfor%}],
+                                borderWidth: 0,
+                                borderColor: 'black',
+                                backgroundColor: 'black',
+                            },
+
+                ],
+
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        ticks: {
+                            color: '#5D6166'
+                        },
+                        beginAtZero: true
+                    },
+                    x: {
+                        ticks: {
+                            color: '#5D6166'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        formatter: (value, context) =>{
+                            if (value>1000,000,000){
+                                return(value/1000,000,0000) + 'B';
+                            }if (value>1000,000){
+                                return(value/1000,000) + 'M';
+                            }if (value>1000){
+                                return(value/1000) + 'k';
+                            }return value;
+
+                            console.log(value);
+
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            // This more specific font property overrides the global property
+                            font: {
+                                size: 14,
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+
+        const doughnutB = document.getElementById('doughnutB');
+
+        new Chart(doughnutB, {
+            type: 'doughnut',
+            data: {
+                labels: ['Cash', 'Credit'],
+                datasets: [{
+                    label: 'Sales this month',
+                    data: [{{cash_m}}, {{credit_m}}],
+                    borderWidth: 1,
+                    borderColor: '#EDEADE',
+                    backgroundColor:['#5D6166', 'black'],
+                    radius: 60,
+                    },
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+
+            }
+        });
+    {%endif%}
+</script>

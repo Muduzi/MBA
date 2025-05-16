@@ -46,10 +46,7 @@ def service_income_per_group_this_month(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        customers[c.id] = {}
-        customers[c.id]['Name'] = c.Name
-        customers[c.id]['Amount'] = amount
-        customers[c.id]['Percentage'] = percentage
+        customers[c.id] = {'Name': c.Name, 'Amount': amount, 'Percentage': percentage}
     customers = dict(sorted(customers.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per category"""
@@ -67,10 +64,7 @@ def service_income_per_group_this_month(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        categories[c] = {}
-        categories[c]['Quantity'] = quantity
-        categories[c]['Percentage'] = percentage
-        categories[c]['Amount'] = amount
+        categories[c.id] = {'Name': c.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
     categories = dict(sorted(categories.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per service"""
@@ -86,11 +80,7 @@ def service_income_per_group_this_month(buss):
             percentage = round((amount/grand_total)*100)
         except ZeroDivisionError:
             percentage = 0
-        services[s] = {}
-        services[s]['Category'] = s.Category.Name
-        services[s]['Quantity'] = quantity
-        services[s]['Percentage'] = percentage
-        services[s]['Amount'] = amount
+        services[s.id] = {'Name': s.Name, 'Category': s.Category.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
     services = dict(sorted(services.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per package"""
@@ -107,11 +97,8 @@ def service_income_per_group_this_month(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        packages[p] = {}
-        packages[p]['Category'] = p.Category.Name
-        packages[p]['Quantity'] = quantity
-        packages[p]['Percentage'] = percentage
-        packages[p]['Amount'] = amount
+        packages[p.id] = {'Name': p.Name, 'Category': p.Category.Name, 'Quantity': quantity, 'Percentage': percentage,
+                          'Amount':  amount}
     packages = dict(sorted(packages.items(), key=lambda item: item[1]['Amount']))
 
     # service_income_per_group_this_month -> s_i_p_g_t_m
@@ -213,10 +200,7 @@ def service_income_per_group_this_year(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        customers[c.id] = {}
-        customers[c.id]['Name'] = c.Name
-        customers[c.id]['Amount'] = amount
-        customers[c.id]['Percentage'] = percentage
+        customers[c.id] = {'Name': c.Name, 'Amount': amount, 'Percentage': percentage}
     customers = dict(sorted(customers.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per category"""
@@ -234,10 +218,7 @@ def service_income_per_group_this_year(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        categories[c] = {}
-        categories[c]['Quantity'] = quantity
-        categories[c]['Percentage'] = percentage
-        categories[c]['Amount'] = amount
+        categories[c.id] = {'Name': c.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
     categories = dict(sorted(categories.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per service"""
@@ -254,11 +235,7 @@ def service_income_per_group_this_year(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        services[s] = {}
-        services[s]['Category'] = s.Category.Name
-        services[s]['Quantity'] = quantity
-        services[s]['Percentage'] = percentage
-        services[s]['Amount'] = amount
+        services[s.id] = {'Name': s.Name, 'Category': s.Category.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
         services = dict(sorted(services.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
         """"Income per package"""
@@ -275,11 +252,8 @@ def service_income_per_group_this_year(buss):
                 percentage = round((amount / grand_total) * 100)
             except ZeroDivisionError:
                 percentage = 0
-            packages[p] = {}
-            packages[p]['Category'] = p.Category.Name
-            packages[p]['Quantity'] = quantity
-            packages[p]['Percentage'] = percentage
-            packages[p]['Amount'] = amount
+            packages[p.id] = {'Name': p.Name, 'Category': p.Category.Name, 'Quantity': quantity, 'Percentage': percentage,
+                              'Amount': amount}
         packages = dict(sorted(packages.items(), key=lambda item: item[1]['Amount']))
 
     # service_income_per_group_this_year -> s_i_p_g_t_y
@@ -469,4 +443,4 @@ def service_income_dash(request):
         'services_y': services_y,
         'packages_y': packages_y
     }
-    return render(request, 'serviceIncomeDash.html', context)
+    return render(request, 'income/serviceIncome/serviceIncomeDash.html', context)

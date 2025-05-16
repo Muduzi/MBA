@@ -44,10 +44,7 @@ def daily_expenses_this_month(buss):
         if not credit:
             credit = 0
 
-        daily_totals[i] = {}
-        daily_totals[i]['Amount'] = amount
-        daily_totals[i]['Cash'] = cash
-        daily_totals[i]['Credit'] = credit
+        daily_totals[i] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
 
     grand_total = Expense.objects.filter(Business__id=buss, Date__range=(start, end))
     total = grand_total.aggregate(Sum('Price'))
@@ -82,11 +79,7 @@ def daily_expenses_this_month(buss):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_month[a] = {}
-        expenses_this_month[a]['Name'] = a.Name
-        expenses_this_month[a]['Quantity'] = quantity
-        expenses_this_month[a]['Percentage'] = percentage
-        expenses_this_month[a]['Amount'] = amount
+        expenses_this_month[a.id] = {'Name':  a.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
 
     expenses = Expense.objects.filter(Business__id=buss, ExpenseAccount__isnull=True, Date__range=(start, end))
     for e in expenses:
@@ -94,11 +87,8 @@ def daily_expenses_this_month(buss):
             percentage = round((e.Price / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_month[e] = {}
-        expenses_this_month[e]['Name'] = e.Name
-        expenses_this_month[e]['Quantity'] = e.Quantity
-        expenses_this_month[e]['Percentage'] = percentage
-        expenses_this_month[e]['Amount'] = e.Price
+        expenses_this_month[e.id] = {'Name': e.Name, 'Quantity': e.Quantity, 'Percentage': percentage,
+                                     'Amount': e.Price}
 
     expenses_this_month = dict(sorted(expenses_this_month.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
@@ -117,10 +107,9 @@ def daily_expenses_this_month(buss):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        suppliers[s.id] = {}
-        suppliers[s.id]['Name'] = s.Name
-        suppliers[s.id]['Amount'] = amount
-        suppliers[s.id]['Percentage'] = percentage
+
+        suppliers[s.id] = {'Name': s.Name, 'Amount': amount, 'Percentage': percentage}
+
     suppliers = dict(sorted(suppliers.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     # daily_expenses_this_month -> d_e_t_m
@@ -210,7 +199,7 @@ def monthly_expenses_this_year(buss):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_year[a] = {'Name': a.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
+        expenses_this_year[a.id] = {'Name': a.Name, 'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
 
     expenses = Expense.objects.filter(Business__id=buss, ExpenseAccount__isnull=True, Date__range=(start_, end_))
     for e in expenses:
@@ -218,7 +207,7 @@ def monthly_expenses_this_year(buss):
             percentage = round((e.Price / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_year[e] = {'Name': e.Name, 'Quantity': e.Quantity, 'Percentage': percentage, 'Amount': e.Price}
+        expenses_this_year[e.id] = {'Name': e.Name, 'Quantity': e.Quantity, 'Percentage': percentage, 'Amount': e.Price}
 
     expenses_this_year = dict(sorted(expenses_this_year.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
@@ -275,8 +264,7 @@ def expenses_dash(request):
         expenses_this_month = cache.get(str(buss) + 'd_e_t_m-expenses_this_month')
 
         if not total_m and cash_m and credit_m and daily_totals and expenses_this_month:
-            # total_m, cash_m, credit_m, daily_totals, suppliers_m, expenses_this_month
-            # = daily_expenses_this_month(buss)
+            total_m, cash_m, credit_m, daily_totals, suppliers_m, expenses_this_month = daily_expenses_this_month(buss)
             return redirect('/expenses_dash/')
 
         # monthly_expenses_this_year
@@ -289,8 +277,8 @@ def expenses_dash(request):
         expenses_this_year = cache.get(str(buss) + 'm_e_t_y-expenses_this_year')
 
         if not total_y and cash_y and credit_y and monthly_expense_records and expenses_this_year:
-            # total_y, cash_y, credit_y, monthly_expense_records, suppliers_y, expenses_this_year = \
-            #   (monthly_expenses_this_year(buss))
+            total_y, cash_y, credit_y, monthly_expense_records, suppliers_y, expenses_this_year = \
+                (monthly_expenses_this_year(buss))
             return redirect('/expenses_dash/')
 
         if request.method == 'POST':
@@ -324,4 +312,4 @@ def expenses_dash(request):
         'expenses_y': expenses_this_year,
         'suppliers_y': suppliers_y,
     }
-    return render(request, 'expensesDash.html', context)
+    return render(request, 'expense/expensesDash.html', context)

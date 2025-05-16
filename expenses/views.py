@@ -124,4 +124,4 @@ def expenses_view(request):
         'amounts': amounts,
         'label': label,
     }
-    return render(request, 'expenses.html', context)
+    return render(request, 'expense/expenses.html', context)

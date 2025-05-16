@@ -1,4 +1,6 @@
 # Create your views here.
+import time
+
 from django.shortcuts import render, redirect, HttpResponse
 from .models import ServiceIncome, Service, Package, Category, PackageServices, ServiceBuffer
 from .service_graphs import income_this_week, daily_total_this_week, cash_credit_this_week
@@ -29,10 +31,7 @@ def services(request):
 
         for p in packages_obj:
             count = PackageServices.objects.filter(Package=p.id).count()
-            packages[p.id] = {}
-            packages[p.id]['Name'] = p.Name
-            packages[p.id]['Price'] = p.Price
-            packages[p.id]['Count'] = count
+            packages[p.id] = {'Name': p.Name, 'Price': p.Price, 'Count': count}
 
         if request.method == 'POST':
             if 'createCategory' in request.POST:
@@ -40,7 +39,7 @@ def services(request):
                 notes = request.POST.get('categoryNotes')
                 try:
                     Category(Business=buss, Name=name, Notes=notes).save()
-                    messages.success(request, f'{name} category saved successfully')
+                    messages.success(request, f'created new category')
                 except Exception as e:
                     messages.error(request, f'failed to save {name} category due to "{e}" error')
 
@@ -74,19 +73,25 @@ def services(request):
                     try:
                         new_package = Package(Business=buss, Category=cat, Name=name, Price=price)
                         new_package.save()
-                        messages.success(request, "Service registered successfully")
 
                         try:
                             for c in choices:
                                 for s in services_obj:
                                     if c == s.Name:
                                         PackageServices(Package=new_package, Service=s).save()
-                                        messages.success(request, "Package saved successfully")
+
                         except Exception as e:
                             messages.error(request, f"failed to due to '{e}' error")
 
+                        messages.success(request, "created new package")
+
+                        packages_obj = Package.objects.filter(Business=buss)
+                        for p in packages_obj:
+                            count = PackageServices.objects.filter(Package=p.id).count()
+                            packages[p.id] = {'Name': p.Name, 'Price': p.Price, 'Count': count}
+
                     except Exception as e:
-                        messages.error(request, f"failed to register spackage due to '{e}' error")
+                        messages.error(request, f"failed to create new package due to '{e}' error")
 
                 except Category.DoesNotExist:
                     messages.error(request, f"The Category does not exist, refresh the page and try again")
@@ -100,7 +105,7 @@ def services(request):
         'packages': packages,
         'categories': categories_obj
     }
-    return render(request, 'services.html', context)
+    return render(request, 'income/serviceIncome/services.html', context)
 
 
 @login_required(login_url="/login/")
@@ -108,7 +113,6 @@ def services(request):
 # @check_active_subscription(allowed_subscriptions=['Basic', 'Standard', 'Advanced', 'Premium'])
 def service_income(request):
     customer = None
-    result = None
     try:
         user_obj = request.user
         check = Employee.objects.get(User=user_obj.id)
@@ -127,9 +131,8 @@ def service_income(request):
         'amounts': amounts,
         'cash': cash,
         'credit': credit,
-        'result': result,
     }
-    return render(request, 'serviceIncome.html', context)
+    return render(request, 'income/serviceIncome/serviceIncome.html', context)
 
 
 @login_required(login_url="/login/")
@@ -239,7 +242,42 @@ def service_sale(request):
         'paid': paid,
         'excess': excess,
     }
-    return render(request, 'serviceSale.html', context)
+    return render(request, 'income/serviceIncome/serviceSale.html', context)
+
+
+@login_required(login_url="/login/")
+@allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
+def edit_service_sale(request, id=0):
+    try:
+        user_obj = request.user
+        check = Employee.objects.get(User=user_obj.id)
+        buss = check.Business
+
+        buffer = ServiceBuffer.objects.get(Business=buss.id, pk=id)
+
+        if request.method == 'POST':
+            if 'change amount' in request.POST:
+                amount = request.POST.get("amount")
+
+                if amount:
+                    if buffer.Amount != amount:
+                        buffer.Amount = amount
+                        buffer.save()
+
+                        messages.success(request, 'changes saved successfully')
+
+            if 'delete' in request.POST:
+                buffer.delete()
+                messages.success(request, 'entry deleted successfully')
+                return redirect('/service_sale/')
+
+    except Employee.DoesNotExist:
+        return HttpResponse('You are not affiliated to any business, please register your business'
+                            ' or ask your employer to register you to their business')
+    context = {
+        'buffer': buffer,
+    }
+    return render(request, 'income/serviceIncome/editServiceSale.html', context)
 
 
 def buffer_service_service_income(buss, user_obj, packages_obj, services_obj, si_type, choices_li, quantity):
@@ -273,7 +311,7 @@ def service(request, id=0):
         categories = Category.objects.filter(Business=buss)
 
         if request.method == 'POST':
-            if 'saveChanges' in request.POST:
+            if 'save changes' in request.POST:
                 name = request.POST.get('name')
                 charging_criteria = request.POST.get('chargingCriteria')
                 category = request.POST.get('category')
@@ -307,6 +345,14 @@ def service(request, id=0):
                     messages.success(request, f'Changes saved')
                 else:
                     messages.info(request, 'No changes to save')
+            if 'delete service' in request.POST:
+                messages.warning(request, 'Do you really want to delete this service?')
+            if 'confirm' in request.POST:
+                data.delete()
+                return redirect('/services/')
+            if 'un-confirm' in request.POST:
+                pass
+
     except Employee.DoesNotExist:
         return HttpResponse('You are not affiliated to any business, please register your business'
                             ' or ask your employer to register you to their business')
@@ -314,7 +360,7 @@ def service(request, id=0):
         'data': data,
         'categories': categories
     }
-    return render(request, 'service.html', context)
+    return render(request, 'income/serviceIncome/service.html', context)
 
 
 @login_required(login_url="/login/")
@@ -420,6 +466,7 @@ def package(request, id=0):
 
             if 'delete' in request.POST:
                 messages.warning(request, 'Press confirm to delete')
+
             if 'confirm' in request.POST:
                 for p_s in pack_services:
                     p_s.delete()
@@ -435,5 +482,61 @@ def package(request, id=0):
         'pack_services': pack_services,
         'categories': categories,
     }
-    return render(request, 'package.html', context)
+    return render(request, 'income/serviceIncome/package.html', context)
 
+
+def service_category(request, id=0):
+    category_obj = None
+    try:
+        check = Employee.objects.get(User=request.user.id)
+        buss = check.Business
+
+        try:
+            category_obj = Category.objects.get(pk=id)
+
+        except Category.DoesNotExist:
+            messages.error(request, 'failed to get the category')
+        if 'save changes' in request.POST:
+            name = request.POST.get('categoryName')
+            notes = request.POST.get('categoryNotes')
+
+            if name:
+                if category_obj.Name != name:
+                    category_obj.Name = name
+            if notes:
+                if category_obj.Notes != notes:
+                    category_obj.Notes = notes
+
+            category_obj.save()
+        if 'delete category' in request.POST:
+            messages.warning(request, "By deleting this category you'll also delete every package"
+                                      " and service under it, press 'yes' to confirm deletion.")
+        if 'confirm' in request.POST:
+            services_ = Service.objects.filter(Category__id=category_obj.id)
+            packages_ = Package.objects.filter(Category__id=category_obj.id)
+
+            for s in services_:
+                try:
+                    PackageServices.objects.get(pk=s.id).delete()
+                    s.delete()
+                except PackageServices.DoesNotExist:
+                    return redirect(f'service_category/{id}/')
+
+            for p in packages_:
+                p.delete()
+
+            messages.success(request, f'{category_obj.Name} deleted successfully')
+            time.sleep(0.3)
+            category_obj.delete()
+            return redirect('/services/')
+        if 'un-confirm' in request.POST:
+            pass
+
+    except Employee.DoesNotExist:
+        return HttpResponse('You are not affiliated to any business, please register your business'
+                            ' or ask your employer to register you to their business')
+
+    context = {
+        'category': category_obj
+    }
+    return render(request, 'income/serviceIncome/serviceCategory.html', context)

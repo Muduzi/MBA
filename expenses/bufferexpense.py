@@ -59,7 +59,7 @@ def buffer_expense_view(request):
         "data": data,
         'total': total,
     }
-    return render(request, 'bufferExpense.html', context)
+    return render(request, 'expense/bufferExpense.html', context)
 
 
 @login_required(login_url="/login/")
@@ -114,4 +114,4 @@ def edit_buffer_expense(request, id=0):
     context = {
         'data': data
     }
-    return render(request, 'editBufferExpense.html', context)
+    return render(request, 'expense/editBufferExpense.html', context)

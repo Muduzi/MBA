@@ -15,9 +15,6 @@ from inventory.models import InventoryProductInfo
 def get_invoices(buss):
     today = datetime.now(timezone.utc).date()
     items_count = 0
-    pending_invoices_stats = {}
-    processed_invoices_stats = {}
-    overdue_invoices_stats = {}
 
     pending_invoices = Invoice.objects.filter(Business__id=buss, Status=False, ValidityLimit__gte=today)
     for i in pending_invoices:
@@ -35,10 +32,8 @@ def get_invoices(buss):
     if not total_vat:
         total_vat = 0
 
-    pending_invoices_stats['total'] = total
-    pending_invoices_stats['total_vat'] = total_vat
-    pending_invoices_stats['count'] = pending_invoices.count()
-    pending_invoices_stats['items'] = items_count
+    pending_invoices_stats = {'total': total, 'total_vat': total_vat,
+                              'count': pending_invoices.count(), 'items': items_count}
 
     overdue_invoices = Invoice.objects.filter(Business__id=buss, Status=False, ValidityLimit__lt=today)
     for i in overdue_invoices:
@@ -56,10 +51,8 @@ def get_invoices(buss):
     if not total_vat:
         total_vat = 0
 
-    overdue_invoices_stats['total'] = total
-    overdue_invoices_stats['total_vat'] = total_vat
-    overdue_invoices_stats['count'] = overdue_invoices.count()
-    overdue_invoices_stats['items'] = items_count
+    overdue_invoices_stats = {'total': total, 'total_vat': total_vat,
+                              'count': overdue_invoices.count(), 'items':  items_count}
 
     processed_invoices = Invoice.objects.filter(Business__id=buss, Status=True)
     for i in processed_invoices:
@@ -76,10 +69,8 @@ def get_invoices(buss):
     if not total_vat:
         total_vat = 0
 
-    processed_invoices_stats['total'] = total
-    processed_invoices_stats['total_vat'] = total_vat
-    processed_invoices_stats['count'] = processed_invoices.count()
-    processed_invoices_stats['items'] = items_count
+    processed_invoices_stats = { 'total': total, 'total_vat':  total_vat,
+                                 'count': processed_invoices.count(), 'items': items_count}
 
     return (pending_invoices, pending_invoices_stats, processed_invoices, processed_invoices_stats, overdue_invoices,
             overdue_invoices_stats)
@@ -452,12 +443,12 @@ def invoice_form(request, id=0, choice=''):
                     elif service_buffer:
                         for i in service_buffer:
                             if i.Service:
-                                InvoiceItems(invoice=new_invoice, Service=i.Service, UnitPrice=i.Service.Price,
-                                             Total=i.Service.Price * i.Quantity, Quantity=i.Quantity).save()
+                                InvoiceItems(invoice=new_invoice, Service=i.Service, UnitPrice=(i.Amount/i.Quantity),
+                                             Total=i.Amount, Quantity=i.Quantity).save()
 
                             if i.Package:
-                                InvoiceItems(invoice=new_invoice, Package=i.Package, UnitPrice=i.Package.Price,
-                                             Total=i.Package.Price * i.Quantity, Quantity=i.Quantity).save()
+                                InvoiceItems(invoice=new_invoice, Package=i.Package, UnitPrice=(i.Amount/i.Quantity),
+                                             Total=i.Amount, Quantity=i.Quantity).save()
 
                         service_buffer.delete()
 

@@ -9,6 +9,7 @@ from django.db.models import Sum, Q
 from User.models import Employee
 from User.models import CashAccount
 from django.contrib import messages
+from fuzzywuzzy import fuzz
 
 
 def get_id(param, business):
@@ -38,20 +39,40 @@ def process_buy_id(buss, request, code, quantity):
         return 'unable to find the product'
 
 
-def process_buy_name(buss, request, name, brand, size, quantity):
+def process_selected_product(request, buss, prod_id, quantity):
     try:
-        prod = InventoryProduct.objects.get(Q(Business=buss), Q(Name__contains=name) & Q(Brand__contains=brand) & Q(Size__contains=size))
-        pro_info = InventoryProductInfo.objects.get(Business=buss, Product=prod.id)
-
-        a = quantity * pro_info.SPrice
-        if pro_info.CurrentQuantity >= quantity:
-            b = IncomeBuffer(Business=buss, Cashier=request.user, Code=pro_info.Code, Product=prod, Amount=a, Quantity=quantity)
+        prod = InventoryProduct.objects.get(Business__id=buss.id, pk=prod_id)
+        prod_info = InventoryProductInfo.objects.get(Business=buss, Product__id=prod.id)
+        a = quantity * prod_info.SPrice
+        if prod_info.CurrentQuantity >= quantity:
+            b = IncomeBuffer(Business=buss, Cashier=request.user, Code=prod_info.Code, Product=prod, Amount=a,
+                             Quantity=quantity)
             b.save()
             return 'success'
         else:
-            return f'inventory error: only {pro_info.CurrentQuantity} left in inventory'
-    except InventoryProduct.DoesNotExist:
-        return 'unable to find the product in inventory'
+            return f'inventory error: only {prod_info.CurrentQuantity} left in inventory'
+    except Exception as e:
+        return str(e)
+
+
+def search_product(buss, name):
+    result = None
+    try:
+        products = InventoryProduct.objects.all()
+        result = []
+        for p in products:
+            ratio = fuzz.partial_ratio(name.lower(), p.Name.lower())
+            if ratio > 60:
+                prod_info = InventoryProductInfo.objects.get(Business=buss, Product__id=p.id)
+                result.append({'id': p.id, 'Name': p.Name, 'Brand': p.Brand, 'Size': p.Size, 'Price': prod_info.SPrice,
+                               'ratio': ratio})
+        if result:
+            result = sorted(result, key=lambda x: x['ratio'], reverse=True)
+            return result
+        else:
+            return "failed to find a product by this name"
+    except Exception as e:
+        return str(e)
 
 
 @login_required(login_url="/login/")
@@ -59,6 +80,8 @@ def process_buy_name(buss, request, name, brand, size, quantity):
 def product_sale(request):
     excess = 0
     paid = 0
+    search_result = None
+    search_name = None
     try:
         check = Employee.objects.get(User=request.user.id)
 
@@ -72,19 +95,21 @@ def product_sale(request):
         cash_account = CashAccount.objects.get(Business=buss)
 
         if request.method == 'POST':
-            if 'save' in request.POST:
-                name = request.POST.get('name')
-                brand = request.POST.get('brand')
-                size = request.POST.get('size')
-                quantity = request.POST.get('quantity')
-                quantity = int(quantity)
-                result = process_buy_name(buss, request, name, brand, size, quantity)
-                if result == 'success':
-                    return redirect('/product_sale/')
+            if 'search product' or 'search_name' and not 'save selected product' in request.POST:
+                search_name = request.POST.get('search name')
 
-                else:
-                    messages.error(request, f'{result}')
+                search_result = search_product(buss, search_name)
+                if type(search_result) == str:
+                    messages.error(request, f"{search_result}")
+                    return redirect('/')
 
+            if 'save selected product' in request.POST:
+                selected_product = request.POST.get("selected product")
+                quantity = request.POST.get("quantity")
+                result = process_selected_product(request, buss, int(selected_product), int(quantity))
+                search_result = None
+                if result is not 'success':
+                    messages.success(request, f'{result}')
             if 'save_by_code' in request.POST:
                 code = request.POST.get('code')
                 quantity = request.POST.get('quantity')
@@ -142,11 +167,13 @@ def product_sale(request):
                             ' or ask your employer to register you to their business')
     context = {
         'table': data,
+        'search_result': search_result,
+        'search_name': search_name,
         'total': total,
         'paid': paid,
-        'excess': excess
+        'excess': excess,
     }
-    return render(request, 'productSale.html', context)
+    return render(request, 'income/productIncome/productSale.html', context)
 
 
 @login_required(login_url="/login/")
@@ -184,4 +211,4 @@ def edit_product_sale(request, id):
     context = {
         'buff_obj': buff_obj
     }
-    return render(request, 'editProductSale.html', context)
+    return render(request, 'income/productIncome/editProductSale.html', context)

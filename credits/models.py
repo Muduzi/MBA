@@ -5,11 +5,11 @@ from User.models import Business
 
 
 class Supplier(models.Model):
-    Business = models.ForeignKey(Business, on_delete=models.CASCADE, null=False, blank=False, )
+    Business = models.ForeignKey(Business, on_delete=models.CASCADE, null=False, blank=False)
     date = models.DateTimeField(auto_now=True)
     Name = models.CharField(blank=False, null=False, max_length=40)
     Email = models.EmailField(null=True, blank=True)
-    Contact = models.IntegerField(blank=False, null=False)
+    Contact = models.CharField(blank=False, null=False)
     Notes = models.TextField(blank=True, null=True, max_length=250)
 
 

@@ -157,10 +157,7 @@ def product_income_per_group_this_year(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        categories[c] = {}
-        categories[c]['Quantity'] = quantity
-        categories[c]['Percentage'] = percentage
-        categories[c]['Amount'] = amount
+        categories[c] = {'Quantity': quantity, 'Percentage': percentage, 'Amount': amount}
     categories = dict(sorted(categories.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     """"Income per products"""
@@ -177,13 +174,9 @@ def product_income_per_group_this_year(buss):
             percentage = round((amount / grand_total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        products[p.id] = {}
-        products[p.id]['Name'] = p.Name
-        products[p.id]['Brand'] = p.Brand
-        products[p.id]['Size'] = p.Size
-        products[p.id]['Quantity'] = quantity
-        products[p.id]['Percentage'] = percentage
-        products[p.id]['Amount'] = amount
+        products[p.id] = {'Name': p.Name, 'Brand': p.Brand, 'Size': p.Size, 'Quantity': quantity,
+                          'Percentage': percentage, 'Amount': amount}
+
     products = dict(sorted(products.items(), key=lambda item: item[1]['Amount'], reverse=True))
 
     # product_income_per_group_this_year -> p_i_p_g_t_y
@@ -341,4 +334,4 @@ def product_income_dash(request):
         'categories_y': categories_y,
         'products_y': products_y,
     }
-    return render(request, 'productIncomeDash.html', context)
+    return render(request, 'income/productIncome/productIncomeDash.html', context)

@@ -60,7 +60,7 @@ def expense_accounts(request):
         'expenses': expenses,
         'total': total
     }
-    return render(request, 'expenseAccounts.html', context)
+    return render(request, 'expense/expenseAccounts.html', context)
 
 
 @login_required(login_url="/login/")
@@ -132,8 +132,8 @@ def expense_account(request, id=0):
                 messages.info(request, 'Set Supplier?')
 
             if 'No' in request.POST:
-                id = request.POST.get("No")
-                b = BufferExpense.objects.get(Business=buss, Cashier=user_obj, pk=int(id))
+                i_d = request.POST.get("No")
+                b = BufferExpense.objects.get(Business=buss, Cashier=user_obj, pk=int(i_d))
                 Expense(Business=buss, Cashier=user_obj, ExpenseAccount=b.ExpenseAccount, Name=b.Name,
                         Price=b.Price, Type=b.Type, Quantity=b.Quantity, PMode=b.PMode, Discount=b.Discount,
                         Notes=b.Notes).save()
@@ -150,7 +150,7 @@ def expense_account(request, id=0):
                 else:
                     messages.warning(request, 'Are you sure you want to delete the account')
 
-            if 'yes_delete' in request.POST:
+            if 'confirm' in request.POST:
                 if expenses:
                     messages.error(request, 'The expense records under the account will persist')
                     time.sleep(5)
@@ -162,7 +162,7 @@ def expense_account(request, id=0):
                 else:
                     account.delete()
                     return redirect('/expense_accounts/')
-            if "don't_delete" in request.POST:
+            if "un-confirm" in request.POST:
                 return redirect(f'/expense_account/{id}/')
 
     except Employee.DoesNotExist:
@@ -173,4 +173,4 @@ def expense_account(request, id=0):
         'account': account,
         'expenses': expenses
     }
-    return render(request, 'expenseAccount.html', context)
+    return render(request, 'expense/expenseAccount.html', context)

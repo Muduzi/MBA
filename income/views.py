@@ -30,7 +30,7 @@ def product_income(request):
         'cash': cash,
         'credit': credit,
     }
-    return render(request, 'productIncome.html', context)
+    return render(request, 'income/productIncome/productIncome.html', context)
 
 
 def sorting_data(buss):

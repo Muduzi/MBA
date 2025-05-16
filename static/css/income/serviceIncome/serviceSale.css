@@ -1,0 +1,450 @@
+body{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-start;
+    justify-content:center;
+    row-gap:10px;
+    position:relative;
+    width:100wh;
+    height:auto;
+    background:#EDEADE;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+
+
+/*navigation*/
+.Navigation{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+    position:relative;
+    width:60%;
+    height:30px;
+    border-radius:10px;
+}
+.Navigation button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    height:80%;
+    color:rgb(54, 69, 79);
+    padding:5px;
+    background:transparent;
+    border:hidden;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.4);
+}
+.Navigation button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+
+table{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    width:60%;
+    height:60%;
+    background:#F9F6EE;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+    overflow-y:scroll;
+}
+
+thead{
+    position:sticky;
+    top:0;
+    z-index:1;
+    width:100%;
+    height:30px;
+    background:#5D6166;
+}
+thead tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:100%;
+}
+th{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    color:#EDEADE;
+    font-size:15px;
+    margin-left:3px;
+}
+.sth1{
+    width:60%;
+    height:100%;
+}
+.sth2{
+    width:20%;
+    height:100%;
+}
+table button{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    color:#2B3856;
+    font-size:15px;
+    width:100%;
+    height:100%;
+    background:transparent;
+    border:hidden;
+}
+tbody{
+    width:100%;
+}
+
+tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30px;
+}
+td{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    font-size:15px;
+    color:#5D6166;
+}
+
+tfoot{
+    position:sticky;
+    bottom:0%;
+    z-index:1;
+    width:100%;
+    height:123px;
+    background:#F9F6EE;
+}
+tfoot tr{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    position:relative;
+    width:100%;
+    height:30px;
+}
+tfoot td{
+    color:rgb(54, 69, 79);
+    font-size:16px;
+}
+
+
+/*forms*/
+form{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-between;
+    position:absolute;
+    z-index:3;
+    top:10%;
+    width:400px;
+    height:450px;
+    padding-left:10px;
+    padding-right:10px;
+    padding-top:15px;
+    padding-bottom:15px;
+    background:#EDEADE;
+    border-radius:10px;
+    box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
+}
+
+.service{
+    display:flex;
+    visibility:visible;
+}
+
+.package{
+    display:flex;
+    visibility:visible;
+}
+
+form text{
+    align-self:center;
+    color:#2B3856;
+    font-size:17px;
+}
+form label{
+    width:auto;
+    color:rgb(54, 69, 79);
+    font-size:16px;
+}
+form input{
+    color:#5D6166;
+    font-size:14px;
+    padding:5px;
+    width:50%;
+    height:32px;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+
+form input:focus{
+    outline:none;
+    border:1px solid gray;
+}
+form select{
+    color:#5D6166;
+    font-size:14px;
+    padding:5px;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+.select1{
+    width:100%;
+    height:55%;
+    color:#5D6166;
+    font-size:14px;
+    padding:5px;
+    background:#F9F6EE;
+    border:hidden;
+    border-radius:10px;
+}
+.select2{
+    width:auto;
+    height:30px;
+}
+form select:focus{
+    outline:none;
+}
+select option{
+    display:flex;
+    align-items:center;
+    height:32px;
+    margin-top:4px;
+    font-size:14px;
+}
+select option:hover{
+    cursor:hand;
+    background:#EDEADE;
+}
+form input[type="checkbox"]{
+    width:auto;
+    height:auto;
+    color:rgb(54, 69, 79);
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+}
+.attach_customer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    height:30px;
+    border-radius:10px;
+}
+
+
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    width:100%;
+    height:30px;
+    border-radius:10px;
+}
+.but button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    min-width:80px;
+    max-width:auto;
+    height:90%;
+    color:rgb(54, 69, 79);
+    font-size:15px;
+    padding:2px;
+    padding-left:5px;
+    padding-right:5px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.but button:hover{
+    color:white;
+    background:#5D6166;
+}
+
+.finish{
+    display:flex;
+    visibility:visible;
+    width:320px;
+    height:280px;
+}
+.finish input{
+    width:100%;
+}
+
+.invoice{
+    display:flex;
+    visibility:visible;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:absolute;
+    height:170px;
+    font-size:15px;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10;
+    padding-bottom:10px;
+    background:#EDEADE;
+    border-radius:10px;
+}
+.invoice p{
+    align-self:center;
+    font-size:18px;
+    color:#2B3856;
+}
+
+@media(max-width:1000px){
+    body{
+        height:auto;
+        overflow-y:scroll;
+    }
+
+    .Navigation{
+        width:90%;
+    }
+    .Navigation button{
+        font-size:12px;
+    }
+
+    table{
+        width:90%;
+        height:75%;
+    }
+
+    table button{
+        font-size:12px;
+    }
+    th{
+        font-size:13px;
+    }
+    td{
+        font-size:13px;
+    }
+    tfoot td{
+        font-size:14px;
+    }
+
+    form{
+        height:390px;
+    }
+    form label{
+        font-size:13px;
+    }
+
+    form input{
+        font-size:12px;
+    }
+
+    .form select{
+        font-size:12px;
+    }
+    form select option{
+        font-size:12px;
+    }
+    .select{
+        font-size:12px;
+    }
+    form textarea{
+        font-size:12px;
+    }
+
+    .invoice p {
+        font-size:14px;
+    }
+}
+
+@media(max-width:768px){
+
+    .Navigation{
+        width:99%;
+    }
+
+    table{
+        width:100%;
+        height:80%;
+    }
+
+}
+
+@media(max-width:430px){
+    body{
+        overflow:hidden;
+    }
+    .messages{
+        width:90%;
+        height:20%;
+    }
+
+    .Navigation{
+        width:99%;
+    }
+    table{
+        width:100%;
+        height:75%;
+    }
+
+    table button{
+        font-size:12px;
+    }
+
+    th{
+        font-size:13px;
+    }
+
+    td{
+        font-size:12px;
+    }
+    tfoot td{
+        font-size:14px;
+    }
+    form{
+        width:90%;
+    }
+}
+
+
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

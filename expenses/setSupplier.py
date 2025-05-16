@@ -46,7 +46,12 @@ def set_supplier(request):
                     notes = request.POST.get('notes')
 
                     try:
-                        supplier = Supplier.objects.get(Business=buss, Name=name, Email=email)
+                        int(contact)
+                    except Exception as e:
+                        messages.error(request, f'{e}')
+
+                    try:
+                        supplier = Supplier.objects.get(Business__id=buss.id, Name=name, Email=email)
                         result = set_expense(buss, cash_account, user_obj, supplier, data, total)
                     except Supplier.DoesNotExist:
                         supplier = Supplier(Business=buss, Name=name, Email=email, Contact=contact, Notes=notes)
@@ -113,7 +118,7 @@ def set_supplier(request):
         'suppliers': suppliers,
         'search_result': search_result
     }
-    return render(request, 'setSupplier.html', context)
+    return render(request, 'expense/setSupplier.html', context)
 
 
 def set_expense(buss, cash_account, user_obj, supplier, data, total):

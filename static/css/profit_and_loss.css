@@ -4,9 +4,9 @@ body{
     align-items:center;
     justify-content:flex-start;
     row-gap:10px;
-    position:relative;
     width:100vw;
     height:auto;
+    margin:0;
     background:#EDEADE;
     border-radius:10px;
     overflow:hidden;
@@ -21,6 +21,7 @@ body{
     position:relative;
     width:50%;
     height:32px;
+    margin-top:3px;
     border-radius:10px;
 }
 .Navigation button{
@@ -260,6 +261,6 @@ td button{
         width:98%;
     }
     .mainTable{
-        width:98%;
+        width:96%;
     }
 }

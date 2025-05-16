@@ -1,0 +1,29 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/expense/editBufferExpense.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/buffer_expense/';">
+        <i class="material-icons" style="font-size:18px;">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post">
+    {%csrf_token%}
+    <label for="name">Item</label>
+    <input type="text" id="name" name="name" value="{{data.Name}}">
+    <label for="quantity">Quantity</label>
+    <input type="number" id="quantity" name="quantity" value="{{data.Quantity}}">
+    <label for="price">Price</label>
+    <input type="number" id="price" name="amount" value="{{data.Price}}">
+    <label for="description">Notes</label>
+    <textarea id="description" name="notes" maxlength="35" placeholder="1-46 characters">{{data.Notes}}</textarea>
+    <div class="but">
+        <button type = 'submit' name="save">save</button>
+        <button type = 'submit' name="delete">
+            <i class="material-icons" style="font-size:16px;">delete</i>
+        </button>
+    </div>
+</form>

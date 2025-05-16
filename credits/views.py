@@ -116,7 +116,7 @@ def credit_view(request, id=0):
         'tod': today(),
         'graphd': graphd
     }
-    return render(request, 'credit.html', context)
+    return render(request, 'expense/credit/credit.html', context)
 
 
 @login_required(login_url="/login/")
@@ -125,25 +125,41 @@ def credit_form(request, id=0):
     try:
         check = Employee.objects.get(User=request.user.id)
         buss = check.Business
+        try:
+            credit = Credit.objects.get(Business=buss, pk=id)
+            if credit.Due:
+                if len(str(credit.Due.day)) == 1:
+                    day = f'0{credit.Due.day}'
+                else:
+                    day = credit.Due.day
+                if len(str(credit.Due.month)) == 1:
+                    month = f'0{credit.Due.month}'
+                else:
+                    month = credit.Due.month
 
-        credit = Credit.objects.get(Business=buss, pk=id)
-        data = Expense.objects.filter(Business=buss, Credit=credit)
-        total = credit.Amount
-        if request.method == 'POST':
-            due = request.POST.get('due')
-            credit.Due = due
-            credit.Status = 'Not Paid'
-            credit.save()
-
-            draft = InventoryDraft.objects.filter(Business=buss, Expenses=data[0])
-            if draft.exists():
-                if draft.count() > 1:
-                    return redirect('/add_inventory/')
-                elif draft.count() == 1:
-                    return redirect(f'/add_inventory/{draft[0].id}')
+                due_date = f"{credit.Due.year}-{month}-{day}"
             else:
-                return redirect('/credit/')
+                due_date = None
 
+            data = Expense.objects.filter(Business=buss, Credit__id=credit.id)
+            total = credit.Amount
+            if request.method == 'POST':
+                due = request.POST.get('due')
+                credit.Due = due
+                credit.Status = 'Not Paid'
+                credit.save()
+                if data[0].Type == 'Stock':
+                    draft = InventoryDraft.objects.filter(Business=buss, Expenses=data[0])
+                    if draft.exists():
+                        if draft.count() > 1:
+                            return redirect('/add_inventory/')
+                        elif draft.count() == 1:
+                            return redirect(f'/add_inventory/{draft[0].id}')
+                else:
+                    return redirect('/credit/')
+        except Credit.DeosNotExist:
+            messages.error(request, "failed to get the credit record")
+            return redirect(request.META.get('HTTP_REFERER'))
     except Employee.DoesNotExist:
         return HttpResponse("Failed to process your profile please try refreshing your browser or contact developer if"
                             "the problem persists")
@@ -152,8 +168,9 @@ def credit_form(request, id=0):
         'credit': credit,
         'data': data,
         'total': total,
+        'due_date': due_date
     }
-    return render(request, 'creditForm.html', context)
+    return render(request, 'expense/credit/creditForm.html', context)
 
 
 @login_required(login_url="/login/")
@@ -194,7 +211,7 @@ def credit_installment(request, id=0):
                                 credit.Sent += remainder
                                 credit.Status = 'Paying'
                                 cash_account.Value -= remainder
-                                messages.info(request, "Credit payment recorded")
+                                messages.success(request, "Credit payment recorded")
                             credit.save()
                             cash_account.save()
 
@@ -210,4 +227,4 @@ def credit_installment(request, id=0):
         'credit': credit,
         'remaining': remaining
     }
-    return render(request, 'creditInstallment.html', context)
+    return render(request, 'expense/credit/creditInstallment.html', context)

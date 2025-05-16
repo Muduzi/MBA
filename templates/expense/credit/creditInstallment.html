@@ -1,0 +1,95 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/expense/credit/creditInstallment.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/expense/expenseMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "expense/expenseMessages.html"%}
+
+<div class="Navigation">
+    <button type="button" onclick="openForm()">
+        pay&nbsp;<i class="material-icons" style="font-size:18px">add</i>
+    </button>
+    <button type="button" onclick="window.location.href='/credit/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<div class="debtor">
+    <text> <i class="material-icons" style="font-size:16px; color:#2B3856;">person</i>&nbsp; {{credit.Supplier.Name}}</text>
+    <text> <i class="material-icons" style="font-size:16px; color:#2B3856;">email</i>&nbsp; {{credit.Supplier.Email}}</text>
+    <text> <i class="material-icons" style="font-size:16px; color:#2B3856;">phone</i>&nbsp; {{credit.Supplier.Contact}}</text>
+    <text>Balance: {{remaining}}</text>
+    <div class="notes">
+        <text class="notes_title">Note:</text>
+        <div class="note">
+            <text> {{credit.Supplier.Notes}}</text>
+        </div>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Name</th>
+            <th class="sth2">Type</th>
+            <th class="sth3">Quant</th>
+            <th class="sth2">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+    {%for i in data%}
+        <tr>
+            <td class="sth1">{{i.Name}}</td>
+            <td class="sth2">{{i.Type}}</td>
+            <td class="sth3">{{i.Quantity}}</td>
+            <td class="sth2">{{i.Price}}</td>
+        </tr>
+    {%endfor%}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="sth1"></td>
+            <td class="sth2"></td>
+            <td class="sth3"></td>
+            <td class="sth2">{{credit.Amount}}</td>
+        </tr>
+    </tfoot>
+</table>
+
+<form method="post" id="InstallmentForm">
+    {%csrf_token%}
+    <label for="amount">Amount</label>
+    <input type="number" id="amount" name="send" value="0" required placeholder="Amount">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="save">Save</button>
+        <button type = 'button' class = 'save' onclick="closeForm();">Cancel</button>
+    </div>
+</form>
+
+<script>
+    <!-- form -->
+    let form = document.getElementById("InstallmentForm");
+
+    function openForm(){
+        form.classList.add("openForm");
+    }
+    function closeForm(){
+        form.classList.remove("openForm");
+    }
+
+    <!-- messages -->
+    let mssg = document.getElementById("mssg");
+
+    function closeMssg(){
+        mssg.classList.add("hide");
+    }
+</script>

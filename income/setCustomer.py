@@ -123,10 +123,10 @@ def service_credit_set(buss, user_obj, data, customer=None):
         for i in data:
             if i.Package:
                 ServiceIncome(Business=buss, Cashier=user_obj, Package=i.Package, Quantity=i.Quantity,
-                              Amount=i.Package.Price * i.Quantity, Customer=customer, Debt=debt, PMode=i.PMode).save()
+                              Amount=i.Amount, Customer=customer, Debt=debt, PMode=i.PMode).save()
             elif i.Service:
                 ServiceIncome(Business=buss, Cashier=user_obj, Service=i.Service, Quantity=i.Quantity,
-                              Amount=i.Service.Price * i.Quantity, Customer=customer, Debt=debt, PMode=i.PMode).save()
+                              Amount=i.Amount, Customer=customer, Debt=debt, PMode=i.PMode).save()
         data.delete()
 
         return debt
@@ -138,13 +138,13 @@ def service_cash_set(buss, user_obj, data, customer=None):
         for i in data:
             if i.Package:
                 ServiceIncome(Business=buss, Cashier=user_obj, Customer=customer, Package=i.Package,
-                              Quantity=i.Quantity, Amount=i.Package.Price * i.Quantity, PMode='Cash').save()
-                cash_account.Value += i.Package.Price * i.Quantity
+                              Quantity=i.Quantity, Amount=i.Amount, PMode='Cash').save()
+                cash_account.Value += i.Amount
 
             elif i.Service:
                 ServiceIncome(Business=buss, Cashier=user_obj, Customer=customer, Service=i.Service,
-                              Quantity=i.Quantity, Amount=i.Service.Price * i.Quantity, PMode='Cash').save()
-                cash_account.Value += i.Service.Price * i.Quantity
+                              Quantity=i.Quantity, Amount=i.Amount, PMode='Cash').save()
+                cash_account.Value += i.Amount
 
             cash_account.save()
         data.delete()

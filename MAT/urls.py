@@ -34,8 +34,12 @@ from credits.views import credit_view, credit_form, credit_installment
 from income.views import product_income
 from debts.views import debt, debt_form, debt_installment
 from income.product_income import product_sale, edit_product_sale
-from income.service_income import services, service_income, service_sale, service, package
+from income.service_income import (services, service_income, service_sale, service, package, service_category,
+                                   edit_service_sale)
 from income.setCustomer import set_customer
+from income.invoice import invoice_form, invoices_view, generate_invoice_pdf, delivery_note, invoice_view
+from income.service_income_dash import service_income_dash
+from income.product_income_dash import product_income_dash
 from inventory.views import inventory_view, add_inventory
 from inventory.replenish import replenish
 from statements.views1 import profit_and_loss_dash, balance_sheet
@@ -45,9 +49,6 @@ from assets.views import assets_view, asset_form
 from catalogue.views import (catalogue_view, market_view, category, add_category, add_product, edit_product,
                              view_product, view_buss_type_products)
 from management.views import *
-from income.invoice import invoice_form, invoices_view, generate_invoice_pdf, delivery_note, invoice_view
-from income.service_income_dash import service_income_dash
-from income.product_income_dash import product_income_dash
 from statements.ProfitAndLoss import profit_and_loss
 
 urlpatterns = [
@@ -118,6 +119,8 @@ urlpatterns = [
     path('set_customer/',  set_customer, name="serviceSale"),
     path('service_sale/', service_sale, name="serviceBuffer"),
     path('services/', services, name="services"),
+    path('service_category/<int:id>/', service_category, name="serviceCategory"),
+    path('edit_service_sale/<int:id>/', edit_service_sale, name="editServiceBuffer"),
 
     # debts
     path("debt/", debt, name="debt"),

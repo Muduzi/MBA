@@ -1,0 +1,106 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/serviceIncome/package.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
+
+
+<div class="Navigation">
+    <button type="button" onclick="addService()">
+        <i class="material-icons" style="font-size:18px">add</i>service
+    </button>
+    <button type="button" onclick="window.location.href='/services/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" class="packageForm">
+    {%csrf_token%}
+    <label for="packageName">Package name</label>
+    <input type="text" id="packageName" name="packageName" value="{{data.Name}}" maxlength="48">
+    <label for="selectCategory1">Category</label>
+    <select id="selectCategory1" name="category">
+        {%if data.Category%}
+            <option value="{{data.Category.id}}" selected>{{data.Category.Name}}</option>
+        {%endif%}
+        {%for c in categories%}
+            <option value="{{c.id}}">{{c.Name}}</option>
+        {%endfor%}
+    </select>
+    <label for="packagePrice">Price</label>
+    <input type="number" id="packagePrice" name="price" value="{{data.Price}}">
+    <div class="but">
+        <button type = 'submit' name="editPackage">save</button>
+        <button type="submit" name="delete">
+            <i class="material-icons" style="font-size:18px;">delete</i>
+        </button>
+    </div>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Service</th>
+            <th class="sth2">Description</th>
+            <th class="sth3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for s in pack_services%}
+            <tr>
+                <td class="sth1">{{s.Service.Name}}</td>
+                <td class="sth2">{{s.Service.Description}}</td>
+                <td class="sth3">
+                    <form method="post" class="delete">
+                        {%csrf_token%}
+                        <button name="remove" value="{{s.id}}">
+                            <i class="material-icons" style="font-size:15px">delete</i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+<form method="post" id="addService">
+    {%csrf_token%}
+    <text>Add Service</text>
+    <label for="services">Select services to add:</label>
+    <select id="services" name="choices" multiple size="5" class="packageSelect">
+        {%if services_obj%}
+            {%for s in services_obj.values%}
+                <option value="{{s.id}}">{{s.Name}}&nbsp;&nbsp;@&nbsp;&nbsp;{{s.Price}}</option>
+            {%endfor%}
+        {%else%}
+            <option style="height:90%; text-align:center;">Every Service is already a part of a package!</option>
+        {%endif%}
+    </select>
+    <div class="but">
+        <button type = 'submit' name="addService">Save</button>
+        <button type = 'button' onclick="closeService()">Cancel</button>
+    </div>
+</form>
+
+<script>
+    let as = document.getElementById("addService");
+
+    <!--open package-->
+    function addService(){
+        as.classList.add("addService");
+    }
+    function closeService(){
+        as.classList.remove("addService");
+    }
+
+</script>
