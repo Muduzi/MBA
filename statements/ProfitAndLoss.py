@@ -27,6 +27,8 @@ def get_tax_year(buss):
 def expenses(buss, start, end):
     total_credit = 0
     paid_for = 0
+    total_discount = 0
+    discounts = {}
 
     # all expenses
     total_expense = (Expense.objects.filter(Business=buss, Date__range=(start, end)).
@@ -79,8 +81,72 @@ def expenses(buss, start, end):
             paid_for = total_expense - total_credit
             print('paid_for==============================================', paid_for)
 
+    # income record per inventory item
+    prod = InventoryProduct.objects.filter(Business=buss)
+
+    for p in prod:
+        prod_info = InventoryProductInfo.objects.get(Product=p.id)
+        inc = ProductIncome.objects.filter(Business=buss, Code=prod_info.Code, Date__range=(start, end), Discount=True)
+
+        total_product_revenue = inc.aggregate(Sum('Amount'))
+        total_product_revenue = total_product_revenue['Amount__sum']
+        if not total_product_revenue:
+            total_product_revenue = 0
+
+        total_product_quantity = inc.aggregate(Sum('Quantity'))
+        total_product_quantity = total_product_quantity['Quantity__sum']
+        if not total_product_quantity:
+            total_product_quantity = 0
+
+        discount = (prod_info.SPrice * total_product_quantity) - total_product_revenue
+        if discount > 1:
+            discounts[p.id] = {'revenue_type': 'products', 'Name': p.Name, 'Amount': discount}
+            total_discount += discount
+
+    # income records per service or package
+    services = Service.objects.filter(Business=buss)
+    packages = Package.objects.filter(Business=buss)
+    for s in services:
+        service_ = ServiceIncome.objects.filter(Service=s, Date__range=(start, end), Discount=True)
+
+        service_total = service_.aggregate(Sum('Amount'))
+        service_total = service_total['Amount__sum']
+        if not service_total:
+            service_total = 0
+
+        service_quantity = service_.aggregate(Sum('Quantity'))
+        service_quantity = service_quantity['Quantity__sum']
+        if not service_quantity:
+            service_quantity = 0
+
+        discount = (s.Price * service_quantity) - service_total
+        if discount > 1:
+            total_discount += discount
+            discounts[s.id] = {'revenue_type': 'services', 'Name': s.Name, 'Amount': discount}
+
+    for p in packages:
+        package_ = ServiceIncome.objects.filter(Package=p, Date__range=(start, end), Discount=True)
+
+        package_total = package_.aggregate(Sum('Amount'))
+        package_total = package_total['Amount__sum']
+        if not package_total:
+            package_total = 0
+
+        package_quantity = package_.aggregate(Sum('Quantity'))
+        package_quantity = package_quantity['Quantity__sum']
+        if not package_quantity:
+            package_quantity = 0
+
+        discount = (p.Price * package_quantity) - package_total
+        if discount > 1:
+            total_discount += discount
+            discounts[p.id] = {'revenue_type': 'services', 'Name': p.Name, 'Amount': discount}
+
+    if total_discount > 1:
+        total_expense += total_discount
+
     return (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-            total_payroll_expense)
+            total_payroll_expense, total_discount, discounts)
 
 
 def product_revenue(buss, tax_settings,  start, end):
@@ -120,10 +186,7 @@ def product_revenue(buss, tax_settings,  start, end):
             quantity = 0
         cog += prod_info.BPrice * quantity
 
-        product_income[p.id] = {}
-        product_income[p.id]['Name'] = p.Name
-        product_income[p.id]['cog'] = prod_info.BPrice * quantity
-        product_income[p.id]['revenue'] = total
+        product_income[p.id] = {'Name': p.Name, 'cog': prod_info.BPrice * quantity, 'revenue': total}
     return product_income, total_product_income, cog, total_product_vat
 
 
@@ -141,9 +204,7 @@ def service_revenue(buss, tax_settings, start, end):
         if not total:
             total = 0
 
-        service_income[s.id] = {}
-        service_income[s.id]['Name'] = s.Name
-        service_income[s.id]['Amount'] = total
+        service_income[s.id] = {'Name': s.Name, 'Amount': total}
 
     for p in packages:
         total = ServiceIncome.objects.filter(Package=p, Date__range=(start, end)).aggregate(Sum('Amount'))
@@ -151,9 +212,7 @@ def service_revenue(buss, tax_settings, start, end):
         if not total:
             total = 0
 
-        service_income[p.id] = {}
-        service_income[p.id]['Name'] = p.Name
-        service_income[p.id]['Amount'] = total
+        service_income[p.id] = {'Name': p.Name, 'Amount': total}
 
     total_service_income = ServiceIncome.objects.filter(Business=buss, Date__range=(start, end)).aggregate(
         Sum('Amount'))
@@ -168,9 +227,7 @@ def service_revenue(buss, tax_settings, start, end):
         except ZeroDivisionError:
             pass
 
-    service_income['VAT'] = {}
-    service_income['VAT']['Name'] = 'Service VAT'
-    service_income['VAT']['Amount'] = total_service_vat
+    service_income['VAT'] = {'Name': 'Service VAT', 'Amount': total_service_vat}
     return service_income, total_service_income, total_service_vat
 
 
@@ -293,7 +350,7 @@ def profit_and_loss(request):
         end = this_tax_year.TaxYearEnd
 
         (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-         total_payroll_expense) = expenses(buss, start, end)
+         total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
 
         assets = Assets.objects.filter(Business=buss)
 
@@ -333,6 +390,8 @@ def profit_and_loss(request):
         'oe_total': total_operational_expense,
         'pe_total': total_payroll_expense,
         'total_annual_depreciation': total_annual_depreciation,
+        'total_discount': total_discount,
+        'discounts': discounts,
         'total_debt': total_debt,
         'total_credit': total_credit,
         'cog': cog,

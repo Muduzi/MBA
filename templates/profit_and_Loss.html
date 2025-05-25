@@ -202,16 +202,16 @@
                             <td class="amount_section">Amount</td>
                         </tr>
                         {%if oe%}
-                        {%for i in oe%}
-                        <tr>
-                            <td class="account">{{i.Name}}</td>
-                            <td class="amount">{{i.Price}}</td>
-                        </tr>
-                        {%endfor%}
+                            {%for i in oe%}
+                                <tr>
+                                    <td class="account">{{i.Name}}</td>
+                                    <td class="amount">{{i.Price}}</td>
+                                </tr>
+                            {%endfor%}
                         {%else%}
-                        <tr>
-                            <td style="color:rgb(54, 69, 79); font-size:14px; width:100%;">No records to show</td>
-                        </tr>
+                            <tr>
+                                <td style="color:rgb(54, 69, 79); font-size:14px; width:100%;">No records to show</td>
+                            </tr>
                         {%endif%}
                         <tr>
                             <td class="account_section_total">Total OE</td>
@@ -222,20 +222,40 @@
                             <td class="amount_section">Amount</td>
                         </tr>
                         {%if pe%}
-                        {%for i in pe%}
-                        <tr>
-                            <td class="account">{{i.Name}}</td>
-                            <td class="amount">{{i.Price}}</td>
-                        </tr>
-                        {%endfor%}
+                            {%for i in pe%}
+                                <tr>
+                                    <td class="account">{{i.Name}}</td>
+                                    <td class="amount">{{i.Price}}</td>
+                                </tr>
+                            {%endfor%}
                         {%else%}
-                        <tr>
-                            <td class="button_td" style="color:rgb(54, 69, 79); font-size:14px;">No records to show</td>
-                        </tr>
+                            <tr>
+                                <td class="nrw" style="color:rgb(54, 69, 79); font-size:14px;">No records to show</td>
+                            </tr>
                         {%endif%}
                         <tr>
                             <td class="account_section_total">Total PE</td>
                             <td class="amount_section_total">{{pe_total}}</td>
+                        </tr>
+                        <tr class="section">
+                            <td class="account_section">Discount</td>
+                            <td class="amount_section">Amount</td>
+                        </tr>
+                        {%if discounts%}
+                            {%for key, value in discounts.items%}
+                                <tr>
+                                    <td class="account">{{value.Name}}</td>
+                                    <td class="amount">{{value.Amount}}</td>
+                                </tr>
+                            {%endfor%}
+                        {%else%}
+                            <tr>
+                                <td class="nrw" style="color:rgb(54, 69, 79); font-size:14px;">No records to show</td>
+                            </tr>
+                        {%endif%}
+                        <tr>
+                            <td class="account_section_total">Total Discounts</td>
+                            <td class="amount_section_total">{{total_discount}}</td>
                         </tr>
                         <tr class="section">
                             <td class="account_section">Total Depreciation</td>

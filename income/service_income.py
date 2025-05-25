@@ -1,6 +1,5 @@
 # Create your views here.
 import time
-
 from django.shortcuts import render, redirect, HttpResponse
 from .models import ServiceIncome, Service, Package, Category, PackageServices, ServiceBuffer
 from .service_graphs import income_this_week, daily_total_this_week, cash_credit_this_week
@@ -197,30 +196,50 @@ def service_sale(request):
                 paid = request.POST.get('amount')
                 p_mode = request.POST.get('p_mode')
                 attach_customer = request.POST.get('attach customer')
-
-                for b in buffer:
-                    b.PMode = p_mode
-                    b.save()
+                discount = request.POST.get('discount')
 
                 if attach_customer:
                     attach_customer = True
                 else:
                     attach_customer = False
 
+                if discount == 'on' and p_mode == 'Credit':
+                    p_mode = 'Cash'
+                    discount = True
+                elif discount == 'on':
+                    discount = True
+                else:
+                    discount = False
+
                 if not paid:
                     paid = 0
                 else:
                     paid = int(paid)
 
-                if p_mode == 'Credit' or attach_customer == True:
+                for b in buffer:
+                    if discount:
+                        b.Discount = True
+                    b.PMode = p_mode
+                    b.save()
+
+                excess = paid - total
+                item_count = buffer.count()
+                if not item_count:
+                    item_count = 0
+                if discount and item_count >= 1 > excess:
+                    mean_discount = round(excess / item_count, 1)
+                    for b in buffer:
+                        b.Amount = b.Amount + mean_discount
+                        b.save()
+
+                if p_mode == 'Credit' or attach_customer:
                     return redirect(f"/set_customer/")
                 else:
                     try:
-                        if paid < total:
+                        if paid < total and not discount:
                             messages.error(request, f'insufficient funds, please add {excess} to the amount paid')
 
-                        elif paid >= total:
-                            excess = paid - total
+                        else:
                             result = service_cash_set(buss, user_obj, buffer)
                             if not 'success':
                                 messages.error(request, f'{result}')
@@ -228,7 +247,13 @@ def service_sale(request):
                     except Exception as e:
                         messages.error(request, f'{e}')
 
-            if 'invoice' in request.POST:
+            if "generate invoice" in request.POST:
+                if buffer:
+                    messages.info(request, "Generate Invoice")
+                else:
+                    messages.error(request, "add items for the invoice")
+
+            if 'Yes' in request.POST:
                 return redirect('/invoice_form/0/services/')
 
     except Employee.DoesNotExist:
@@ -248,6 +273,7 @@ def service_sale(request):
 @login_required(login_url="/login/")
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
 def edit_service_sale(request, id=0):
+
     try:
         user_obj = request.user
         check = Employee.objects.get(User=user_obj.id)
@@ -257,14 +283,26 @@ def edit_service_sale(request, id=0):
 
         if request.method == 'POST':
             if 'change amount' in request.POST:
+                quantity = request.POST.get("quantity")
                 amount = request.POST.get("amount")
+
+                quantity = int(quantity)
+                amount = int(amount)
 
                 if amount:
                     if buffer.Amount != amount:
                         buffer.Amount = amount
-                        buffer.save()
 
-                        messages.success(request, 'changes saved successfully')
+                if quantity:
+                    if buffer.Quantity != quantity:
+                        buffer.Quantity = quantity
+                        if buffer.Service:
+                            buffer.Amount = buffer.Service.Price * quantity
+                        if buffer.Package:
+                            buffer.Amount = buffer.Package.Price * quantity
+
+                buffer.save()
+                messages.success(request, 'changes saved successfully')
 
             if 'delete' in request.POST:
                 buffer.delete()

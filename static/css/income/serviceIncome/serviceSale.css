@@ -42,7 +42,21 @@ body{
     color:white;
     background:#5D6166;
 }
+.Navigation form{
+    display:flex;
+    visibility:visible;
+    align-items:flex-start;
+    align-self:flex-start;
+    justify-content:space-around;
+    position:relative;
+    top:0;
+    width:auto;
+    height:100%;
+    padding:0;
+    background:transparent;
+    box-shadow:none;
 
+}
 
 table{
     display:flex;
@@ -268,7 +282,7 @@ form input[type="checkbox"]{
     position:relative;
     min-width:80px;
     max-width:auto;
-    height:90%;
+    height:80%;
     color:rgb(54, 69, 79);
     font-size:15px;
     padding:2px;
@@ -286,34 +300,13 @@ form input[type="checkbox"]{
 .finish{
     display:flex;
     visibility:visible;
-    width:320px;
-    height:280px;
+    width:350px;
+    height:290px;
 }
 .finish input{
     width:100%;
 }
 
-.invoice{
-    display:flex;
-    visibility:visible;
-    flex-direction:column;
-    align-items:flex-start;
-    justify-content:space-around;
-    position:absolute;
-    height:170px;
-    font-size:15px;
-    padding-left:15px;
-    padding-right:15px;
-    padding-top:10;
-    padding-bottom:10px;
-    background:#EDEADE;
-    border-radius:10px;
-}
-.invoice p{
-    align-self:center;
-    font-size:18px;
-    color:#2B3856;
-}
 
 @media(max-width:1000px){
     body{
@@ -376,7 +369,6 @@ form input[type="checkbox"]{
 }
 
 @media(max-width:768px){
-
     .Navigation{
         width:99%;
     }

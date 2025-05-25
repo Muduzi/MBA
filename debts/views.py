@@ -149,6 +149,9 @@ def debt_form(request, id=0):
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
 def debt_installment(request, id=0):
     remaining = 0
+    total = 0
+    balance = 0
+
     try:
         check = Employee.objects.get(User=request.user.id)
 
@@ -158,6 +161,7 @@ def debt_installment(request, id=0):
         data_p = ProductIncome.objects.filter(Business=buss, Debt=debt)
         data_s = ServiceIncome.objects.filter(Business=buss, Debt=debt)
 
+        balance = debt.Amount - debt.Received
         if request.method == 'POST':
             if 'save' in request.POST:
                 received = request.POST.get('received')
@@ -165,7 +169,7 @@ def debt_installment(request, id=0):
 
                 if received:
                     if debt.Status == 'Paid':
-                        messages.info(request, 'Debt already paid in full')
+                        messages.warning(request, 'Debt already paid in full')
                     else:
                         remaining = debt.Amount - debt.Received
                         if received >= remaining:
@@ -180,14 +184,14 @@ def debt_installment(request, id=0):
                             debt.Status = 'Paid'
                             cash_account.Value += remaining
                             DebtInstallment(Business=buss, Debt=debt, Amount=remaining).save()
-                            messages.info(request, "Final installment saved")
+                            messages.success(request, "Final installment saved")
 
                         elif received < remaining:
                             debt.Received += received
                             debt.Status = 'Paying'
                             cash_account.Value += received
                             DebtInstallment(Business=buss, Debt=debt, Amount=received).save()
-                            messages.info(request, "Installment saved")
+                            messages.success(request, "Installment saved")
                         debt.save()
                         cash_account.save()
     except Employee.DoesNotExist:
@@ -197,5 +201,6 @@ def debt_installment(request, id=0):
         'data_p': data_p,
         'data_s': data_s,
         'debt': debt,
+        'balance': balance,
     }
     return render(request, 'debtInstallment.html', context)

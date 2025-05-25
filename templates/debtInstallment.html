@@ -13,39 +13,29 @@
 
 <div class="Navigation">
     <button type="button" onclick="openForm()">
-        <i class="material-icons" style="font-size:18px">add</i>
+        <i class="material-icons" style="font-size:18px">add</i> &nbsp;installment
     </button>
     <button type="button" onclick="window.location.href='/debt/';">
         <i class="material-icons" style="font-size:18px">arrow_forward</i>
     </button>
 </div>
 
-{%if messages%}
-    {%for message in messages%}
-        <div class="messages" id="mssg">
-            <button type="button"  class="close" onclick="closeMssg()">
-                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
-            </button>
-            {%if 'info' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
-            {%elif 'warning' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
-            {%elif 'error' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
-            {%elif 'success' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
-            {%endif%}
-        </div>
-    {%endfor%}
-{%endif%}
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
 
 <div class="debtor">
-    <text> <i class="material-icons" style="font-size:18px;">person</i> {{debt.Customer.Name}}</text>
-    <text> <i class="material-icons" style="font-size:18px;">email</i> {{debt.Customer.Email}}</text>
-    <text> <i class="material-icons" style="font-size:18px;">phone</i> {{debt.Customer.Contact}}</text>
-    <text style="display:flex; flex-direction:column;"><span>Note:</span> {{debt.Customer.Notes}}</text>
-    <text>Received:{{debt.Received}}</text>
+    <text> <i class="material-icons" style="font-size:16px;">person</i> {{debt.Customer.Name}}</text>
+    <text> <i class="material-icons" style="font-size:16px;">email</i> {{debt.Customer.Email}}</text>
+    <text> <i class="material-icons" style="font-size:16px;">phone</i> {{debt.Customer.Contact}}</text>
+    <text>Balance:{{balance}}</text>
+    <div class="notes">
+        <text class="notes_title">Note:</text>
+        <div class="note">
+            <text> {{debt.Customer.Notes}}</text>
+        </div>
+    </div>
 </div>
+
 {%if data_p%}
     <table>
         <thead>
@@ -120,19 +110,6 @@
 <script>
     <!-- form -->
     let form = document.getElementById("InstallmentForm");
-
-    function openForm(){
-        form.classList.add("openForm");
-    }
-    function closeForm(){
-        form.classList.remove("openForm");
-    }
-
-    <!-- messages -->
-    let mssg = document.getElementById("mssg");
-
-    function closeMssg(){
-        mssg.classList.add("hide");
-        window.location.href = "/debt_installment/{{debt.id}}/";
-    }
+    const openForm = () => form.classList.add("openForm");
+    const closeForm = () => form.classList.remove("openForm");
 </script>

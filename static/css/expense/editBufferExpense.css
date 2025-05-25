@@ -19,7 +19,7 @@ body{
     justify-content:flex-end;
     gap:10px;
     position:relative;
-    width:98%;
+    width:400px;
     height:32px;
     margin-top:3px;
     border-radius:10px;
@@ -50,8 +50,8 @@ form{
     justify-content:space-between;
     position:absolute;
     top:10%;
-    width:30%;
-    height:80%;
+    width:380px;
+    height:450px;
     font-size:15px;
     padding-left:15px;
     padding-right:15px;
@@ -96,9 +96,9 @@ form textarea{
 }
 .but button{
     width:20%;
-    height:100%;
+    height:90%;
     color:rgb(54, 69, 79);
-    font-size:15px;
+    font-size:14px;
     padding:2px;
     background:transparent;
     border:1px solid #5D6166;
@@ -109,11 +109,13 @@ form textarea{
     background:#5D6166;
 }
 
-@media(max-width:768px){
+@media(max-width:1000px){
+    body{
+        overflow-y:scroll;
+    }
 
     form{
-        width:50%;
-        height:70%;
+        margin-bottom:10px;
     }
     form label{
         font-size:14px;
@@ -129,10 +131,10 @@ form textarea{
     }
 }
 @media(max-width:430px){
-
+    .Navigation{
+        width:95%;
+    }
     form{
-        top:10%;
-        width:90%;
-        height:60%;
+        width:85%;
     }
 }

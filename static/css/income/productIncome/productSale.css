@@ -12,51 +12,6 @@ body{
     overflow:hidden;
 }
 
-/*messages*/
-.messages{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    align-self:center;
-    justify-content:flex-start;
-    position:fixed;
-    top:2%;
-    z-index:7;
-    row-gap:5px;
-    width:45%;
-    height:100px;
-    padding-top:10px;
-    padding-bottom:15px;
-    padding-right:10px;
-    padding-left:10px;
-    background:rgb(230, 230, 250, 0.95);
-    border-radius:10px;
-}
-.hide{
-    display:none;
-    visibility:hidden;
-}
-.message{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    width:70%;
-    height:20%;
-    color:#2B3856;
-    font-size:16px;;
-}
-.close{
-    align-self:flex-end;
-    background:transparent;
-    border:hidden;
-}
-.close:hover{
-    cursor:pointer;
-    color:white;
-    background:red;
-}
-
 /*navigation*/
 .Navigation{
     display:flex;
@@ -84,6 +39,22 @@ body{
 .Navigation button:hover{
     color:white;
     background:#5D6166;
+}
+
+.Navigation form{
+    display:flex;
+    visibility:visible;
+    align-items:flex-start;
+    align-self:flex-start;
+    justify-content:space-around;
+    position:relative;
+    top:0;
+    width:auto;
+    height:100%;
+    padding:0;
+    background:transparent;
+    box-shadow:none;
+
 }
 
 
@@ -201,7 +172,7 @@ form{
     justify-content:space-between;
     position:absolute;
     z-index:2;
-    top:20%;
+    top:10%;
     width:400px;
     font-size:15px;
     padding-left:15px;
@@ -234,12 +205,12 @@ form input:focus{
 }
 
 form select{
-    width:100%;
-    height:55%;
+    width:auto;
+    height:32px;
     color:#5D6166;
     font-size:14px;
     padding:5px;
-    background:transparent;
+    background:#F9F6EE;
     border:hidden;
     border-radius:10px;
 }
@@ -269,13 +240,8 @@ form select option:checked{
     background:#5D6166;
 }
 
-.form1{
-    display:flex;
-    visibility:visible;
-    height:35%;
-}
 
-.form2{
+.search_form{
     display:flex;
     visibility:visible;
     height:450px;
@@ -326,13 +292,23 @@ form select option:checked{
 .select_item{
     width:100%;
     height:270px;
+    background:transparent;
 }
 
 .select_item:focus{
     border:hidden;
 }
 
-.form3{
+.discount{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    height:30px;
+    border-radius:10px;
+}
+
+.add_with_code{
     display:flex;
     visibility:visible;
     height:35%;
@@ -340,11 +316,17 @@ form select option:checked{
 
 .finalise{
     display:flex;
+    visibility:visible;
+    width:350px;
+    height:280px;
+}
+.finalise button{
+    display:flex;
     align-items:center;
     justify-content:space-around;
     align-self:center;
-    width:auto;
-    height:30px;
+    width:80px;
+    height:28px;
     color:rgb(54, 69, 79);
     font-size:14px;
     padding:5px;
@@ -354,7 +336,17 @@ form select option:checked{
     border:1px solid #5D6166;
     border-radius:10px;
 }
+.finalise button:hover{
+    color:#F9F6EE;
+    background:#5D6166;
+}
 
+form input[type="checkbox"]{
+    width:auto;
+    height:auto;
+    color:rgb(54, 69, 79);
+    background:#F9F6EE;
+}
 
 
 .but{
@@ -383,7 +375,7 @@ form select option:checked{
     border-radius:10px;
 }
 .but button:hover{
-    color:white;
+    color:#F9F6EE;
     background:#5D6166;
 }
 
@@ -492,11 +484,6 @@ form select option:checked{
 }
 
 @media(max-width:430px){
-    .messages{
-        width:90%;
-        height:20%;
-    }
-
     table{
         width:100%;
         height:75%;

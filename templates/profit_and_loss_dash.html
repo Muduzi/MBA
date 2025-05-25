@@ -236,6 +236,26 @@
             <td class="amount_section_total">{{pe_total}}</td>
         </tr>
         <tr class="section">
+            <td class="section1">Discounts</td>
+            <td class="section2">Amount</td>
+        </tr>
+        {%if discounts%}
+            {%for key, value in discounts.items%}
+                <tr>
+                    <td class="section1">{{value.Name}}</td>
+                    <td class="section2">{{value.Amount}}</td>
+                </tr>
+            {%endfor%}
+        {%else%}
+            <tr>
+                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+            </tr>
+        {%endif%}
+        <tr>
+            <td class="account_section_total">Total Discount</td>
+            <td class="amount_section_total">{{total_discount}}</td>
+        </tr>
+        <tr class="section">
             <td class="section1">Total Depreciation</td>
             <td class="section2">Amount</td>
         </tr>

@@ -5,38 +5,26 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-{%if messages%}
-    {%for message in messages%}
-        <div class="messages" id="mssg">
-            <button type="button"  class="close" onclick="closeMssg()">
-                <i class="material-icons" style="font-size:18px; border:hidden;">close</i>
-            </button>
-            {%if 'info' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:18px;">info</i>{{message}}</text>
-            {%elif 'warning' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:18px;">warning</i>{{message}}</text>
-            {%elif 'error' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:18px;">error</i>{{message}}</text>
-            {%elif 'success' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:18px;">check</i>{{message}}</text>
-            {%endif%}
-        </div>
-    {%endfor%}
-{%endif%}
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/productIncome/productIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
 
 <div class="Navigation">
-    <button type="button" onclick="openForm1()">
+    <button type="button" onclick="openFinalise()">
         finish
     </button>
-    <button type="button" onclick="openForm2()">
-        <i class="material-icons" style="font-size:16px;">add</i>
+    <form method="post">
+        {%csrf_token%}
+        <button type="submit" name="generate invoice">
+            Invoice
+        </button>
+    </form>
+    <button type="button" onclick="openSearchForm()">
+        <i class="material-icons" style="font-size:16px;">search</i>
+        &nbsp;product
     </button>
-    <button type="button" onclick="openForm3()" >
+    <button type="button" onclick="openAddWithCode()" >
         <i class="material-icons" style="font-size:16px;">add</i>
-        Code
-    </button>
-    <button type="button" onclick="openInvoice()">
-        Invoice
+        &nbsp;code
     </button>
     <button type = 'submit' name="refresh" onclick="window.location.href='/inventory/';">
         inventory
@@ -62,7 +50,7 @@
         {%for i in table%}
         <tr>
             <td class="sth1">
-                <button type="button" class="edit" onclick="window.location.href='/edit_buffer/{{i.id}}/';">
+                <button type="button" class="edit" onclick="window.location.href='/edit_product_sale/{{i.id}}/';">
                     {{i.Product.Name}}
                 </button>
             </td>
@@ -104,11 +92,11 @@
     <div class="but">
         <button type = 'submit' name="invoice">Yes</button>
         <button type = 'button' onclick="closeInvoice()">
-            <i class="material-icons" style="font-size:16px;">close</i>
+            No
         </button>
     </div>
 </form>
-<form method="post" id="form1">
+<form method="post" id="finaliseForm">
     {%csrf_token%}
     <label for="Amount">Amount</label>
     <input type="number" id="Amount" name="amount" value="0" required>
@@ -117,10 +105,14 @@
         <option value="Cash">Cash</option>
         <option value="Credit">Credit</option>
     </select>
-    <button type = 'submit' class='finalise' name="finalise" onclick="closeFinalise()">Finalise</button>
+    <div class="discount">
+        <label for="discount">Discount</label>
+        <input type="checkbox" id="discount" name="discount">
+    </div>
+    <button type = 'submit' name="finalise" onclick="closeFinalise()">Finalise</button>
 </form>
 
-<form method="post" id="form2" {%if search_result%} class="form2" {%endif%}>
+<form method="post" id="searchForm" {%if search_result%} class="search_form" {%endif%}>
     {%csrf_token%}
     <div class="search_input">
         <input type="search" id="name" name="search name" {%if search_name%} value="{{search_name}}" {%endif%}required placeholder="product name...........">
@@ -139,20 +131,20 @@
     {%endif%}
     <div class="but">
         <button type = 'submit' class = 'save' name="save selected product">Add</button>
-        <button type = 'button' class = 'cancel' onclick="closeForm2()">
+        <button type = 'button' class = 'cancel' onclick="closeSearchForm()">
             <i class="material-icons" style="font-size:16px;">close</i>
         </button>
     </div>
 </form>
-<form method="post" id="form3">
+<form method="post" id="addWithCode">
     {%csrf_token%}
     <label for="code">Code</label>
     <input type="text" id="code" name="code" required>
     <label for="quantity1">Quantity</label>
     <input type="number" id="quantity1" name="quantity" required>
     <div class="but">
-        <button type = 'submit' class = 'save' name="save_by_code" onclick="closeForm3()">Save</button>
-        <button type = 'button' class = 'cancel' onclick="closeForm3()">Cancel</button>
+        <button type = 'submit' class = 'save' name="save_by_code">add</button>
+        <button type = 'button' class = 'cancel' onclick="closeAddWithCode()">cancel</button>
     </div>
 </form>
 
@@ -160,48 +152,22 @@
 
     let invoice = document.getElementById("invoice");
 
-    function openInvoice(){
-        invoice.classList.add("invoice");
-    }
-    function closeInvoice(){
-        invoice.classList.remove("invoice");
-    }
+    const openInvoice = () => invoice.classList.add("invoice");
+    const closeInvoice = () => invoice.classList.remove("invoice");
 
+    let finaliseForm = document.getElementById("finaliseForm");
 
-    let form1 = document.getElementById("form1");
+    const openFinalise = () =>  finaliseForm.classList.add("finalise");
+    const closeFinalise = () => finaliseForm.classList.remove("finalise");
 
-    function openForm1(){
-        form1.classList.add("form1");
-    }
-    function closeForm1(){
-        form1.classList.remove("form1");
-    }
+    let searchForm = document.getElementById("searchForm");
 
+    const openSearchForm = () => searchForm.classList.add("search_form");
+    const closeSearchForm = () => searchForm.classList.remove("search_form");
 
-    let form2 = document.getElementById("form2");
+    let addWithCode = document.getElementById("addWithCode");
 
-    function openForm2(){
-        form2.classList.add("form2");
-    }
-    function closeForm2(){
-        form2.classList.remove("form2");
-    }
+    const openAddWithCode = () => addWithCode.classList.add("add_with_code");
+    const closeAddWithCode = () =>  addWithCode.classList.remove("add_with_code");
 
-
-    let form3 = document.getElementById("form3");
-
-    function openForm3(){
-        form3.classList.add("form3");
-    }
-    function closeForm3(){
-        form3.classList.remove("form3");
-    }
-
-
-    <!-- messages -->
-    let mssg = document.getElementById("mssg");
-
-    function closeMssg(){
-        mssg.classList.add("hide");
-    }
 </script>

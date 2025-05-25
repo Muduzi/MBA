@@ -13,9 +13,6 @@
 
 
 <div class="Navigation">
-    <button type="button" onclick="openPopup()">
-        <i class="material-icons" style="font-size:18px">add</i>
-    </button>
     <button type="button" onclick="window.location.href='/';">
         <i class="material-icons" style="font-size:18; font-size:20px;">home</i>
     </button>
@@ -155,13 +152,13 @@
     new Chart(doughnut, {
         type: 'doughnut',
         data: {
-            labels: ['Paid', 'Rem', 'Over'],
+            labels: ['Paid', 'Rem'],
             datasets: [{
                 label: 'credits stats in %',
-                data: [{{rec_perc}}, {{exp_perc}}, {{over_perc}}],
+                data: [{{rec_perc}}, {{exp_perc}}],
                 borderWidth: 0,
                 borderColor: 'gray',
-                backgroundColor:['#39FF14', '#FFEF00', '#FF0000'],
+                backgroundColor:['#39FF14', '#FFEF00'],
                 radius:50,
                 },
             ]

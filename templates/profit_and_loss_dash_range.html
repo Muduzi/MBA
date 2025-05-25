@@ -208,16 +208,16 @@
             <td class="section2">Amount</td>
         </tr>
         {%if oe%}
-        {%for i in oe%}
-        <tr>
-            <td class="section1">{{i.Name}}</td>
-            <td class="section2">{{i.Price}}</td>
-        </tr>
-        {%endfor%}
+            {%for i in oe%}
+                <tr>
+                    <td class="section1">{{i.Name}}</td>
+                    <td class="section2">{{i.Price}}</td>
+                </tr>
+            {%endfor%}
         {%else%}
-        <tr>
-            <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
-        </tr>
+            <tr>
+                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+            </tr>
         {%endif%}
         <tr>
             <td class="account_section_total">Total OP</td>
@@ -228,20 +228,40 @@
             <td class="section2">Amount</td>
         </tr>
         {%if pe%}
-        {%for i in pe%}
-        <tr>
-            <td class="section1">{{i.Name}}</td>
-            <td class="section2">{{i.Price}}</td>
-        </tr>
-        {%endfor%}
+            {%for i in pe%}
+                <tr>
+                    <td class="section1">{{i.Name}}</td>
+                    <td class="section2">{{i.Price}}</td>
+                </tr>
+            {%endfor%}
         {%else%}
-        <tr>
-            <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
-        </tr>
+            <tr>
+                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+            </tr>
         {%endif%}
         <tr>
             <td class="account_section_total">Total PE</td>
             <td class="amount_section_total">{{pe_total}}</td>
+        </tr>
+        <tr class="section">
+            <td class="section1">Discounts</td>
+            <td class="section2">Amount</td>
+        </tr>
+        {%if discounts%}
+            {%for key, value in discounts.items%}
+                <tr>
+                    <td class="section1">{{value.Name}}</td>
+                    <td class="section2">{{value.Price}}</td>
+                </tr>
+            {%endfor%}
+        {%else%}
+            <tr>
+                <td class="nrw" style="color:rgb(54, 69, 79);">No records to show</td>
+            </tr>
+        {%endif%}
+        <tr>
+            <td class="account_section_total">Total Discount</td>
+            <td class="amount_section_total">{{total_discount}}</td>
         </tr>
         </tbody>
     </table>
@@ -285,7 +305,7 @@
         labels: ['R', 'CIN', 'TE', 'PF'],
         datasets: [{
             label: 'Revenue(R), Cash In Hand(CIN), Total Expenses(TE), Paid for(PF)',
-            data: [{{sales}}, {{income_in_hand}}, {{total_expense}},{{paid_for}}],
+            data: [{{total_sales}}, {{income_in_hand}}, {{total_expense}},{{paid_for}}],
             borderWidth: 0,
             backgroundColor: ['green', '#00FF00', '#00008B', '#6F00FF'],
             hoverBackgroundColor:'gray'

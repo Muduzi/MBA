@@ -16,7 +16,7 @@
 
 <div class="Navigation">
     <button type="button" onclick="openForm()">
-        pay&nbsp;<i class="material-icons" style="font-size:18px">add</i>
+        <i class="material-icons" style="font-size:18px">add</i> &nbsp;installment
     </button>
     <button type="button" onclick="window.location.href='/credit/';">
         <i class="material-icons" style="font-size:18px">arrow_forward</i>
@@ -78,18 +78,6 @@
 <script>
     <!-- form -->
     let form = document.getElementById("InstallmentForm");
-
-    function openForm(){
-        form.classList.add("openForm");
-    }
-    function closeForm(){
-        form.classList.remove("openForm");
-    }
-
-    <!-- messages -->
-    let mssg = document.getElementById("mssg");
-
-    function closeMssg(){
-        mssg.classList.add("hide");
-    }
+    const openForm = () => form.classList.add("openForm");
+    const closeForm = () => form.classList.remove("openForm");
 </script>

@@ -83,7 +83,7 @@
     <label for="description">Notes</label>
     <textarea id="description" name="notes" maxlength="35" placeholder="1-46 characters"></textarea>
     <div class="but">
-        <button type = 'submit' class = 'save' name="save">Add</button>
+        <button type = 'submit' class = 'save' name="save">add</button>
         <button type = 'button' class = 'cancel' onclick="closeForm2()">
             <i class="material-icons" style="font-size:16px;">close</i>
         </button>
@@ -91,25 +91,10 @@
 </form>
 <script>
     let form1 = document.getElementById("form1");
+    const openForm1 = () => form1.classList.add("form1");
+    const closeForm1 = () => form1.classList.remove("form1");
+
     let form2 = document.getElementById("form2");
-
-    function openForm1(){
-        form1.classList.add("form1");
-    }
-    function closeForm1(){
-        form1.classList.remove("form1");
-    }
-    function openForm2(){
-        form2.classList.add("form2");
-    }
-    function closeForm2(){
-        form2.classList.remove("form2");
-    }
-
-    <!-- messages -->
-    let mssg = document.getElementById("mssg");
-
-    function closeMssg(){
-        mssg.classList.add("hide");
-    }
+    const openForm2 = () => form2.classList.add("form2");
+    const closeForm2 = () => form2.classList.remove("form2");
 </script>

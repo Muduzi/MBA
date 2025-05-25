@@ -179,10 +179,6 @@ td{
         overflow-y:scroll;
     }
 
-    .messages{
-        width:50%;
-    }
-
     .top_nav{
         width:98%;
     }
@@ -250,10 +246,6 @@ td{
         height:100vh;
         background:#F9F6EE;
         overflow-y:hidden;
-    }
-    .messages{
-        width:90%;
-        height:20%;
     }
 
     .top_nav{

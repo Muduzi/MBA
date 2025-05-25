@@ -11,18 +11,21 @@
 <div class="Navigation">
     <button type="button" onclick="openService()">
         <i class="material-icons" style="font-size:18px">list</i>
-        service
+        &nbsp;service
     </button>
     <button type="button" onclick="openPackage()">
         <i class="material-icons" style="font-size:18px">list</i>
-        package
+        &nbsp;package
     </button>
     <button type="button" onclick="openFinish()">
         finish
     </button>
-    <button type="button" onclick="openInvoice()">
-        Invoice
-    </button>
+    <form method="post">
+        {%csrf_token%}
+        <button type="submit" name="generate invoice">
+            Invoice
+        </button>
+    </form>
     <button type="button" onclick="window.location.href = '/service_income/'">
         <i class="material-icons" style="font-size:18px;">arrow_forward</i>
     </button>
@@ -111,16 +114,6 @@
         <button type = 'button' onclick="closePackage()">Cancel</button>
     </div>
 </form>
-<form method="post" id="invoice">
-    {%csrf_token%}
-    <p>Generate Invoice?</p>
-    <div class="but">
-        <button type = 'submit' name="invoice">Yes</button>
-        <button type = 'button' onclick="closeInvoice()">
-            <i class="material-icons" style="font-size:16px;">close</i>
-        </button>
-    </div>
-</form>
 <form method="post" id="finish">
     {%csrf_token%}
     <label for="amount">Amount</label>
@@ -133,6 +126,10 @@
     <div class="attach_customer">
         <label for="attachCustomer">Attach Customer</label>
         <input  type="checkbox" id="attachCustomer" name="attach customer">
+    </div>
+    <div class="attach_customer">
+        <label for="discount">Discount</label>
+        <input  type="checkbox" id="discount" name="discount">
     </div>
     <div class="but">
         <button type = 'submit' class='finalise' name="finalise" onclick="closeFinish()">Finalise</button>
@@ -170,16 +167,4 @@
     function closeFinish(){
         finish.classList.remove("finish");
     }
-
-
-    <!--open invoice-->
-    let invoice = document.getElementById("invoice");
-
-    function openInvoice(){
-        invoice.classList.add("invoice");
-    }
-    function closeInvoice(){
-        invoice.classList.remove("invoice");
-    }
-
 </script>

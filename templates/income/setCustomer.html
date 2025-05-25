@@ -1,0 +1,90 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/setCustomer.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
+
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/service_income/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+
+<div class="new_select">
+    <text> Press 'New' to create a new customer profile or press 'Select' to select an existing profile</text>
+    <button type="button" onclick="openNewCustomer()">
+        New
+    </button>
+    <button  type="button" onclick="openSelectCustomer()">
+        Select
+    </button>
+</div>
+<form method="post" id="newCustomer">
+    {%csrf_token%}
+    <text>Enter customer information</text>
+    <label for="Name">Name</label>
+    <input type="text" id="Name" name="name" required>
+    <label for="Email">Email</label>
+    <input id="Email" type="email" name="email" required>
+    <label for="Contact">Contact</label>
+    <input type="text" id="Contact" name="contact"  required maxlength="12">
+    <label for="Notes">Notes</label>
+    <textarea id="Notes" name="notes" maxlength="245"  placeholder="1-250"></textarea>
+    <div class="but">
+        <button type = 'submit' name="newCustomer" onclick="closeNewCustomer()">Save</button>
+        <button type = 'button' onclick="closeNewCustomer()">Cancel</button>
+    </div>
+</form>
+<form method="post" id="selectCustomer" {% if search_result %} class="selectCustomer" {% endif %}>
+    {%csrf_token%}
+    <text>Select customer / type in name to search then select</text>
+    <input type="search" name="search" placeholder="type in the name to look for........">
+    <label for="customerList">Select Customer</label>
+    <select id="customerList" name="customer" size="5">
+        {%if search_result%}
+            {%for s in search_result%}
+                <option value="{{s.id}}">{{s.Name}}</option>
+            {%endfor%}
+        {%else%}
+            {%for c in customers%}
+                <option value="{{c.id}}">{{c.Name}}</option>
+            {%endfor%}
+        {%endif%}
+    </select>
+    <label for="Notes1">Notes</label>
+    <textarea id="Notes1" name="notes" maxlength="245"  placeholder="1-250"></textarea>
+    <div class="but">
+        <button type = 'submit' name="selectedCustomer" onclick="closeSelectCustomer()">Ok</button>
+        <button type = 'button' onclick="closeSelectCustomer()">Cancel</button>
+    </div>
+</form>
+<script>
+    let customer = document.getElementById('newCustomer');
+    let existing = document.getElementById('selectCustomer');
+
+    function openNewCustomer(){
+        customer.classList.add('newCustomer');
+    }
+    function closeNewCustomer(){
+        customer.classList.remove('newCustomer');
+    }
+
+    function openSelectCustomer(){
+        existing.classList.add('selectCustomer');
+    }
+    function closeSelectCustomer(){
+        existing.classList.remove('selectCustomer');
+    }
+</script>

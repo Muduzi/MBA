@@ -115,7 +115,7 @@ def business(request):
             end = tax_this_year.TaxYearEnd
 
             (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-             total_payroll_expense) = expenses(buss_id, start, end)
+             total_payroll_expense, total_discount, discounts) = expenses(buss_id, start, end)
             product_income, total_product_income, cog, total_product_vat = product_revenue(buss_id, tax_settings, start, end)
             service_income, total_service_income, total_service_vat = service_revenue(buss_id, tax_settings, start, end)
             total_debt = debt_total(buss_id, start, end)
@@ -675,7 +675,7 @@ def taxes(request):
             end = this_tax_year.TaxYearEnd
 
             (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-             total_payroll_expense) = expenses(buss, start, end)
+             total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
             product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
             service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
             total_debt = debt_total(buss, start, end)

@@ -54,15 +54,19 @@ def set_customer(request, id=0):
                 if data_s:
                     if data_s[0].PMode == 'Credit':
                         result = service_credit_set(buss, user_obj, data_s, customer)
+
                     elif data_s[0].PMode == 'Cash':
-                        service_cash_set(buss, user_obj, data_s, customer=None)
+                        result = service_cash_set(buss, user_obj, data_s, customer=None)
+
                 elif data_p:
                     result = product_set(buss, user_obj, data_p, customer)
 
-                if type(result) == int or type(result) == str:
+                if type(result) == int:
+                    return redirect(f'/debt_form/{result}/')
+                elif result == 'success':
                     messages.success(request, 'sales record made successfully')
                 else:
-                    return redirect(f'/debt_form/{result.id}/')
+                    messages.error(request, f"{result}")
 
             if 'search' in request.POST:
                 search_item = request.POST.get('search')
@@ -89,18 +93,19 @@ def set_customer(request, id=0):
                             if data_s:
                                 if data_s[0].PMode == 'Credit':
                                     result = service_credit_set(buss, user_obj, data_s, c)
+
                                 elif data_s[0].PMode == 'Cash':
                                     result = service_cash_set(buss, user_obj, data_s, c)
 
-                                if type(result) == int or type(result) == str:
-                                    search_result = None
-                                    messages.success(request, 'sales record made successfully')
-                                else:
-                                    print('==============================', result)
-                                    return redirect(f'/debt_form/{result.id}/')
                             elif data_p:
                                 result = product_set(buss, user_obj, data_p, c)
-                                return redirect(f'/debt_form/{result.id}/')
+
+                            if type(result) == int:
+                                return redirect(f'/debt_form/{result}/')
+                            if result == 'success':
+                                messages.success(request, 'sales record made successfully')
+                            else:
+                                messages.error(request, f"{result}")
     except Employee.DoesNotExist:
         return HttpResponse('You are not affiliated to any business, please register your business'
                             ' or ask your employer to register you to their business')
@@ -110,13 +115,13 @@ def set_customer(request, id=0):
         'customers': customers,
         'search_result': search_result
     }
-    return render(request, 'setCustomer.html', context)
+    return render(request, 'income/setCustomer.html', context)
 
 
 def service_credit_set(buss, user_obj, data, customer=None):
-        total = data.aggregate(Sum('Amount'))
-        total = total['Amount__sum']
-
+    total = data.aggregate(Sum('Amount'))
+    total = total['Amount__sum']
+    try:
         debt = Debt(Business=buss, Customer=customer, Amount=total, Status='Not Paid', Received=0,
                     Notes=customer.Notes)
         debt.save()
@@ -129,21 +134,28 @@ def service_credit_set(buss, user_obj, data, customer=None):
                               Amount=i.Amount, Customer=customer, Debt=debt, PMode=i.PMode).save()
         data.delete()
 
-        return debt
+        return debt.id
+    except Exception as e:
+        return e
 
 
 def service_cash_set(buss, user_obj, data, customer=None):
+    discount = False
     cash_account = CashAccount.objects.get(Business=buss)
     try:
         for i in data:
             if i.Package:
+                if (i.Package.Price*i.Quantity) > i.Amount:
+                    discount = True
                 ServiceIncome(Business=buss, Cashier=user_obj, Customer=customer, Package=i.Package,
-                              Quantity=i.Quantity, Amount=i.Amount, PMode='Cash').save()
+                              Quantity=i.Quantity, Amount=i.Amount, PMode='Cash', Discount=discount).save()
                 cash_account.Value += i.Amount
 
             elif i.Service:
+                if (i.Service.Price*i.Quantity) > i.Amount:
+                    discount = True
                 ServiceIncome(Business=buss, Cashier=user_obj, Customer=customer, Service=i.Service,
-                              Quantity=i.Quantity, Amount=i.Amount, PMode='Cash').save()
+                              Quantity=i.Quantity, Amount=i.Amount, PMode='Cash', Discount=discount).save()
                 cash_account.Value += i.Amount
 
             cash_account.save()
@@ -154,24 +166,30 @@ def service_cash_set(buss, user_obj, data, customer=None):
         return e
 
 
-def product_set(buss, user_obj, customer, data_p):
+def product_set(buss, user_obj, data_p, customer):
     total = data_p.aggregate(Sum('Amount'))
     total = total['Amount__sum']
     if not total:
         total = 0
 
-    debt = Debt(Business=buss, Customer=customer, Amount=total, Status='Not Paid', Received=0,
-                Notes=customer.Notes)
-    debt.save()
+    try:
+        debt = Debt(Business=buss, Customer=customer, Amount=total, Status='Not Paid', Received=0,
+                    Notes=customer.Notes)
+        debt.save()
 
-    for i in data_p:
-        pro_info = InventoryProductInfo.objects.get(Business=buss, Code=i.Code)
-        pro_info.CurrentQuantity -= i.Quantity
-        pro_info.CurrentValue -= i.Amount
+        discount = False
+        for i in data_p:
+            prod_info = InventoryProductInfo.objects.get(Business=buss, Code=i.Code)
+            if (prod_info.BPrice*i.Quantity) > i.Amount:
+                discount = True
+            prod_info.CurrentQuantity -= i.Quantity
+            prod_info.CurrentValue -= i.Amount
 
-        ProductIncome(Business=buss, Cashier=user_obj, Debt=debt, Code=pro_info.Code, Product=i.Product,
-                      Amount=i.Amount, Quantity=i.Quantity, PMode='Credit').save()
+            ProductIncome(Business=buss, Cashier=user_obj, Debt=debt, Code=prod_info.Code, Product=i.Product,
+                          Amount=i.Amount, Quantity=i.Quantity, PMode='Credit', Discount=discount).save()
 
-    data_p.delete()
+        data_p.delete()
 
-    return debt
+        return debt.id
+    except Exception as e:
+        return e

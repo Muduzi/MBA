@@ -34,7 +34,7 @@ def profit_and_loss_dash(request):
         end = this_tax_year.TaxYearEnd
 
         (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-         total_payroll_expense) = expenses(buss, start, end)
+         total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
 
         # annual depreciation is recorded as expense that reduces net-income
         if assets.exists():
@@ -66,6 +66,8 @@ def profit_and_loss_dash(request):
         'cog': cog,
         'gp': gp,
         'op': op,
+        "discounts": discounts,
+        "total_discount": total_discount,
         'income_in_hand': income_in_hand,
         'paid_for': paid_for,
         'net_profit': net_profit,
@@ -170,12 +172,10 @@ def balance_stats(buss):
         non_current_assets = 0
 
     for a in assets:
-        property_and_equipment[a.id] = {}
-        property_and_equipment[a.id]['Name'] = a.Name
-        property_and_equipment[a.id]['Amount'] = a.CurrentValue
+        property_and_equipment[a.id] = {'Name': a.Name, 'Amount': a.CurrentValue}
 
     (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-     total_payroll_expense) = expenses(buss, start, end)
+     total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
     product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
     service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
     total_debt = debt_total(buss, start, end)

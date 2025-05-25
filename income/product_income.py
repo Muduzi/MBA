@@ -75,6 +75,39 @@ def search_product(buss, name):
         return str(e)
 
 
+def record_product_sale(request, buss, cash_account,  data, item_count, total, paid, p_mode, discount):
+    excess = paid - total
+    if excess < 1:
+        mean_discount = round(excess / item_count, 1)
+    else:
+        mean_discount = 0
+    for i in data:
+        print(i.Code)
+        pro_info = InventoryProductInfo.objects.get(Business=buss, Code=i.Code)
+        pro_info.CurrentQuantity -= i.Quantity
+        pro_info.CurrentValue -= i.Amount
+
+        if discount:
+            # mean discount is a negative value hence adding it to amount because:
+            # i.Amount - (-mean_discount*i.Quantity); negatives cancel out
+            # purchases on credit won't permit discount's
+            inc = ProductIncome(Business=buss, Cashier=request.user, Code=pro_info.Code,
+                                Product=i.Product, Amount=i.Amount + mean_discount, Quantity=i.Quantity,
+                                PMode=p_mode, Discount=discount)
+        else:
+            inc = ProductIncome(Business=buss, Cashier=request.user, Code=pro_info.Code,
+                                Product=i.Product, Amount=i.Amount, Quantity=i.Quantity,
+                                PMode=p_mode)
+
+        cash_account.Value += i.Amount
+
+        inc.save()
+        pro_info.save()
+        cash_account.save()
+        i.delete()
+    return excess
+
+
 @login_required(login_url="/login/")
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
 def product_sale(request):
@@ -91,25 +124,13 @@ def product_sale(request):
         total = total['Amount__sum']
         if not total:
             total = 0
+        item_count = data.count()
+        if not item_count:
+            item_count = 0
 
         cash_account = CashAccount.objects.get(Business=buss)
 
         if request.method == 'POST':
-            if 'search product' or 'search_name' and not 'save selected product' in request.POST:
-                search_name = request.POST.get('search name')
-
-                search_result = search_product(buss, search_name)
-                if type(search_result) == str:
-                    messages.error(request, f"{search_result}")
-                    return redirect('/')
-
-            if 'save selected product' in request.POST:
-                selected_product = request.POST.get("selected product")
-                quantity = request.POST.get("quantity")
-                result = process_selected_product(request, buss, int(selected_product), int(quantity))
-                search_result = None
-                if result is not 'success':
-                    messages.success(request, f'{result}')
             if 'save_by_code' in request.POST:
                 code = request.POST.get('code')
                 quantity = request.POST.get('quantity')
@@ -126,40 +147,68 @@ def product_sale(request):
                 elif 'unable to find the product':
                     messages.error(request, "Unable to find a product that matches the code")
 
+            if 'search_name' in request.POST:
+                search_name = request.POST.get('search name')
+
+                search_result = search_product(buss, search_name)
+                if type(search_result) == str:
+                    messages.error(request, f"{search_result}")
+                    return redirect('/')
+
+            if 'search product' in request.POST:
+                search_name = request.POST.get('search name')
+
+                search_result = search_product(buss, search_name)
+                if type(search_result) == str:
+                    messages.error(request, f"{search_result}")
+                    return redirect('/')
+
+            if 'save selected product' in request.POST:
+                selected_product = request.POST.get("selected product")
+                quantity = request.POST.get("quantity")
+                result = process_selected_product(request, buss, int(selected_product), int(quantity))
+                search_result = None
+                if result != 'success':
+                    messages.success(request, f'{result}')
+
             if 'finalise' in request.POST:
                 paid = request.POST.get('amount')
                 p_mode = request.POST.get('PMode')
+                discount = request.POST.get('discount')
                 paid = int(paid)
+
+                if discount == 'on' and p_mode == 'Credit':
+                    p_mode = 'Cash'
+                    discount = True
+                elif discount == 'on':
+                    discount = True
+                else:
+                    discount = False
+
                 if p_mode == 'Cash':
                     if not total:
                         pass
                     else:
-                        if paid < total:
+                        if paid < total and not discount:
                             messages.error(request, 'insufficient funds')
 
-                        elif paid >= total:
-                            excess = paid - total
-                            for i in data:
-                                print(i.Code)
-                                pro_info = InventoryProductInfo.objects.get(Business=buss, Code=i.Code)
-                                pro_info.CurrentQuantity -= i.Quantity
-                                pro_info.CurrentValue -= i.Amount
-
-                                inc = ProductIncome(Business=buss, Cashier=request.user, Code=pro_info.Code,
-                                                    Product=i.Product, Amount=i.Amount, Quantity=i.Quantity,
-                                                    PMode=p_mode)
-
-                                cash_account.Value += i.Amount
-
-                                inc.save()
-                                pro_info.save()
-                                cash_account.save()
-                                i.delete()
+                        else:
+                            excess = record_product_sale(request, buss, cash_account,  data, item_count,
+                                                         total, paid, p_mode, discount)
 
                 elif p_mode == 'Credit':
-                    return redirect('/set_customer/')
+                    if discount:
+                        messages.error(request, "discount on credit purchases is not allowed")
+                    else:
+                        return redirect('/set_customer/')
 
-            if 'invoice' in request.POST:
+            if "generate invoice" in request.POST:
+                if data:
+                    messages.info(request, "Generate Invoice")
+                else:
+                    messages.error(request, "add items for the invoice")
+
+            if 'Yes' in request.POST:
                 return redirect('/invoice_form/0/products/')
 
     except Employee.DoesNotExist:

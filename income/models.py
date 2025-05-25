@@ -98,6 +98,7 @@ class ServiceIncome(models.Model):
         ('Credit', 'Credit'),
     ]
     PMode = models.CharField(max_length=7, choices=Options, default='Cash', null=False)
+    Discount = models.BooleanField(null=False, blank=True, default=False)
 
 
 class ServiceBuffer(models.Model):

@@ -182,7 +182,7 @@ def credit_installment(request, id=0):
 
         cash_account = CashAccount.objects.get(Business=buss)
         credit = Credit.objects.get(Business=buss, pk=id)
-        data = Expense.objects.filter(Business=buss, Supplier=credit.Supplier.id)
+        data = Expense.objects.filter(Business=buss, Supplier=credit.Supplier.id, PMode='Credit')
         remaining = credit.Amount - credit.Sent
         if not remaining:
             remaining = 0

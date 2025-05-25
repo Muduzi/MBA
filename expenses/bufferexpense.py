@@ -38,7 +38,7 @@ def buffer_expense_view(request):
                 e_type = request.POST.get('type')
                 for d in data:
                     d.PMode = p_mode
-                    d.Name = e_type
+                    d.Type = e_type
                     d.save()
                 if data.exists():
                     return redirect('/set_supplier/')

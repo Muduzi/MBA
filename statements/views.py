@@ -22,6 +22,7 @@ def profit_and_loss_dash_range(request):
     cog = 0
     gp = 0
     op = 0
+    discounts = {}
     income_in_hand = 0
     net_profit = 0
     profit_perc = 0
@@ -49,7 +50,7 @@ def profit_and_loss_dash_range(request):
                 end = request.POST.get('end')
 
                 (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
-                 total_payroll_expense) = expenses(buss, start, end)
+                 total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
 
                 assets = Assets.objects.filter(Business=buss)
 
@@ -96,6 +97,7 @@ def profit_and_loss_dash_range(request):
         'profit_perc': profit_perc,
         'oe': operational_expense,
         'pe': payroll_expense,
+        "discounts": discounts,
         'total_expense': total_expense,
         'oe_total': total_operational_expense,
         'pe_total': total_payroll_expense,
