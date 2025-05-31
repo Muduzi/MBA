@@ -4,7 +4,6 @@ body{
     align-items:flex-start;
     justify-content:space-evenly;
     row-gap:5px;
-    position:relative;
     width:100vw;
     height:auto;
     margin:0;
@@ -33,7 +32,7 @@ body{
     justify-content:space-around;
     position:relative;
     column-gap:5px;
-    width:15%;
+    width:300px;
     height:80%;
     color:rgb(54, 69, 79);
     margin-top:20px;

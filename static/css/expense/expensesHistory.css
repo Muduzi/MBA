@@ -14,30 +14,17 @@ body{
     overflow-y:scroll;
 }
 
+
 /*navigation*/
 .Navigation{
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:flex-end;
     gap:10px;
     position:relative;
     width:93%;
     height:30px;
     margin-top:2px;
-    border-radius:10px;
-}
-.Navigation form{
-    display:flex;
-    align-items:center;
-    justify-content:space-around;
-    position:relative;
-    column-gap:5px;
-    width:300px;
-    height:80%;
-    color:rgb(54, 69, 79);
-    margin-top:20px;
-    background:transparent;
-    border:hidden;
     border-radius:10px;
 }
 .Navigation button{
@@ -73,6 +60,7 @@ body{
     font-weight:500;
 }
 
+
 .graph{
     display:flex;
     flex-wrap:wrap;
@@ -82,6 +70,7 @@ body{
     width:93%;
     height:300px;
     background:#F9F6EE;
+    margin-bottom:10px;
     transition: width 2s, height 3s;
     box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
     border-radius:10px;
@@ -127,6 +116,7 @@ text{
     align-items:center;
     justify-content:flex-start;
 }
+
 .title{
     color:gray;
     font-size:16px;
@@ -158,14 +148,15 @@ table{
     width:100%;
     height:87%;
     background:#F9F6EE;
-    overflow:hidden;
     overflow-y:scroll;
+    overflow-x:hidden;
     border-radius:10px;
     box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
 }
 .customers{
     width:26%;
     height:350px;
+    margin-bottom:5px;
 }
 
 .cth1{
@@ -186,7 +177,6 @@ table{
     height:350px;
     margin-bottom:10px;
 }
-
 .tableTitle{
     display:flex;
     flex-wrap:wrap;
@@ -194,7 +184,7 @@ table{
     justify-content:space-between;
     position:relative;
     width:100%;
-    height:35px;
+    height:13%;
 }
 .tableTitle text{
     color:rgb(54, 69, 79);
@@ -207,8 +197,7 @@ table{
     align-items:center;
     justify-content:space-around;
     position:relative;
-    column-gap:5px;
-    width:auto;
+    width:35%;
     height:98%;
     color:rgb(54, 69, 79);
     margin-top:0px;
@@ -222,8 +211,8 @@ form label{
 }
 form select{
     color:#5D6166;
-    font-size:13px;
-    height:30px;
+    font-size:14px;
+    height:25px;
     padding:5px;
     background:#F9F6EE;
     border:hidden;
@@ -236,7 +225,7 @@ select option{
     display:flex;
     align-items:center;
     margin-top:4px;
-    font-size:13px;
+    font-size:14px;
 }
 select option:hover{
     cursor:hand;
@@ -248,9 +237,9 @@ form button{
     justify-content:center;
     position:relative;
     width:auto;
-    height:90%;
+    height:75%;
     color:rgb(54, 69, 79);
-    font-size:13px;
+    font-size:15px;
     padding:5px;
     background:transparent;
     border:hidden;
@@ -284,13 +273,10 @@ th{
     height:100%;
 }
 .sth2{
-    width:10%;
+    width:20%;
     height:100%;
 }
-.sth3{
-    width:15%;
-    height:100%;
-}
+
 
 .psth{
     display:none;
@@ -313,8 +299,61 @@ td{
     align-items:center;
     justify-content:flex-start;
     font-size:14px;
-    color:rgba(54, 69, 79, 0.8);
+    color:rgb(54, 69, 79);
     margin-left:10px;
+}
+
+.range{
+    display:none;
+    visibility:hidden;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-around;
+    position:fixed;
+    top:15%;
+    z-index:2;
+    width:360px;
+    height:250px;
+    padding-left:15px;
+    padding-right:15px;
+    padding-top:10px;
+    padding-bottom:10px;
+    background:#EDEADE;
+    border-radius:10px;
+    box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+}
+.open_range{
+    display:flex;
+    visibility:visible;
+}
+
+.range label{
+    font-size:15px;
+    color:rgb(54, 69, 79);
+}
+.range input{
+    width:100%;
+    height:32px;
+    color:gray;
+    background:#F9F6EE;
+    border:1px solid #EDEADE;
+    border-radius:10px;
+}
+.range button{
+    display:flex;
+    align-items:center;
+    justify-content:space-evenly;
+    align-self:center;
+    color:#5D6166;
+    height:25px;
+    background:transparent;
+    border:1px solid #5D6166;
+    border-radius:10px;
+}
+.range button:hover{
+    color:#F9F6EE;
+    background:#5D6166;
+
 }
 
 @media(max-width:1000px){
@@ -338,10 +377,10 @@ td{
         height:80%;
     }
     th{
-        font-size:13px;
+        font-size:14px;
     }
     td{
-        font-size:12px;
+        font-size:13px;
     }
     .sales{
         width:95%;
@@ -370,12 +409,6 @@ td{
         width:95%;
         height:80%;
     }
-    th{
-        font-size:13px;
-    }
-    td{
-        font-size:12px;
-    }
     .sales{
         width:95%;
         height:80%;
@@ -403,13 +436,6 @@ td{
     .sales{
         width:95%;
         height:50%;
-    }
-
-    th{
-        margin-left:1px;
-    }
-    td{
-        margin-left:1px;
     }
 
 }

@@ -278,14 +278,14 @@ def product_income_dash(request):
         credit_m = cache.get(str(buss_id) + 'p_d_r_t_m-credit')
         income_this_month = cache.get(str(buss_id) + 'p_d_r_t_m-income_this_month')
 
-        if not total_m and cash_m and credit_m and income_this_month:
+        if not total_m and not cash_m and not credit_m and not income_this_month:
             total_m, cash_m, credit_m, income_this_month = product_daily_records_this_month(buss_id)
 
         product_income_per_group_this_month.delay(buss_id)
         categories_m = cache.get(str(buss_id) + 'p_i_p_g_t_m-categories_m')
         products_m = cache.get(str(buss_id) + 'p_i_p_g_t_m-products_m')
 
-        if not categories_m and products_m:
+        if not categories_m and not products_m:
             categories_m, products_m = product_income_per_group_this_month(buss_id)
 
         product_monthly_records_this_year.delay(buss_id)
@@ -294,14 +294,14 @@ def product_income_dash(request):
         credit_y = cache.get(str(buss_id) + 'p_m_r_t_y-credit')
         income_this_year = cache.get(str(buss_id) + 'p_m_r_t_y-product_income_this_year')
 
-        if not total_y and cash_y and credit_y and income_this_year:
+        if not total_y and not cash_y and not credit_y and not income_this_year:
             total_y, cash_y, credit_y, income_this_year = product_monthly_records_this_year(buss_id)
 
         product_income_per_group_this_year.delay(buss_id)
         categories_y = cache.get(str(buss_id) + 'p_i_p_g_t_y-categories_y')
         products_y = cache.get(str(buss_id) + 'p_i_p_g_t_y-products_y')
 
-        if not categories_y and products_y:
+        if not categories_y and not products_y:
             categories_y, products_y = product_income_per_group_this_year(buss_id)
 
         if request.method == 'POST':

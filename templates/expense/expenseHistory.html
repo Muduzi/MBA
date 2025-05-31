@@ -1,0 +1,292 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/expense/expenseHistory.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
+
+<div class="Navigation">
+    <button type="button" onclick="openRange()">
+        <i class="material-icons" style="font-size:18;">calendar_month</i>
+    </button>
+    <button type="button" onclick="window.location.href='/expenses_dash/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<div class="container1">
+    <div class="information">
+        <div class="pieChart">
+            <canvas id="doughnutA"></canvas>
+        </div>
+        <div class="info">
+            <text class="content">
+                {{total}}
+            </text>
+            <text class="title">
+                Total Sales
+            </text>
+        </div>
+    </div>
+    <div class="tableTitle">
+        <text style="filter: drop-shadow(1px 1px 20px 50px red);">Suppliers</text>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="cth1">Supplier</th>
+                <th class="cth2">Total</th>
+                <th class="cth3">Perc (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for a, b in suppliers.items%}
+                <tr>
+                    <td class="cth1">{{b.Name}}</td>
+                    <td class="cth2">{{b.Amount}}</td>
+                    <td class="cth3">{{b.Percentage}}%</td>
+                </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="container2">
+    <div class="linearGraph">
+        <canvas id="myLChartA"></canvas>
+    </div>
+    <div class="tableTitle">
+        <text>Transactions</text>
+        <button type="button" onclick="openExpandedTransactionTable()">
+            <i class="material-icons" style="font-size:18px;">zoom_out_map</i>
+        </button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="sth1">Date</th>
+                <th class="sth2">Expense</th>
+                <th class="sth3">Type</th>
+                <th class="sth4">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for i in all_transactions%}
+            <tr>
+                <td class="sth1">{{i.Date.date}}</td>
+                <td class="sth2">{{i.Name}}</td>
+                <td class="sth3">{{i.Type}}</td>
+                {% if 'Cash' in i.PMode %}
+                    <td style="color:rgba(54, 69, 79, 0.8);" class="sth4">{{i.Price}}</td>
+                {% else %}
+                    <td style="color:red" class="sth4">{{i.Price}}</td>
+                {% endif %}
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="container3">
+    <div class="tableTitle">
+        <text style="filter: drop-shadow(1px 1px 20px 50px red);">Overall Totals</text>
+        <button type="button" onclick="openExpandedPerformanceTable()">
+            <i class="material-icons" style="font-size:18px;">zoom_out_map</i>
+        </button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="pt1">Expense</th>
+                <th class="pt2">Type</th>
+                <th class="pt3">Qnt</th>
+                <th class="pt4">Total</th>
+                <th class="pt5">Perc</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for a, b in expense_record.items%}
+            <tr>
+                <td class="pt1">{{b.Name}}</td>
+                <td class="pt2">{{b.Type}}</td>
+                <td class="pt3">{{b.Quantity}}</td>
+                <td class="pt4">{{b.Amount}}</td>
+                <td class="pt5">{{b.Percentage}}%</td>
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<form method="post" id="range" class="range">
+    {%csrf_token%}
+    <label for="start">Start</label>
+    <input type="date" id="start" name="start" required >
+    <label for="end">End</label>
+    <input type="date" id="end" name="end" required >
+    <button type="submit" name="filter" onclick="closeRange()">
+        <i class="material-icons" style="font-size:18px;">filter_alt</i>
+        filter
+    </button>
+</form>
+
+<div class="expandedTransactionTable" id="expandedTransactionTable">
+    <div class="tableTitle">
+        <text>Transactions</text>
+        <button type="button" onclick="closeExpandedTransactionTable()">
+            <i class="material-icons" style="font-size:18px;">zoom_in_map</i>
+        </button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="eth1">Date</th>
+                <th class="eth2">Expense</th>
+                <th class="eth3">Type</th>
+                <th class="eth4">Qnt</th>
+                <th class="eth5">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for i in all_transactions%}
+            <tr>
+                <td class="eth1">{{i.Date.date}}</td>
+                <td class="eth2">{{i.Name}}</td>
+                <td class="eth3">{{i.Type}}</td>
+                <td class="eth4">{{i.Quantity}}</td>
+                {% if 'Cash' in i.PMode %}
+                    <td style="color:rgba(54, 69, 79, 0.8);" class="eth5">{{i.Price}}</td>
+                {% else %}
+                    <td style="color:red" class="eth5">{{i.Price}}</td>
+                {% endif %}
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<div class="expandedTransactionTable" id="expandedPerformanceTable">
+    <div class="tableTitle">
+        <text>Product Performance</text>
+        <button type="button" onclick="closeExpandedPerformanceTable()">
+            <i class="material-icons" style="font-size:18px;">zoom_in_map</i>
+        </button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="ept1">Expense</th>
+                <th class="ept2">Type</th>
+                <th class="ept3">Qnt</th>
+                <th class="ept4">Total</th>
+                <th class="ept5">Perc</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for a, b in expense_record.items%}
+            <tr>
+                <td class="ept1">{{b.Name}}</td>
+                <td class="ept2">{{b.Type}}</td>
+                <td class="ept3">{{b.Quantity}}</td>
+                <td class="ept4">{{b.Amount}}</td>
+                <td class="ept5">{{b.Percentage}}%</td>
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    <!--Range Form-->
+    let range = document.getElementById("range");
+
+    const openRange = () => range.classList.add("open_range");
+    const closeRange = () => range.classList.remove("open_range");
+
+    <!-- expanded transaction table-->
+    let eTT = document.getElementById("expandedTransactionTable");
+
+    const openExpandedTransactionTable = () => eTT.classList.add("open_expandedTransactionTable");
+    const closeExpandedTransactionTable = () => eTT.classList.remove("open_expandedTransactionTable");
+
+    <!-- expanded performance table-->
+    let ePT = document.getElementById("expandedPerformanceTable");
+
+    const openExpandedPerformanceTable = () => ePT.classList.add("open_expandedTransactionTable");
+    const closeExpandedPerformanceTable = () => ePT.classList.remove("open_expandedTransactionTable");
+
+    <!-- Graphs (This Year)-->
+    const lChartA = document.getElementById('myLChartA');
+
+    new Chart(lChartA, {
+        type: 'bar',
+        data: {
+            labels: [{%for i in totals.keys%} '{{i}}', {%endfor%}],
+            datasets: [{
+                            label: 'Sales this Year',
+                            data: [{%for i in totals.values%} '{{i.Amount}}', {%endfor%}],
+                            borderWidth: 0,
+                            borderColor: 'Teal',
+                            backgroundColor: 'Teal',
+                        },
+                        {
+                            label: 'Sales in Cash',
+                            data: [{%for i in totals.values%} '{{i.Cash}}', {%endfor%}],
+                            borderWidth: 0,
+                            borderColor: '#5D6166',
+                            backgroundColor: '#5D6166',
+                        },
+                        {
+                            label: 'Sales on Credit',
+                            data: [{%for i in totals.values%} '{{i.Credit}}', {%endfor%}],
+                            borderWidth: 0,
+                            borderColor: 'black',
+                            backgroundColor: 'black',
+                        },
+
+            ],
+
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                  beginAtZero: true
+                },
+            },
+        }
+    });
+
+
+    const doughnutA = document.getElementById('doughnutA');
+
+    new Chart(doughnutA, {
+        type: 'doughnut',
+        data: {
+            labels: ['Cash', 'Credit'],
+            datasets: [{
+                label: 'Sales this week',
+                data: [{{cash}}, {{credit}}],
+                borderWidth: 1,
+                borderColor: '#EDEADE',
+                backgroundColor:['#5D6166', 'black'],
+                radius: 60,
+                },
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+
+        }
+    });
+</script>

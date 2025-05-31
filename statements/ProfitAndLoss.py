@@ -325,10 +325,8 @@ def pay_out(buss, net_profit):
             pay_out_percentage = (sh.Shares / total_shares) * 100
         except ZeroDivisionError:
             pay_out_percentage = 0
-        dividends[sh] = {}
-        dividends[sh]['shares'] = sh.Shares
-        dividends[sh]['pay_out_percentage'] = pay_out_percentage
-        dividends[sh]['total_dividends'] = total_dividends * (pay_out_percentage/100)
+        dividends[sh] = {'shares': sh.Shares, 'pay_out_percentage': pay_out_percentage,
+                         'total_dividends': total_dividends * (pay_out_percentage/100)}
 
     return total_dividends, dividends, retained_earnings
 

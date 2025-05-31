@@ -27,6 +27,7 @@ from User.views import (login_view, sign_up, logout_view, management, profile_fo
 from User.business import business, business_profile, edit_business_profile, taxes
 from expenses.views import expenses_view
 from expenses.expenses_dash import expenses_dash
+from expenses.expense_history import expense_history
 from expenses.bufferexpense import buffer_expense_view, edit_buffer_expense
 from expenses.setSupplier import set_supplier
 from expenses.Accounts import expense_accounts, expense_account
@@ -34,8 +35,10 @@ from credits.views import credit_view, credit_form, credit_installment
 from income.views import product_income
 from debts.views import debt, debt_form, debt_installment
 from income.product_income import product_sale, edit_product_sale
+from income.product_income_history import product_income_history
 from income.service_income import (services, service_income, service_sale, service, package, service_category,
                                    edit_service_sale)
+from income.service_income_history import service_income_history
 from income.setCustomer import set_customer
 from income.invoice import invoice_form, invoices_view, generate_invoice_pdf, delivery_note, invoice_view
 from income.service_income_dash import service_income_dash
@@ -88,6 +91,7 @@ urlpatterns = [
     path("expense_account/<int:id>/", expense_account, name='expenseAccount'),
     path("set_supplier/", set_supplier, name="assetsVendor"),
     path("set_supplier/<int:id>/", set_supplier, name="assetsVendor"),
+    path("expenses_history/", expense_history, name="expenseHistory"),
 
     # credits
     path("credit/", credit_view, name="credit"),
@@ -108,6 +112,7 @@ urlpatterns = [
     path("invoice/", invoice_view, name="invoice"),
     path("invoice/<int:id>/", invoice_view, name="invoice"),
     path("delivery_note/", delivery_note, name="deliveryNote"),
+    path('product_income_history/', product_income_history, name="productIncomeHistory"),
     # path('test/', test, name='test'),
 
     # service sales income
@@ -121,6 +126,7 @@ urlpatterns = [
     path('services/', services, name="services"),
     path('service_category/<int:id>/', service_category, name="serviceCategory"),
     path('edit_service_sale/<int:id>/', edit_service_sale, name="editServiceBuffer"),
+    path('service_income_history/', service_income_history, name="serviceIncomeHistory"),
 
     # debts
     path("debt/", debt, name="debt"),

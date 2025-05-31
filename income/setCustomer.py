@@ -33,8 +33,8 @@ def set_customer(request, id=0):
         data_s = ServiceBuffer.objects.filter(Business=buss, Cashier=user_obj)
         if not data_s:
             data_p = IncomeBuffer.objects.filter(Business=buss, Cashier=user_obj)
-
-            messages.error(request, 'Unable to process the transaction draft')
+            if not data_p:
+                messages.error(request, 'Unable to process the transaction draft')
 
         customers = Customer.objects.filter(Business=buss)
 

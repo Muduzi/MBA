@@ -255,9 +255,7 @@ def account_receivable(buss, end):
     for i in debts:
         amount = i.Amount
         received = i.Received
-        accounts_receivable[i.id] = {}
-        accounts_receivable[i.id]['Customer'] = i.Customer.Name
-        accounts_receivable[i.id]['total'] = amount - received
+        accounts_receivable[i.id] = {'Customer': i.Customer.Name, 'total': amount - received}
 
     return accounts_receivable, receivable, receivable_ty
 
@@ -297,9 +295,7 @@ def account_payable(buss, end):
     for i in credit:
         amount = i.Amount
         sent = i.Sent
-        accounts_payable[i.id] = {}
-        accounts_payable[i.id]['Supplier'] = i.Supplier.Name
-        accounts_payable[i.id]['total'] = amount - sent
+        accounts_payable[i.id] = {'Supplier': i.Supplier.Name, 'total': amount - sent}
 
     return accounts_payable, payable, payable_ty, payable_ny
 

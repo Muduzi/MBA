@@ -194,6 +194,7 @@ def debt_installment(request, id=0):
                             messages.success(request, "Installment saved")
                         debt.save()
                         cash_account.save()
+                        return redirect(f'/debt_installment/{id}/')
     except Employee.DoesNotExist:
         return HttpResponse('You are not affiliated to any business, please register your business'
                             ' or ask your employer to register you to their business')

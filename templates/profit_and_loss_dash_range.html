@@ -288,14 +288,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 
-   let range = document.getElementById("range");
+    let range = document.getElementById("range");
 
-    function openRange(){
-        range.classList.add("open_range");
-    }
-    function closeRange(){
-        range.classList.remove("open_range");
-    }
+    const openRange = () => range.classList.add("open_range");
+    const closeRange = () => range.classList.remove("open_range");
 
     const ctxx = document.getElementById('myDChart');
 

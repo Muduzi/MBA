@@ -24,6 +24,9 @@
             <option value="This Year">This Year</option>
         </select>
         <button type="submit" name="general_content">Ok</button>
+        <button type="button" onclick="window.location.href='/product_income_history/';">
+            <i class="material-icons" style="font-size:18px">search</i>&nbsp;history
+        </button>
     </form>
     <button type="button" onclick="window.location.href='/product_income/';">
         <i class="material-icons" style="font-size:18px">arrow_forward</i>
@@ -228,32 +231,7 @@
                       beginAtZero: true
                     },
                 },
-                plugins: {
-                    datalabels: {
-                        formatter: (value, context) =>{
-                            if (value>1000,000,000){
-                                return(value/1000,000,0000) + 'B';
-                            }if (value>1000,000){
-                                return(value/1000,000) + 'M';
-                            }if (value>1000){
-                                return(value/1000) + 'k';
-                            }return value;
-
-                            console.log(value);
-
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            // This more specific font property overrides the global property
-                            font: {
-                                size: 14
-                            }
-                        }
-                    }
-                }
-            },
-            plugins: [ChartDataLabels]
+            }
         });
 
 
@@ -331,32 +309,7 @@
                         beginAtZero: true
                     }
                 },
-                plugins: {
-                    datalabels: {
-                        formatter: (value, context) =>{
-                            if (value>1000,000,000){
-                                return(value/1000,000,0000) + 'B';
-                            }if (value>1000,000){
-                                return(value/1000,000) + 'M';
-                            }if (value>1000){
-                                return(value/1000) + 'k';
-                            }return value;
-
-                            console.log(value);
-
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            // This more specific font property overrides the global property
-                            font: {
-                                size: 14,
-                            }
-                        }
-                    }
-                }
-            },
-            plugins: [ChartDataLabels]
+            }
         });
 
 

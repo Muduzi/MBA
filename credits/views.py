@@ -201,20 +201,23 @@ def credit_installment(request, id=0):
                                 credit.Sent += remainder
                                 credit.Status = 'Paid'
                                 cash_account.Value -= remainder
+                                CreditInstallment(Business=buss, Debt=credit, Amount=remaining).save()
                                 messages.success(request, "Credit repaid successfully")
                             elif send == remainder:
                                 credit.Sent += remainder
                                 credit.Status = 'Paid'
                                 cash_account.Value -= remainder
+                                CreditInstallment(Business=buss, Debt=credit, Amount=remaining).save()
                                 messages.success(request, "Credit repaid successfully")
                             else:
-                                credit.Sent += remainder
+                                credit.Sent += send
                                 credit.Status = 'Paying'
-                                cash_account.Value -= remainder
+                                cash_account.Value -= send
+                                CreditInstallment(Business=buss, Debt=credit, Amount=send).save()
                                 messages.success(request, "Credit payment recorded")
                             credit.save()
                             cash_account.save()
-
+                            return redirect(f'/credit_installment/{id}/')
                         else:
                             messages.error(request, "You don't have enough funds to repay the debt")
 

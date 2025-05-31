@@ -1,15 +1,9 @@
 from django.shortcuts import render, HttpResponse
-from income.models import ProductIncome, ServiceIncome, Service, Package
-from inventory.models import InventoryProduct, InventoryProductInfo
-from expenses.models import Expense
-from django.db.models import Sum, Q
-from credits.models import Credit
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from django.contrib.auth.decorators import login_required
 from User.decorator import allowed_users
-from User.models import Employee, Business, TaxSettings
-from debts.models import Debt
-from .ProfitAndLoss import (get_tax_year, expenses, product_revenue, service_revenue, debt_total,
+from User.models import Employee, TaxSettings
+from .ProfitAndLoss import (expenses, product_revenue, service_revenue, debt_total,
                             totals_and_profits)
 from assets.models import Assets
 

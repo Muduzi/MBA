@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from .models import (ServiceIncome, Category, Service, Package, ServiceAnnualContent, ServiceMonthlyContent,
                      ServiceGeneralContent)
 from debts.models import Customer
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from django.db.models import Sum, Q
 from django.contrib.auth.decorators import login_required
 from User.decorator import allowed_users
@@ -371,7 +371,7 @@ def service_income_dash(request):
         credit_m = cache.get(str(buss_id) + 's_d_r_t_m-credit')
         income_this_month = cache.get(str(buss_id) + 's_d_r_t_m-income_this_month')
 
-        if total_m and cash_m and credit_m and income_this_month:
+        if not total_m and not cash_m and not credit_m and not income_this_month:
             return redirect('/service_dash/')
 
         service_income_per_group_this_month.delay(buss_id)
@@ -380,7 +380,7 @@ def service_income_dash(request):
         packages_m = cache.get(str(buss_id) + 's_i_p_g_t_m-packages_m')
         customers_m = cache.get(str(buss_id) + 's_i_p_g_t_m-customers_m')
 
-        if not categories_m and services_m and packages_m:
+        if not categories_m and not services_m and not packages_m:
             return redirect('/service_dash/')
 
         service_monthly_records_this_year.delay(buss_id)
@@ -389,7 +389,7 @@ def service_income_dash(request):
         credit_y = cache.get(str(buss_id) + 's_m_r_t_y-credit')
         income_this_year = cache.get(str(buss_id) + 's_m_r_t_y-income_this_year')
 
-        if not total_y and cash_y and credit_y and income_this_year:
+        if not total_y and not cash_y and not credit_y and not income_this_year:
             return redirect('/service_dash/')
 
         service_income_per_group_this_year.delay(buss_id)
@@ -398,7 +398,7 @@ def service_income_dash(request):
         packages_y = cache.get(str(buss_id) + 's_i_p_g_t_y-packages_y')
         customers_y = cache.get(str(buss_id) + 's_i_p_g_t_y-customers_y')
 
-        if not categories_m and services_m and packages_m:
+        if not categories_m and not services_m and not packages_m:
             return redirect('/service_dash/')
 
         if request.method == 'POST':

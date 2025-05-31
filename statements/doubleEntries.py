@@ -50,12 +50,7 @@ def product_stats(buss, start, end):
         cog = prod_info.BPrice * quantity
         total_cog += prod_info.BPrice * quantity
 
-        product_income[p.id] = {}
-        product_income[p.id]['Name'] = p.Name
-        product_income[p.id]['Cash'] = total-credit
-        product_income[p.id]['Credit'] = credit
-        product_income[p.id]['total'] = total
-        product_income[p.id]['COG'] = cog
+        product_income[p.id] = {'Name': p.Name, 'Cash': total-credit, 'Credit': credit, 'total': total, 'COG': cog}
 
         credit = 0
 
@@ -110,11 +105,7 @@ def service_stats(buss, start, end):
             if service_inc.exists():
                 if i.PMode == 'Credit':
                     credit += i.Amount
-        service_income[s.id] = {}
-        service_income[s.id]['Name'] = s.Name
-        service_income[s.id]['total'] = total
-        service_income[s.id]['Cash'] = total-credit
-        service_income[s.id]['Credit'] = credit
+        service_income[s.id] = {'Name': s.Name, 'total': total, 'Cash': total-credit, 'Credit': credit}
 
         credit = 0
 
@@ -129,11 +120,7 @@ def service_stats(buss, start, end):
             if package_inc.exists():
                 if i.PMode == 'Credit':
                     credit += i.Amount
-        service_income[p.id] = {}
-        service_income[p.id]['Name'] = p.Name
-        service_income[p.id]['total'] = total
-        service_income[p.id]['Cash'] = total-credit
-        service_income[p.id]['Credit'] = credit
+        service_income[p.id] = {'Name': p.Name, 'total':  total, 'Cash': total-credit, 'Credit': credit}
 
         credit = 0
 
@@ -175,10 +162,7 @@ def expense_stats(buss, start, end):
         if expense.exists():
             for e in expense:
                 credit += e.Price
-        expense_totals[et] = {}
-        expense_totals[et]['total'] = total
-        expense_totals[et]['cash'] = total-credit
-        expense_totals[et]['credit'] = credit
+        expense_totals[et] = {'total': total, 'cash': total-credit, 'credit': credit}
         credit = 0
 
     accounts = ExpenseAccount.objects.filter(Business=buss)
@@ -194,10 +178,7 @@ def expense_stats(buss, start, end):
                 if i.PMode == 'Credit':
                     credit += i.Price
 
-        expense_accounts[a.id] = {}
-        expense_accounts[a.id]['Name'] = a.Name
-        expense_accounts[a.id]['cash'] = total-credit
-        expense_accounts[a.id]['credit'] = credit
+        expense_accounts[a.id] = {'Name': a.Name, 'cash': total-credit, 'credit': credit}
         credit = 0
 
     return total_expenses, total_expense_cash, total_expense_credit, expense_totals, expense_accounts

@@ -5,3 +5,4 @@ from .models import *
 
 admin.site.register(Credit)
 admin.site.register(Supplier)
+admin.site.register(CreditInstallment)
