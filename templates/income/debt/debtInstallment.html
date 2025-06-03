@@ -1,0 +1,283 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/debt/debtInstallment.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
+
+<div class="Navigation">
+    <button type="button" onclick="openForm()">
+        <i class="material-icons" style="font-size:18px">add</i> &nbsp;installment
+    </button>
+    <button type="button" onclick="window.location.href='/debt/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<div class="debtor">
+    <text> <i class="material-icons" style="font-size:16px;">person</i> {{debt.Customer.Name}}</text>
+    <text> <i class="material-icons" style="font-size:16px;">email</i> {{debt.Customer.Email}}</text>
+    <text> <i class="material-icons" style="font-size:16px;">phone</i> {{debt.Customer.Contact}}</text>
+    <text>Balance:{{balance}}</text>
+    <div class="notes">
+        <text class="notes_title">Note:</text>
+        <div class="note">
+            <text> {{debt.Customer.Notes}}</text>
+        </div>
+    </div>
+</div>
+
+<div class="choose_content">
+    <form method="post">
+        <label>Content</label>
+        <select name="">
+            <option value="all">All</option>
+            <option value="current">Current</option>
+        </select>
+        <button type="submit">
+            Ok
+        </button>
+    </form>
+</div>
+
+{%if data_p%}
+    <table class="mainTable">
+        <thead>
+            <tr>
+                <th class="account_th"></th>
+                <th class="amount_th">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="open_section">
+                <td style="width:100%">Service Income</td>
+            </tr>
+
+            <tr class="separator"></tr>
+
+            <tr class="section_header">
+                <td class="pth1">Name</td>
+                <td class="pth2">Type</td>
+                <td class="pth3">Quant</td>
+                <td class="pth4"></td>
+            </tr>
+            {%for i in data_p%}
+                <tr>
+                    <td class="pth1">{{i.Product.Name}}</td>
+                    <td class="pth2">{{i.Product.Size}}</td>
+                    <td class="pth3">{{i.Quantity}}</td>
+                    <td class="pth4">{{i.Amount}}</td>
+                </tr>
+            {%endfor%}
+
+            <tr class="separator"></tr>
+
+            <tr class="close_section">
+                <td class="close_section_title">Total Debt</td>
+                <td class="close_section_value">{{debt.Amount}}</td>
+            </tr>
+            <tr>
+                <td class="separator"></td>
+            </tr>
+            <tr class="open_section">
+                <td style="width:100%">Installments</td>
+            </tr>
+            <!--Installments -->
+            <tr>
+                <td class="button_td" >
+                    <button type="button" id="installmentsDropDown" onclick="openInstallmentsDetail()">
+                        <i class="material-icons" style="font-size:30px">arrow_drop_down</i>{{installments_count}}
+                    </button>
+                    <button type="button" id="installmentsDropUp" onclick="closeInstallmentsDetail()" class="hide">
+                        <i class="material-icons" style="font-size:30px">arrow_drop_up</i>{{installments_count}}
+                    </button>
+                </td>
+            </tr>
+            <tr class="detail_container">
+                <td>
+                    <table id="installmentsDetail" class="detail">
+                        <tbody>
+                            <tr class="section_header">
+                                <td style="width:75%">Date</td>
+                                <td style="width:25%"></td>
+                            </tr>
+                            {%for i in installments%}
+                                <tr>
+                                    <td style="width:75%">{{i.Date.date}}</td>
+                                    <td style="width:25%">{{i.Amount}}</td>
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="separator"></tr>
+
+            <tr class="close_section">
+                <td class="close_section_title">Total Installments</td>
+                <td class="close_section_value">{{debt.Received}}</td>
+            </tr>
+            <tr>
+                <td class="separator"></td>
+            </tr>
+            <tr class="close_section">
+                <td class="close_section_title">Balance</td>
+                <td class="close_section_value">{{balance}}</td>
+            </tr>
+            <tr>
+                <td class="separator"></td>
+            </tr>
+        </tbody>
+    </table>
+{%elif data_s%}
+    <table class="mainTable">
+        <thead>
+            <tr>
+                <th class="account_th"></th>
+                <th class="amount_th">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="open_section">
+                <td style="width:100%">Service Income</td>
+            </tr>
+
+            <tr class="separator"></tr>
+
+            <tr class="section_header">
+                <td class="sth1">Name</td>
+                <td class="sth2">Category</td>
+                <td class="sth3"></td>
+            </tr>
+        {%for i in data_s%}
+            <tr>
+                {%if i.Package%}
+                    <td class="sth1">{{i.Package.Name}}</td>
+                    <td class="sth2">{{i.Package.Category.Name}}</td>
+                    <td class="sth3">{{i.Package.Price}}</td>
+                {%elif i.Service%}
+                    <td class="sth1">{{i.Service.Name}}</td>
+                    <td class="sth2">{{i.Service.Category.Name}}</td>
+                    <td class="sth3">{{i.Service.Price}}</td>
+                {%endif%}
+            </tr>
+        {%endfor%}
+        <tr class="separator"></tr>
+
+            <tr class="close_section">
+                <td class="close_section_title">Total Debt</td>
+                <td class="close_section_value">{{debt.Amount}}</td>
+            </tr>
+            <tr>
+                <td class="separator"></td>
+            </tr>
+            <tr class="open_section">
+                <td style="width:100%">Installments</td>
+            </tr>
+            <!--Installments -->
+            <tr>
+                <td class="button_td" >
+                    <button type="button" id="installmentsDropDown1" onclick="openInstallmentsDetail1()">
+                        <i class="material-icons" style="font-size:30px">arrow_drop_down</i>{{installments_count}}
+                    </button>
+                    <button type="button" id="installmentsDropUp1" onclick="closeInstallmentsDetail1()" class="hide">
+                        <i class="material-icons" style="font-size:30px">arrow_drop_up</i>{{installments_count}}
+                    </button>
+                </td>
+            </tr>
+            <tr class="detail_container">
+                <td>
+                    <table id="installmentsDetail1" class="detail">
+                        <tbody>
+                            <tr class="section_header">
+                                <td style="width:75%">Date</td>
+                                <td style="width:25%"></td>
+                            </tr>
+                            {%for i in installments%}
+                                <tr>
+                                    <td style="width:75%">{{i.Date.date}}</td>
+                                    <td style="width:25%">{{i.Amount}}</td>
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="separator"></tr>
+
+            <tr class="close_section">
+                <td class="close_section_title">Total Installments</td>
+                <td class="close_section_value">{{debt.Received}}</td>
+            </tr>
+            <tr>
+                <td class="separator"></td>
+            </tr>
+            <tr class="close_section">
+                <td class="close_section_title">Balance</td>
+                <td class="close_section_value">{{balance}}</td>
+            </tr>
+            <tr>
+                <td class="separator"></td>
+            </tr>
+        </tbody>
+    </table>
+{%endif%}
+
+<form method="post" id="InstallmentForm">
+    {%csrf_token%}
+    <label for="amount">Amount</label>
+    <input type="number" id="amount" name="received" value="0" required placeholder="Amount">
+    <div class="but">
+        <button type = 'submit' class = 'save' name="save">Save</button>
+    </div>
+</form>
+
+<script>
+    <!-- form -->
+    let form = document.getElementById("InstallmentForm");
+    const openForm = () => form.classList.add("openForm");
+    const closeForm = () => form.classList.remove("openForm");
+
+    <!--installments table-->
+    installmentsDetail = document.getElementyId("installmentsDetail");
+    installmentsDropDown = document.getElementById("installmentsDropDown");
+    installmentsDropUp = document.getElementById("installmentsDropUp");
+
+    function openInstallmentsDetail(){
+        installmentsDetail.classList.add("showDetail");
+        installmentsDropDown.classList.add("hide");
+        installmentsDropUp.classList.remove("hide");
+    }
+    function closeInstallmentsDetail(){
+        installmentsDetail.classList.remove("showDetail");
+        installmentsDropDown.classList.remove("hide");
+        installmentsDropUp.classList.add("hide");
+    }
+
+    <!--installments table1-->
+    installmentsDetail1 = document.getElementyId("installmentsDetail1");
+    installmentsDropDown1 = document.getElementById("installmentsDropDown1");
+    installmentsDropUp1 = document.getElementById("installmentsDropUp1");
+
+    function openInstallmentsDetail1(){
+        installmentsDetail1.classList.add("showDetail");
+        installmentsDropDown1.classList.add("hide");
+        installmentsDropUp1.classList.remove("hide");
+    }
+    function closeInstallmentsDetail1(){
+        installmentsDetail1.classList.remove("showDetail");
+        installmentsDropDown1.classList.remove("hide");
+        installmentsDropUp1.classList.add("hide");
+    }
+</script>

@@ -1,5 +1,5 @@
 {%load static%}
-<link rel="stylesheet" type="text/css" href="{% static 'css/debt.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/debt/debt.css'%}" xmlns="http://www.w3.org/1999/html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
 
 <div class="Navigation">
     <button type="button" onclick="window.location.href='/';">
@@ -62,6 +64,23 @@
     </div>
 </div>
 
+<div class="choose_content">
+    <form method="post">
+        {%csrf_token%}
+        <label>Content:</label>
+        <select name="choice">
+            <option value="All">All</option>
+            <option value="Current">Current</option>
+            {%if content_choice.Choice%}
+                <option value="{{content_choice.Choice}}" selected>{{content_choice.Choice}}</option>
+            {%endif%}
+        </select>
+        <button type="submit" name="change_content">
+            Ok
+        </button>
+    </form>
+</div>
+
 <table>
     <thead>
         <tr>
@@ -76,7 +95,40 @@
     </thead>
     <tbody>
         {%for i in data%}
-            <tr>
+            {%if i.Status == 'Paid'%}
+                <tr style="background:#EDEADE; margin-left:4px;">
+                    <td class="sth1">{{i.Date.date}}</td>
+                    <td class="sth2">
+                        <button type="submit" name="credit" class="action1" onclick="window.location.href='/debt_form/{{i.id}}';">
+                            {{i.Customer.Name}}
+                        </button>
+                    </td>
+                    <td class="sth3">{{i.Status}}</td>
+                    <td class="sth4">K{{i.Amount}}</td>
+                    <td class="sth4">K{{i.Received}}</td>
+                    {%if tod.date >= i.Due.date%}
+                        {%if i.Amount != 0%}
+                            {%if i.Status == 'Paid'%}
+                                <td class="sth11">{{i.Due.date}}</td>
+                            {%elif i.Status == 'Paying'%}
+                                <td class="sth11" style="background:#FFEF00; color:white;">{{i.Due.date}}</td>
+                            {%elif i.Status == 'Not Paid'%}
+                                <td class="sth11" style="background:#FF0000; color:white;">{{i.Due.date}}</td>
+                            {%endif%}
+                        {%else%}
+                            <td class="sth11">{{i.Due.date}}</td>
+                        {%endif%}
+                    {%else%}
+                        <td class="sth11">{{i.Due.date}}</td>
+                    {%endif%}
+                    <td class="sth5">
+                        <button type="submit" name="settle" class="action2" onclick="window.location.href='/debt_installment/{{i.id}}/';">
+                            <i class="material-icons" style="font-size:12px">send</i>
+                        </button>
+                    </td>
+                </tr>
+            {%else%}
+                 <tr>
                 <td class="sth1">{{i.Date.date}}</td>
                 <td class="sth2">
                     <button type="submit" name="credit" class="action1" onclick="window.location.href='/debt_form/{{i.id}}';">
@@ -107,10 +159,12 @@
                     </button>
                 </td>
             </tr>
+            {%endif%}
         {%endfor%}
     </tbody>
 </table>
 
+<!--
 <form method="post" id="popup">
     {%csrf_token%}
     <label for="vendor">
@@ -135,8 +189,9 @@
         <button type="button" onclick="closePopup()" class="cancel">Cancel</button>
     </div>
 </form>
-
+-->
 <script>
+    <!--
     let popup = document.getElementById("popup");
 
         function openPopup(){
@@ -146,6 +201,7 @@
         function closePopup(){
         popup.classList.remove("open-popup");
         }
+    -->
 
     const doughnut = document.getElementById('doughnut');
 

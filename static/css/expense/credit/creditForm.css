@@ -158,7 +158,7 @@ form label{
 }
 form input{
     width:100%;
-    height:35px;
+    height:32px;
     color:gray;
     font-size:13px;
     background:#F9F6EE;
@@ -174,7 +174,7 @@ form input[type:"date"]:focus{
     align-items:center;
     justify-content:space-around;
     width:100%;
-    height:25px;
+    height:26px;
     border-radius:10px;
 }
 .but button{
@@ -193,17 +193,12 @@ form input[type:"date"]:focus{
 }
 
 @media(max-width:1000px){
-    body{
-        height:auto;
-        overflow:scroll;
-    }
     .Navigation{
-        width:80%;
+        width:98%;
     }
-
     table{
-        width:80%;
-        height:300px;
+        width:98%;
+        height:95%;
     }
     th{
         font-size:14px;
@@ -213,46 +208,35 @@ form input[type:"date"]:focus{
     }
 
     .title{
-        font-size:13px;
+        font-size:14px;
     }
     .content{
         font-size:13px;
     }
-    form{
-        height:26%;
-    }
-    .but button{
-        font-size:13px;
-    }
+
 }
 
 @media(max-width:430px){
-    body{
-        height:100vh;
-        overflow:hidden;
-    }
     .Navigation{
-        width:98%;
+        width:96%;
     }
     table{
-        width:98%;
-        height:95%;
+        width:96%;
+        height:550px;
     }
 
+    .debtor{
+        height:200px;
+    }
     .title{
-        font-size:12px;
+        font-size:15px;
     }
     .content{
-        font-size:11px;
+        font-size:13px;
     }
     form{
-        position:fixed;
-        z-index:3;
-        width:90%;
-        height:100px;
-        bottom:0;
+        width:88%;
     }
-
 }
 
 /* width */

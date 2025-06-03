@@ -36,33 +36,93 @@
     </div>
 </div>
 
-<table>
+<table class="mainTable">
     <thead>
         <tr>
-            <th class="sth1">Name</th>
-            <th class="sth2">Type</th>
-            <th class="sth3">Quant</th>
-            <th class="sth2">Amount</th>
+            <th class="account_th"></th>
+            <th class="amount_th">Total</th>
         </tr>
     </thead>
     <tbody>
-    {%for i in data%}
-        <tr>
-            <td class="sth1">{{i.Name}}</td>
-            <td class="sth2">{{i.Type}}</td>
-            <td class="sth3">{{i.Quantity}}</td>
-            <td class="sth2">{{i.Price}}</td>
+        <tr class="open_section">
+            <td style="width:100%">Expenses</td>
         </tr>
-    {%endfor%}
-    </tbody>
-    <tfoot>
-        <tr>
-            <td class="sth1"></td>
+
+        <tr class="separator"></tr>
+
+        <tr class="section_header">
+            <td class="sth1">Name</td>
+            <td class="sth2">Type</td>
+            <td class="sth3">Quant</td>
             <td class="sth2"></td>
-            <td class="sth3"></td>
-            <td class="sth2">{{credit.Amount}}</td>
         </tr>
-    </tfoot>
+        {%for i in data%}
+            <tr>
+                <td class="sth1">{{i.Name}}</td>
+                <td class="sth2">{{i.Type}}</td>
+                <td class="sth3">{{i.Quantity}}</td>
+                <td class="sth2">{{i.Price}}</td>
+            </tr>
+        {%endfor%}
+        <tr class="separator">
+        </tr>
+        <tr class="close_section">
+            <td class="close_section_title">Total Credit</td>
+            <td class="close_section_value">{{credit.Amount}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="open_section">
+            <td style="width:100%">Installments</td>
+        </tr>
+        <!--Installments -->
+        <tr>
+            <td class="button_td" >
+                <button type="button" id="installmentsDropDown" onclick="openInstallmentsDetail()">
+                    <i class="material-icons" style="font-size:30px">arrow_drop_down</i>{{installments_count}}
+                </button>
+                <button type="button" id="installmentsDropUp" onclick="closeInstallmentsDetail()" class="hide">
+                    <i class="material-icons" style="font-size:30px">arrow_drop_up</i>{{installments_count}}
+                </button>
+            </td>
+        </tr>
+        <tr class="detail_container">
+            <td>
+                <table id="installmentsDetail" class="detail">
+                    <tbody>
+                        <tr class="section_header">
+                            <td style="width:75%">Date</td>
+                            <td style="width:25%"></td>
+                        </tr>
+                        {%for i in installments%}
+                            <tr>
+                                <td style="width:75%">{{i.Date.date}}</td>
+                                <td style="width:25%">{{i.Amount}}</td>
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="separator"></tr>
+
+        <tr class="close_section">
+            <td class="close_section_title">Total Installments</td>
+            <td class="close_section_value">{{credit.Sent}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+        <tr class="close_section">
+            <td class="close_section_title">Balance</td>
+            <td class="close_section_value">{{remaining}}</td>
+        </tr>
+        <tr>
+            <td class="separator"></td>
+        </tr>
+    </tbody>
 </table>
 
 <form method="post" id="InstallmentForm">
@@ -80,4 +140,20 @@
     let form = document.getElementById("InstallmentForm");
     const openForm = () => form.classList.add("openForm");
     const closeForm = () => form.classList.remove("openForm");
+
+    <!--installments table-->
+    installmentsDetail = document.getElementyId("installmentsDetail");
+    installmentsDropDown = document.getElementById("installmentsDropDown");
+    installmentsDropUp = document.getElementById("installmentsDropUp");
+
+    function openInstallmentsDetail(){
+        installmentsDetail.classList.add("showDetail");
+        installmentsDropDown.classList.add("hide");
+        installmentsDropUp.classList.remove("hide");
+    }
+    function closeInstallmentsDetail(){
+        installmentsDetail.classList.remove("showDetail");
+        installmentsDropDown.classList.remove("hide");
+        installmentsDropUp.classList.add("hide");
+    }
 </script>

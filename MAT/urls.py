@@ -33,7 +33,7 @@ from expenses.setSupplier import set_supplier
 from expenses.Accounts import expense_accounts, expense_account
 from credits.views import credit_view, credit_form, credit_installment
 from income.views import product_income
-from debts.views import debt, debt_form, debt_installment
+from debts.views import debt_view, debt_form, debt_installment
 from income.product_income import product_sale, edit_product_sale
 from income.product_income_history import product_income_history
 from income.service_income import (services, service_income, service_sale, service, package, service_category,
@@ -129,7 +129,7 @@ urlpatterns = [
     path('service_income_history/', service_income_history, name="serviceIncomeHistory"),
 
     # debts
-    path("debt/", debt, name="debt"),
+    path("debt/", debt_view, name="debt"),
     path("debt_installment/<int:id>/", debt_installment, name="debtInstallment"),
     path("debt_form/<int:id>/", debt_form, name="debtForm"),
 

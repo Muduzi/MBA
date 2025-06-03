@@ -63,6 +63,24 @@
         <canvas id="doughnut"></canvas>
     </div>
 </div>
+
+<div class="choose_content">
+    <form method="post">
+        {%csrf_token%}
+        <label>Content:</label>
+        <select name="choice">
+            <option value="All">All</option>
+            <option value="Current">Current</option>
+            {%if content_choice.Choice%}
+                <option value="{{content_choice.Choice}}" selected>{{content_choice.Choice}}</option>
+            {%endif%}
+        </select>
+        <button type="submit" name="change_content">
+            Ok
+        </button>
+    </form>
+</div>
+
 <table>
     <thead>
         <tr>
@@ -77,40 +95,76 @@
     </thead>
     <tbody>
         {%for i in data%}
-            <tr>
-                <td class="sth1">{{i.Date.date}}</td>
-                <td class="sth2">
-                    <button type="submit" name="credit" class="action1" onclick="window.location.href='/credit_form/{{i.id}}/';">
-                        {{i.Supplier.Name}}
-                    </button>
-                </td>
-                <td class="sth3">{{i.Status}}</td>
-                <td class="sth4">K{{i.Amount}}</td>
-                <td class="sth4">K{{i.Sent}}</td>
-                {%if tod.date >= i.Due.date%}
-                    {%if i.Amount != 0%}
-                        {%if i.Status == 'Paid'%}
+            {%if i.Status == 'Paid'%}
+                <tr style="background:#EDEADE; margin-left:4px;">
+                    <td class="sth1">{{i.Date.date}}</td>
+                    <td class="sth2">
+                        <button type="submit" name="credit" class="action1" onclick="window.location.href='/credit_form/{{i.id}}/';">
+                            {{i.Supplier.Name}}
+                        </button>
+                    </td>
+                    <td class="sth3">{{i.Status}}</td>
+                    <td class="sth4">K{{i.Amount}}</td>
+                    <td class="sth4">K{{i.Sent}}</td>
+                    {%if tod.date >= i.Due.date%}
+                        {%if i.Amount != 0%}
+                            {%if i.Status == 'Paid'%}
+                                <td class="sth11">{{i.Due.date}}</td>
+                            {%elif i.Status == 'Paying'%}
+                                <td class="sth11" style="background:#FFEF00; color:white;">{{i.Due.date}}</td>
+                            {%elif i.Status == 'Not Paid'%}
+                                <td class="sth11" style="background:#FF0000; color:white;">{{i.Due.date}}</td>
+                            {%endif%}
+                        {%else%}
                             <td class="sth11">{{i.Due.date}}</td>
-                        {%elif i.Status == 'Paying'%}
-                            <td class="sth11" style="background:#FFEF00; color:white;">{{i.Due.date}}</td>
-                        {%elif i.Status == 'Not Paid'%}
-                            <td class="sth11" style="background:#FF0000; color:white;">{{i.Due.date}}</td>
                         {%endif%}
                     {%else%}
                         <td class="sth11">{{i.Due.date}}</td>
                     {%endif%}
-                {%else%}
-                    <td class="sth11">{{i.Due.date}}</td>
-                {%endif%}
-                <td class="sth5">
-                    <button type="submit" name="settle" class="action2" onclick="window.location.href='/credit_installment/{{i.id}}/';">
-                        <i class="material-icons" style="color:#5D6166; font-size:16px;">send</i>
-                    </button>
-                </td>
-            </tr>
+                    <td class="sth5">
+                        <button type="submit" name="settle" class="action2" onclick="window.location.href='/credit_installment/{{i.id}}/';">
+                            <i class="material-icons" style="color:#5D6166; font-size:16px;">send</i>
+                        </button>
+                    </td>
+                </tr>
+            {%else%}
+                <tr>
+                    <td class="sth1">{{i.Date.date}}</td>
+                    <td class="sth2">
+                        <button type="submit" name="credit" class="action1" onclick="window.location.href='/credit_form/{{i.id}}/';">
+                            {{i.Supplier.Name}}
+                        </button>
+                    </td>
+                    <td class="sth3">{{i.Status}}</td>
+                    <td class="sth4">K{{i.Amount}}</td>
+                    <td class="sth4">K{{i.Sent}}</td>
+                    {%if tod.date >= i.Due.date%}
+                        {%if i.Amount != 0%}
+                            {%if i.Status == 'Paid'%}
+                                <td class="sth11">{{i.Due.date}}</td>
+                            {%elif i.Status == 'Paying'%}
+                                <td class="sth11" style="background:#FFEF00; color:white;">{{i.Due.date}}</td>
+                            {%elif i.Status == 'Not Paid'%}
+                                <td class="sth11" style="background:#FF0000; color:white;">{{i.Due.date}}</td>
+                            {%endif%}
+                        {%else%}
+                            <td class="sth11">{{i.Due.date}}</td>
+                        {%endif%}
+                    {%else%}
+                        <td class="sth11">{{i.Due.date}}</td>
+                    {%endif%}
+                    <td class="sth5">
+                        <button type="submit" name="settle" class="action2" onclick="window.location.href='/credit_installment/{{i.id}}/';">
+                            <i class="material-icons" style="color:#5D6166; font-size:16px;">send</i>
+                        </button>
+                    </td>
+                </tr>
+            {%endif%}
         {%endfor%}
     </tbody>
 </table>
+
+<!--
 <form method="post" id="popup">
     {%csrf_token%}
     <label for="vendor">
@@ -135,8 +189,9 @@
         <button type="button" onclick="closePopup()" class="cancel">Cancel</button>
     </div>
 </form>
-
+-->
 <script>
+    <!--
     let popup = document.getElementById("popup");
 
         function openPopup(){
@@ -146,7 +201,7 @@
         function closePopup(){
         popup.classList.remove("open-popup");
         }
-
+    -->
     const doughnut = document.getElementById('doughnut');
 
     new Chart(doughnut, {

@@ -99,42 +99,143 @@ table{
     align-items:center;
     justify-content:flex-start;
     position:relative;
+}
+
+.mainTable{
     width:680px;
-    height:50%;
+    min-height:300px;
+    max-height:550px;
     background:#F9F6EE;
     border-radius:10px;
     box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
     overflow-y:scroll;
 }
+.detail_container{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    position:relative;
+    height:auto;
+
+    td{
+        width:95%;
+    }
+}
+.detail{
+    display:none;
+    visibility:hidden;
+    width:100%;
+    height:auto;
+}
+.showDetail{
+    display:flex;
+    visibility:visible;
+}
+.hide{
+    display:none;
+    visibility:hidden;
+}
+.show{
+    display:block;
+    visibility:visible;
+}
 
 thead{
-    position:sticky;
-    top:0;
-    z-index:1;
     width:100%;
     height:30px;
-    background:#5D6166;
+    border-radius:10px 10px 0px 0px;
 }
 th{
     display:flex;
     flex-direction:column;
     align-items:flex-start;
     justify-content:center;
-    color:white;
-    font-size:15px;
-    margin-left:5px;
+    height:100%;
+    color:rgb(54, 69, 79);
+    font-size:20px;
+    font-weight:800;
+    margin-left:10px;
 }
-.sth1{
-    width:30%;
+
+.account_th{
+    width:75%;
+}
+.amount_th{
+    width:25%;
+}
+
+.separator{
+    height:5px;
+}
+
+.open_section td{
+    color:rgb(54, 69, 79);
+    font-size:18px;
+}
+.section_header{
+    background:rgba(10, 100, 10, 0.1);
+}
+.section_header td{
+    color:rgb(54, 69, 79, 0.9);
+    font-size:16px;
+}
+
+.close_section td{
+    color:rgb(54, 69, 79);
+    font-size:17px;
+}
+.close_section_title{
+    width:75%;
+}
+.close_section_value{
+    width:25%;
+}
+
+.button_td{
+    width:100%;
+    height:85%;
+    font-size:18px;
+    font-weight:500;
+}
+
+td button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:auto;
+    height:auto;
+    color:rgb(54, 69, 79);
+    background:transparent;
+    border:hidden;
+}
+
+.pth1{
+    width:35%;
     height:100%;
 }
-.sth2{
+.pth2{
     width:25%;
     height:100%;
 }
-.sth3{
-    width:20%;
+.pth3{
+    width:15%;
+}
+.pth4{
+    width:25%;
     height:100%;
+}
+
+.sth1{
+    width:45%;
+    height:100%;
+}
+.sth2{
+    width:30%;
+    height:100%;
+}
+.sth3{
+    width:25%;
 }
 
 tbody{
@@ -148,7 +249,6 @@ tr{
     position:relative;
     width:100%;
     height:30px;
-    border-bottom:1px solid #EDEADE;
 }
 td{
     display:flex;
@@ -160,18 +260,7 @@ td{
     margin-left:5px;
 }
 
-tfoot{
-    bottom:0%;
-    z-index:1;
-    font-size:14px;
-    width:100%;
-}
-tfoot tr{
-    border:hidden;
-}
-tfoot td{
-    color:rgba(54, 69, 79);
-}
+
 form{
     display:none;
     visibility:hidden;
@@ -238,6 +327,7 @@ form input[type:"date"]:focus{
     background:#5D6166;
 }
 
+
 @media(max-width:1000px){
     body{
         overflow-y:scroll;
@@ -277,12 +367,18 @@ form input[type:"date"]:focus{
     .Navigation{
         width:98%;
     }
-    table{
+    .mainTable{
         width:98%;
         height:510px;
         margin-bottom:10px;
     }
+    .open_section td{
+        font-size:15px;
+    }
 
+    .close_section td{
+        font-size:15px;
+    }
     .debtor{
         width:93%;
         height:300px;

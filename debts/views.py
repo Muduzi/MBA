@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
-from .models import Debt, DebtInstallment
+from .models import Debt, DebtInstallment,  DebtContent
 from datetime import datetime
 from income.models import ProductIncome, ServiceIncome
 from django.db.models import Sum, Q
@@ -17,16 +17,16 @@ def today():
 
 
 def debt_stats(buss):
-    count = Debt.objects.filter(Business=buss).exclude(Status='Paid').values().count()
-    total = Debt.objects.filter(Business=buss).exclude(Status='Paid').aggregate(Sum('Amount'))
+    count = Debt.objects.filter(Business__id=buss.id).exclude(Status='Paid').values().count()
+    total = Debt.objects.filter(Business__id=buss.id).exclude(Status='Paid').aggregate(Sum('Amount'))
     total = total['Amount__sum']
     if not total:
         total = 0
-    received = Debt.objects.filter(Business=buss, Status='Paying').aggregate(Sum('Received'))
+    received = Debt.objects.filter(Business__id=buss.id, Status='Paying').aggregate(Sum('Received'))
     received = received['Received__sum']
     if not received:
         received = 0
-    overdue = Debt.objects.filter(Business=buss, Due__lte=today()).exclude(Status='Paid').aggregate(Sum('Amount'))
+    overdue = Debt.objects.filter(Business__id=buss.id, Due__lte=today()).exclude(Status='Paid').aggregate(Sum('Amount'))
     overdue = overdue['Amount__sum']
     if not overdue:
         overdue = 0
@@ -38,7 +38,7 @@ def debt_stats(buss):
         rec_perc = 0
 
     if overdue:
-        over_received = (Debt.objects.filter(Business=buss, Due__lte=today()).exclude(Status='Paid').
+        over_received = (Debt.objects.filter(Business__id=buss.id, Due__lte=today()).exclude(Status='Paid').
                          aggregate(Sum('Received')))
         over_received = over_received['Received__sum']
 
@@ -67,33 +67,45 @@ def debt_stats(buss):
 
 @login_required(login_url="/login/")
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
-def debt(request, id=0):
+def debt_view(request, id=0):
     try:
         check = Employee.objects.get(User=request.user.id)
-
         buss = check.Business
-        data = Debt.objects.filter(Business=buss)
+
+        try:
+            content_choice = DebtContent.objects.get(Business__id=buss.id, Cashier__id=request.user.id)
+        except DebtContent.DoesNotExist:
+            content_choice = DebtContent(Business=buss, Cashier=request.user, Choice='All')
+            content_choice.save()
+
+        if content_choice.Choice == 'All':
+            data = Debt.objects.filter(Business__id=buss.id).order_by('-id')
+        else:
+            data = Debt.objects.filter(Business__id=buss.id).order_by('-id').exclude(Status='Paid')
+
         count, total, received, rec_perc, expected, expe_perc, overdue, over_perc = debt_stats(buss)
 
         graphd = [rec_perc, expe_perc, over_perc]
 
         if request.method == 'POST':
-            if 'save' in request.POST:
+            """if 'save' in request.POST:
                 debtor = request.POST.get('debtor')
                 email = request.POST.get('email')
                 contact = request.POST.get('contact')
                 info = request.POST.get('info')
                 c = Debt(Business=buss, Date=datetime.now(), Debtor=debtor, Email=email, Contact=contact, Info=info)
                 c.save()
+                return redirect('/debt/')"""
+
+            if 'change_content' in request.POST:
+                choice = request.POST.get("choice")
+                content_choice.Choice = choice
+                content_choice.save()
                 return redirect('/debt/')
 
-            if 'filter' in request.POST:
-                choice = request.POST.get('Show')
-                pass
-
         if id != 0:
-            delet = Debt.objects.filter(Business=buss, id=id)
-            delet.delete()
+            delete_debt = Debt.objects.filter(Business=buss, id=id)
+            delete_debt.delete()
             return redirect('/debt/')
 
     except Employee.DoesNotExist:
@@ -112,8 +124,9 @@ def debt(request, id=0):
         'over_perc': over_perc,
         'tod': today(),
         'graphd': graphd,
+        'content_choice': content_choice
     }
-    return render(request, 'debt.html', context)
+    return render(request, 'income/debt/debt.html', context)
 
 
 """This function hundles the grunting of credits"""
@@ -142,7 +155,7 @@ def debt_form(request, id=0):
         'data_p': data_p,
         'data_s': data_s
     }
-    return render(request, 'debtForm.html', context)
+    return render(request, 'income/debt/debtForm.html', context)
 
 
 @login_required(login_url="/login/")
@@ -161,7 +174,15 @@ def debt_installment(request, id=0):
         data_p = ProductIncome.objects.filter(Business=buss, Debt=debt)
         data_s = ServiceIncome.objects.filter(Business=buss, Debt=debt)
 
+        installments = DebtInstallment.objects.filter(Business=buss, Debt__id=debt.id)
+        installments_count = installments.count()
+        if not installments_count:
+            installments_count = 0
+
         balance = debt.Amount - debt.Received
+        if not remaining:
+            remaining = 0
+
         if request.method == 'POST':
             if 'save' in request.POST:
                 received = request.POST.get('received')
@@ -169,7 +190,7 @@ def debt_installment(request, id=0):
 
                 if received:
                     if debt.Status == 'Paid':
-                        messages.warning(request, 'Debt already paid in full')
+                        messages.success(request, 'Debt already paid in full')
                     else:
                         remaining = debt.Amount - debt.Received
                         if received >= remaining:
@@ -195,6 +216,7 @@ def debt_installment(request, id=0):
                         debt.save()
                         cash_account.save()
                         return redirect(f'/debt_installment/{id}/')
+
     except Employee.DoesNotExist:
         return HttpResponse('You are not affiliated to any business, please register your business'
                             ' or ask your employer to register you to their business')
@@ -203,5 +225,7 @@ def debt_installment(request, id=0):
         'data_s': data_s,
         'debt': debt,
         'balance': balance,
+        'installments': installments,
+        "installments_count": installments_count,
     }
-    return render(request, 'debtInstallment.html', context)
+    return render(request, 'income/debt/debtInstallment.html', context)

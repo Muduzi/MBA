@@ -1,5 +1,5 @@
 from django.db import models
-from User.models import Business
+from User.models import User, Business
 
 # Create your models here.
 
@@ -34,3 +34,14 @@ class CreditInstallment(models.Model):
     Credit = models.ForeignKey(Credit, on_delete=models.CASCADE, blank=True, null=True)
     Date = models.DateTimeField(auto_now=True)
     Amount = models.IntegerField(null=False, default=0, blank=True)
+
+
+class CreditContent(models.Model):
+    Business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True)
+    Cashier = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    options = [
+        ('All', 'All'),
+        ('Current', 'Current'),
+    ]
+    Choice = models.CharField(max_length=11, choices=options, default='This Month', null=False)
+

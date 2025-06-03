@@ -1,5 +1,5 @@
 {%load static%}
-<link rel="stylesheet" type="text/css" href="{% static 'css/debtForm.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/debt/debtForm.css'%}" xmlns="http://www.w3.org/1999/html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,11 +11,15 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
+
 <div class="Navigation">
     <button type="button" onclick="window.location.href='/debt/';">
         <i class="material-icons" style="font-size:18px">arrow_forward</i>
     </button>
 </div>
+
 {%if data_p%}
     <table>
         <thead>
@@ -78,6 +82,7 @@
         </tfoot>
     </table>
 {%endif%}
+
 <form method="post">
     {%csrf_token%}
     <label for="date">Due date</label>

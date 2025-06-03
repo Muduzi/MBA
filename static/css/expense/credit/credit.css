@@ -7,6 +7,7 @@ body{
     position:relative;
     width:100wh;
     height:auto;
+    margin:0;
     background:#EDEADE;
     border-radius:10px;
     overflow:hidden;
@@ -109,6 +110,78 @@ text{
     height:98%;
     border-radius:10px;
 }
+
+.choose_content{
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-start;
+    position:relative;
+    width:90%;
+    height:38px;
+
+    form{
+        display:flex;
+        visibility:visible;
+        align-items:center;
+        justify-content:space-around;
+        position:relative;
+        width:180px;
+        height:98%;
+        color:rgb(54, 69, 79);
+        margin-top:0px;
+        background:transparent;
+        border:hidden;
+        border-radius:10px;
+
+        label{
+            color:rgb(54, 69, 79);
+            font-size:18px;
+        }
+        select{
+            color:#5D6166;
+            font-size:14px;
+            height:28px;
+            padding:5px;
+            background:#F9F6EE;
+            border:hidden;
+            border-radius:10px;
+        }
+        select:focus{
+            outline:none;
+        }
+        select option{
+            display:flex;
+            align-items:center;
+            margin-top:4px;
+            font-size:14px;
+        }
+        select option:hover{
+            cursor:hand;
+            background:#EDEADE;
+        }
+        button{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            position:relative;
+            width:auto;
+            height:70%;
+            color:rgb(54, 69, 79);
+            font-size:15px;
+            padding:5px;
+            background:transparent;
+            border:hidden;
+            border-radius:10px;
+            box-shadow:2px 2px 10px rgba(10, 10, 10, 0.3);
+        }
+        button:hover{
+            color:white;
+            background:#5D6166;
+        }
+    }
+}
+
+
 table{
     display:flex;
     flex-direction:column;
@@ -116,11 +189,13 @@ table{
     justify-content:flex-start;
     position:relative;
     width:90%;
-    height:55%;
+    height:53%;
     background:#F9F6EE;
     border-radius:10px;
+    overflow:hidden;
     overflow-y:scroll;
     box-shadow:2px 2px 10px rgba(10, 10, 10, 0.4);
+    margin-bottom:10px;
 }
 
 thead{
@@ -200,7 +275,7 @@ td{
     margin-left:5px;
 }
 
-
+/*
 form{
     display:none;
     visibility:hidden;
@@ -280,6 +355,7 @@ form textarea{
 .cancel:hover{
     background-image: linear-gradient(to right, white, #E44D2E, red)
 }
+*/
 
 @media(max-width:1000px){
     body{
@@ -297,16 +373,22 @@ form textarea{
     }
 
     .title{
-        font-size:14px;
+        font-size:17px;
     }
 
     .content1{
-        font-size:13px;
+        font-size:15px;
     }
     .content2{
-        font-size:13px;
+        font-size:14px;
     }
 
+    /*choose content*/
+    .choose_content{
+        width:95%
+    }
+
+    /*table*/
     table{
         width:96%;
         height:350px;
@@ -326,7 +408,7 @@ form textarea{
         height:450px;
     }
     form label{
-        font-size:13px;
+        font-size:14px;
     }
     form input{
         font-size:13px;
@@ -343,7 +425,7 @@ form textarea{
         flex-direction:column;
         align-items:center;
         justify-content:fle-start;
-        width:98%;
+        width:94%;
         height:300px;
         background:linear-gradient(to bottom, #908f8f, #6e6d6c, #5D6166);
     }
@@ -358,38 +440,36 @@ form textarea{
     }
     .title{
         color:white;
-        font-size:13px;
+        font-size:16px;
     }
     .content1{
         color:white;
-        font-size:12px;
+        font-size:14px;
     }
     .content2{
         color:white;
-        font-size:11px;
+        font-size:13px;
     }
     .doughnut{
         width:60%;
         height:48%;
     }
-    table{
-        width:100%;
-        height:300px;
-    }
-    tr button{
-        font-size:11px;
-    }
-    th{
-        font-size:12px;
+
+    /*choose content*/
+    .choose_content{
+        width:98%;
     }
 
-    td{
-        font-size:11px;
+    /*table*/
+    table{
+        width:97%;
+        height:300px;
     }
-    .open-popup{
+
+    /*.open-popup{
         width:50%;
         height:60%;
-    }
+    }*/
 }
 
 @media(max-width:430px){
@@ -409,24 +489,15 @@ form textarea{
         width:45%;
         height:38%;
     }
-    .title{
-        color:white;
-        font-size:13px;
-    }
 
     .doughnut{
         width:97%;
         height:48%;
     }
+
+    /*table*/
     table{
-        width:100%;
         height:420px;
-    }
-    tr button{
-        font-size:11px;
-    }
-    th{
-        font-size:12px;
     }
     .sth1{
         display:none;
@@ -453,13 +524,10 @@ form textarea{
         width:5%;
         height:100%;
     }
-    td{
-        font-size:11px;
-    }
 
-    .open-popup{
+    /*.open-popup{
         width:90%
-    }
+    }*/
     form label{
         font-size:14px;
     }
