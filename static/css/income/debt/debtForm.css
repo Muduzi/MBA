@@ -18,8 +18,9 @@ body{
     align-items:center;
     justify-content:flex-end;
     position:relative;
-    width:100%;
+    width:70%;
     height:32px;
+    margin-top:10px;
     border-radius:10px;
 }
 .Navigation button{

@@ -134,8 +134,8 @@ def business(request):
             credit_service_income_y = cache.get(str(buss_id) + 's_m_r_t_y-credit')
             service_income_this_year = cache.get(str(buss_id) + 's_m_r_t_y-income_this_year')
 
-            while (not total_service_income_y and cash_service_income_y and credit_service_income_y and
-                    service_income_this_year):
+            if (not total_service_income_y and not cash_service_income_y and not credit_service_income_y
+                    and not service_income_this_year):
                 total_service_income_y, cash_service_income_y, credit_service_income_y, service_income_this_year = (
                     service_monthly_records_this_year(buss_id))
 
@@ -146,8 +146,8 @@ def business(request):
             credit_product_income_y = cache.get(str(buss_id) + 'p_m_r_t_y-credit')
             products_income_this_year = cache.get(str(buss_id) + 'p_m_r_t_y-product_income_this_year')
 
-            while (not total_product_income_y and cash_product_income_y and credit_product_income_y and
-                    products_income_this_year):
+            if (not total_product_income_y and not cash_product_income_y and not credit_product_income_y
+                    and not products_income_this_year):
                 total_product_income_y, cash_product_income_y, credit_product_income_y, products_income_this_year =\
                     product_monthly_records_this_year(buss_id)
 
@@ -160,8 +160,8 @@ def business(request):
             suppliers_y = cache.get(str(buss_id) + 'm_e_t_y-suppliers_y')
             expenses_this_year = cache.get(str(buss_id) + 'm_e_t_y-expenses_this_year')
 
-            while (not total_expenses_y and cash_expenses_y and credit_expenses_y and monthly_expense_record_y and
-                    expenses_this_year):
+            if (not total_expenses_y and not cash_expenses_y and not credit_expenses_y and
+                    not monthly_expense_record_y and not expenses_this_year):
                 (total_expenses_y, cash_expenses_y, credit_expenses_y, monthly_expense_record_y, suppliers_y,
                  expenses_this_year) = monthly_expenses_this_year(buss_id)
 
@@ -174,8 +174,8 @@ def business(request):
             credit_product_income_m = cache.get(str(buss_id) + 'p_d_r_t_m-credit')
             products_income_this_month = cache.get(str(buss_id) + 'p_d_r_t_m-income_this_month')
 
-            while (not total_product_income_m and cash_product_income_m and credit_product_income_m and
-                    products_income_this_month):
+            if (not total_product_income_m and not cash_product_income_m and not credit_product_income_m and
+                    not products_income_this_month):
                 total_product_income_m, cash_product_income_m, credit_product_income_m, products_income_this_month =\
                     product_daily_records_this_month(buss_id)
 
@@ -186,8 +186,8 @@ def business(request):
             credit_service_income_m = cache.get(str(buss_id) + 's_d_r_t_m-credit')
             services_income_this_month = cache.get(str(buss_id) + 's_d_r_t_m-income_this_month')
 
-            while (not total_service_income_m and cash_service_income_m and credit_service_income_m and
-                    services_income_this_month):
+            if (not total_service_income_m and not cash_service_income_m and not credit_service_income_m
+                    and not services_income_this_month):
                 total_service_income_m, cash_service_income_m, credit_service_income_m, services_income_this_month = (
                     services_daily_records_this_month(buss_id))
 
@@ -200,8 +200,8 @@ def business(request):
             suppliers_m = cache.get(str(buss_id) + 'd_e_t_m-suppliers_m')
             expenses_this_month = cache.get(str(buss_id) + 'd_e_t_m-expenses_this_month')
 
-            while (not total_expense_m and cash_expense_m and credit_expense_m and daily_expenses_record_m and
-                    expenses_this_month):
+            if (not total_expense_m and not cash_expense_m and not credit_expense_m and not daily_expenses_record_m
+                    and not expenses_this_month):
                 (total_expense_m, cash_expense_m, credit_expense_m, daily_expenses_record_m, suppliers_m,
                  expenses_this_month) = (daily_expenses_this_month(buss_id))
 

@@ -47,7 +47,7 @@ class ProductGeneralContent(models.Model):
     Choice = models.CharField(max_length=11, choices=options, default='This Month', null=False)
 
 
-#Service models
+# Service models
 
 class Category(models.Model):
     Business = models.ForeignKey(Business, on_delete=models.CASCADE, null=False, blank=False)

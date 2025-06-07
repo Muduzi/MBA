@@ -44,11 +44,9 @@
             <text class="service_count">{{value.Count}} services</text>
         </div>
     {%endfor%}
-
 </div>
 
 <text class="section">Services</text>
-
 <table class="services">
     <thead>
         <tr>
@@ -60,8 +58,8 @@
     </thead>
     <tbody>
         {%for s in services%}
-            <tr>
-                <td class="sth1" style="color:#2B3856; cursor:hand;" onclick="window.location.href='/service/{{s.id}}/';">{{s.Name}}</td>
+            <tr onclick="window.location.href='/service/{{s.id}}/';">
+                <td class="sth1">{{s.Name}}</td>
                 <td class="sth1">{{s.Category.Name}}</td>
                 <td class="sth2">{{s.Description}}</td>
                 <td class="sth3">{{s.Price}}</td>

@@ -14,6 +14,7 @@ import pickle
 # from django_redis.cache import RedisCache
 from .setCustomer import service_credit_set, service_cash_set
 from User.models import CashAccount
+from debts.models import Debt, DebtInstallment
 
 
 @login_required(login_url="/login/")
@@ -578,3 +579,98 @@ def service_category(request, id=0):
         'category': category_obj
     }
     return render(request, 'income/serviceIncome/serviceCategory.html', context)
+
+
+def edit_service_income_transaction(request, id=0):
+    amount = 0
+    try:
+        check = Employee.objects.get(User=request.user.id)
+        buss = check.Business
+
+        back_url = cache.get(f"{buss.id}-{check.id}-edit_service_income_transaction_http_referer")
+        if not back_url:
+            cache.set(f"{buss.id}-{check.id}-edit_service_income_transaction_http_referer",
+                      request.META.get("HTTP_REFERER"))
+            back_url = cache.get(f"{buss.id}-{check.id}-edit_service_income_transaction_http_referer")
+
+        try:
+            serv_income = ServiceIncome.objects.get(Business__id=buss.id, pk=id)
+            ca = CashAccount.objects.get(Business__id=buss.id)
+
+            if 'save' in request.POST:
+                quantity = request.POST.get('quantity')
+                quantity = int(quantity)
+
+                if serv_income.Discount:
+                    amount = request.POST.get('amount')
+                    amount = int(amount)
+                else:
+                    if serv_income.Service:
+                        amount = serv_income.Service.Price * quantity
+                    elif serv_income.Package:
+                        amount = serv_income.Package.Price * quantity
+
+                # if previous amount is greater that the revised amount then the result of the subtraction
+                # will be negative. This added to the CashAccount value, the excess of the transaction will be removed.
+                # if positive then the lacking amount will be added to the CashAccount.
+                if serv_income.Service:
+                    ca.Value += amount - serv_income.Amount
+                elif serv_income.Package:
+                    ca.Value += amount - serv_income.Amount
+                ca.save()
+
+                serv_income.Amount = amount
+                serv_income.Quantity = quantity
+                serv_income.save()
+
+                messages.success(request, "changes made successfully")
+                return redirect(f"{request.META.get('HTTP_REFERER')}")
+            if 'delete' in request.POST:
+                if serv_income.PMode == 'Credit':
+                    messages.warning(request, "this will delete it's debt record too, press confirm to proceed")
+                else:
+                    try:
+                        serv_income.delete()
+                        messages.success(request, "service sales record deleted successfully")
+                    except Exception as e:
+                        messages.error(request, f"{e}")
+                    return redirect(f"{request.META.get('HTTP_REFERER')}")
+
+            if 'confirm' in request.POST:
+                try:
+                    debt_record = Debt.objects.get(pk=serv_income.Debt.id)
+                    if debt_record.Amount != serv_income.Amount:
+                        debt_record.Amount -= serv_income.Amount
+                        debt_record.save()
+                        ca.Value -= serv_income.Amount
+                        ca.save()
+                        serv_income.delete()
+                    else:
+                        ca.Value -= serv_income.Amount
+                        ca.save()
+                        serv_income.delete()
+                        debt_record.delete()
+
+                    messages.success(request, "service sales record deleted successfully")
+                    return redirect(f"{request.META.get('HTTP_REFERER')}")
+                except Exception as e:
+                    messages.error(request, f"{e}")
+                return redirect(f"{request.META.get('HTTP_REFERER')}")
+
+            if 'un-confirm' in request.POST:
+                return redirect(f'/edit_service_income_transaction/{id}/')
+
+        except Exception as e:
+            messages.error(request, f"{e}")
+            return redirect(f"{back_url}")
+
+    except Employee.DoesNotExist:
+        return HttpResponse('You are not affiliated to any business, please register your business'
+                            ' or ask your employer to register you to their business')
+
+    context = {
+        'serv_income': serv_income,
+        'back_url': back_url
+    }
+
+    return render(request, 'income/serviceIncome/editServiceIncomeTransaction.html', context)

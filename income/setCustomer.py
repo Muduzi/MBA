@@ -184,7 +184,7 @@ def product_set(buss, user_obj, data_p, customer):
                 discount = True
             prod_info.CurrentQuantity -= i.Quantity
             prod_info.CurrentValue -= i.Amount
-
+            prod_info.save()
             ProductIncome(Business=buss, Cashier=user_obj, Debt=debt, Code=prod_info.Code, Product=i.Product,
                           Amount=i.Amount, Quantity=i.Quantity, PMode='Credit', Discount=discount).save()
 

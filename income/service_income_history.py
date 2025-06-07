@@ -31,6 +31,22 @@ def get_tax_years(buss, start, end):
     return tax_years, start_, end_
 
 
+def date_initial(date_obj):
+    if len(str(date_obj.day)) == 1:
+        day = f'0{date_obj.day}'
+    else:
+        day = date_obj.day
+
+    if len(str(date_obj.month)) == 1:
+        month = f'0{date_obj.month}'
+    else:
+        month = date_obj.month
+
+    date = f"{date_obj.year}-{month}-{day}"
+
+    return date
+
+
 def service_income_per_group_history(buss, start, end):
     services = {}
     packages = {}
@@ -242,6 +258,8 @@ def service_income_history(request):
     customers = {}
     income_record = {}
     all_transactions = {}
+    start_initial = None
+    end_initial = None
 
     try:
         user_object = request.user
@@ -269,6 +287,9 @@ def service_income_history(request):
                 tax_years, start_, end_ = get_tax_years(buss, start, end)
                 categories, services, packages, customers = service_income_per_group_history(buss, start_, end_)
 
+            start_initial = date_initial(start)
+            end_initial = date_initial(end)
+
         if request.method == 'POST':
             if 'filter' in request.POST:
                 start = request.POST.get('start')
@@ -293,6 +314,9 @@ def service_income_history(request):
                     tax_years, start_, end_ = get_tax_years(buss, start, end)
                     categories, services, packages, customers = service_income_per_group_history(buss, start_, end_)
 
+                start_initial = date_initial(start)
+                end_initial = date_initial(end)
+
             if 'show_content' in request.POST:
                 annual_content = request.POST.get('content')
                 sales_this_year.Choice = annual_content
@@ -312,7 +336,9 @@ def service_income_history(request):
         'customers': customers,
         'income_record': income_record,
         "sales_this_year": sales_this_year,
-        "all_transactions": all_transactions
+        "all_transactions": all_transactions,
+        'start_initial': start_initial,
+        'end_initial': end_initial
     }
     return render(request, 'income/serviceIncome/serviceIncomeHistory.html', context)
 

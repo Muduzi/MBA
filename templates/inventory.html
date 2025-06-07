@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<title>Inventory</title>
 
 {%if messages%}
     {%for message in messages%}
@@ -42,9 +43,15 @@
     <button type="button" onclick="window.location.href='/add_inventory/';">
         <i class="material-icons" style="font-size:18px">add</i>&nbsp;product
     </button>
-    <button type="button" onclick="window.history.go(-1)">
-        <i class="material-icons" style="font-size:18px">arrow_forward</i>
-    </button>
+    {%if back_url%}
+        <button type="button" onclick="window.location.href='{{back_url}}';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%else%}
+        <button type="button" onclick="window.location.href='/management/';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%endif%}
 </div>
 
 <form method="post" id="popup">

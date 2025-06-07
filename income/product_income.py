@@ -10,6 +10,9 @@ from User.models import Employee
 from User.models import CashAccount
 from django.contrib import messages
 from fuzzywuzzy import fuzz
+from django.core.cache import cache
+from .service_income_history import date_initial
+from debts.models import Debt, DebtInstallment
 
 
 def get_id(param, business):
@@ -195,6 +198,7 @@ def product_sale(request):
                         else:
                             excess = record_product_sale(request, buss, cash_account,  data, item_count,
                                                          total, paid, p_mode, discount)
+                            messages.success(request, "sales record made successfully")
 
                 elif p_mode == 'Credit':
                     if discount:
@@ -261,3 +265,129 @@ def edit_product_sale(request, id):
         'buff_obj': buff_obj
     }
     return render(request, 'income/productIncome/editProductSale.html', context)
+
+
+def edit_product_income_transaction(request, id=0):
+    prod_income = {}
+    prod_info = {}
+    trans_date = None
+    try:
+        check = Employee.objects.get(User=request.user.id)
+        buss = check.Business
+
+        back_url = cache.get(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer")
+        if not back_url:
+            cache.set(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer",
+                      request.META.get("HTTP_REFERER"), 300)
+            back_url = cache.get(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer")
+
+        try:
+            prod_income = ProductIncome.objects.get(Business__id=buss.id, pk=id)
+
+            prod_info = InventoryProductInfo.objects.get(Business__id=buss.id, pk=prod_income.Product.id)
+
+            ca = CashAccount.objects.get(Business__id=buss.id)
+
+            if request.method == 'POST':
+                if 'save' in request.POST:
+                    quantity = request.POST.get('quantity')
+                    quantity = int(quantity)
+
+                    if prod_income.Discount:
+                        amount = request.POST.get('amount')
+                        amount = int(amount)
+                    else:
+                        amount = prod_info.SPrice * quantity
+
+                    if prod_info.CurrentQuantity > (quantity - prod_income.Quantity):
+
+                        prod_info.CurrentQuantity -= quantity - prod_income.Quantity
+                        prod_info.CurrentValue -= ((prod_info.SPrice * quantity) -
+                                                   (prod_info.SPrice * prod_income.Quantity))
+                        prod_info.save()
+
+                        prod_income.Quantity = quantity
+                        prod_income.Amount = amount
+                        prod_income.save()
+
+                        # if previous amount is greater that the revised amount then the result of the subtraction
+                        # will be negative. This added to the CashAccount value, the excess of the transaction will
+                        # be removed.
+                        # if positive then the lacking amount will be added to the CashAccount.
+
+                        ca.Value += prod_income.Amount - prod_info.SPrice * quantity
+                        ca.save()
+
+                        messages.success(request, 'changes made successfully')
+                    else:
+                        messages.success(request, 'not enough items in inventory')
+
+                if 'delete' in request.POST:
+                    if prod_income.PMode == 'Credit':
+                        messages.warning(request, "Note that this will delete it's debt record too. press"
+                                                  " confirm to proceed")
+                    else:
+                        try:
+                            prod_income.delete()
+
+                            prod_info.CurrentQuantity += prod_income.Quantity
+                            prod_info.CurrentValue += prod_income.Amount
+                            prod_info.save()
+
+                            ca.Value -= prod_income.Amount
+                            ca.save()
+
+                            messages.success(request, 'product sales record deleted successfully')
+                            return redirect(f"{request.META.get('HTTP_REFERER')}")
+                        except Exception as e:
+                            messages.error(request, f"{e}")
+                            return redirect(f"{back_url}")
+
+                if 'confirm' in request.POST:
+                    try:
+                        debt_record = Debt.objects.get(pk=prod_income.Debt.id)
+                        if debt_record.Amount != prod_income.Amount:
+                            debt_record.Amount -= prod_income.Amount
+                            debt_record.save()
+
+                            ca.Value -= prod_income.Amount
+                            ca.save()
+
+                            prod_info.CurrentQuantity += prod_income.Quantity
+                            prod_info.CurrentValue += prod_income.Amount
+                            prod_info.save()
+
+                            prod_income.delete()
+                        else:
+                            ca.Value -= prod_income.Amount
+                            ca.save()
+
+                            prod_info.CurrentQuantity += prod_income.Quantity
+                            prod_info.CurrentValue += prod_income.Amount
+                            prod_info.save()
+
+                            prod_income.delete()
+
+                            debt_record.delete()
+
+                        messages.success(request, "product sales record deleted successfully")
+                    except Exception as e:
+                        messages.error(request, f"{e}")
+                    return redirect(f"{back_url}")
+
+                if 'un-confirm' in request.POST:
+                    return redirect(f'/edit_service_income_transaction/{id}/')
+        except Exception as e:
+            messages.error(request, f"{e}")
+            return redirect(f"{back_url}")
+
+    except Employee.DoesNotExist:
+        return HttpResponse('You are not affiliated to any business, please register your business'
+                            ' or ask your employer to register you to their business')
+
+    context = {
+        'prod_income': prod_income,
+        'prod_info': prod_info,
+        'back_url': back_url
+    }
+    return render(request, "income/productIncome/editProductIncomeTransaction.html", context)

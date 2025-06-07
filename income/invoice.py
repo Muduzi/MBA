@@ -10,6 +10,7 @@ from xhtml2pdf import pisa
 from debts.models import Customer
 from datetime import timezone, datetime
 from inventory.models import InventoryProductInfo
+from django.core.cache import cache
 
 
 def get_invoices(buss):
@@ -126,6 +127,12 @@ def invoices_view(request):
         check = Employee.objects.get(User=request.user.id)
         buss = check.Business
 
+        back_url = cache.get(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer")
+        if not back_url:
+            cache.set(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer",
+                      request.META.get("HTTP_REFERER"), 300)
+            back_url = cache.get(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer")
+
         (pending_invoices, pending_invoices_stats, processed_invoices, processed_invoices_stats, overdue_invoices,
          overdue_invoices_stats) = get_invoices(buss.id)
 
@@ -177,7 +184,8 @@ def invoices_view(request):
         'processed_invoices': processed_invoices,
         'processed_invoices_stats': processed_invoices_stats,
         'overdue_invoices': overdue_invoices,
-        'overdue_invoices_stats': overdue_invoices_stats
+        'overdue_invoices_stats': overdue_invoices_stats,
+        'back_url': back_url
 
     }
     return render(request, 'invoices.html', context)

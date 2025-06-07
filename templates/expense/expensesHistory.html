@@ -1,5 +1,5 @@
 {%load static%}
-<link rel="stylesheet" type="text/css" href="{% static 'css/expense/expenseHistory.css'%}" xmlns="http://www.w3.org/1999/html">
+<link rel="stylesheet" type="text/css" href="{% static 'css/expense/expensesHistory.css'%}" xmlns="http://www.w3.org/1999/html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,6 +15,9 @@
 {%include "income/productIncome/productIncomeMessages.html"%}
 
 <div class="Navigation">
+    {%if start_initial and end_initial%}
+        <text>{{start_initial}}&nbsp;<span style="color:#5D6166;">to</span>&nbsp;{{end_initial}}</text>
+    {%endif%}
     <button type="button" onclick="openRange()">
         <i class="material-icons" style="font-size:18;">calendar_month</i>
     </button>
@@ -81,7 +84,7 @@
         </thead>
         <tbody>
         {%for i in all_transactions%}
-            <tr>
+            <tr onclick="window.location.href='/edit_expense_transaction/{{i.id}}/';">
                 <td class="sth1">{{i.Date.date}}</td>
                 <td class="sth2">{{i.Name}}</td>
                 <td class="sth3">{{i.Type}}</td>
@@ -130,9 +133,9 @@
 <form method="post" id="range" class="range">
     {%csrf_token%}
     <label for="start">Start</label>
-    <input type="date" id="start" name="start" required >
+    <input type="date" id="start" name="start" {%if start_initial%} value="{{start_initial}}" {%else%} required {%endif%}>
     <label for="end">End</label>
-    <input type="date" id="end" name="end" required >
+    <input type="date" id="end" name="end" {%if end_initial%} value="{{end_initial}}" {%else%} required {%endif%}>
     <button type="submit" name="filter" onclick="closeRange()">
         <i class="material-icons" style="font-size:18px;">filter_alt</i>
         filter
@@ -158,7 +161,7 @@
         </thead>
         <tbody>
         {%for i in all_transactions%}
-            <tr>
+            <tr onclick="window.location.href='/edit_expense_transaction/{{i.id}}/';">
                 <td class="eth1">{{i.Date.date}}</td>
                 <td class="eth2">{{i.Name}}</td>
                 <td class="eth3">{{i.Type}}</td>

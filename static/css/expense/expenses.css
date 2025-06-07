@@ -89,6 +89,10 @@ form input{
     border:hidden;
     border-radius:10px;
 }
+form input:focus{
+    outline:none;
+    border:1px solid gray;
+}
 
 form select{
     width:auto;
@@ -201,6 +205,12 @@ tr{
     height:30px;
     border-bottom:1px solid #EDEADE;
 }
+tbody tr:hover{
+    cursor:hand;
+    color:#2B3856;
+    font-weight:550;
+    background:rgba(10, 100, 10, 0.1);
+}
 td{
     display:flex;
     align-items:center;
@@ -210,8 +220,6 @@ td{
     height:100%;
     margin-left:10px;
 }
-
-
 
 .graph{
     display:flex;
@@ -260,8 +268,6 @@ td{
     border-radius:10px;
     box-shadow:5px 5px 15px rgba(10, 10, 10, 0.3);
 }
-
-
 
 @media(max-width:1000px){
     body{

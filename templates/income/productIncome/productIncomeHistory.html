@@ -11,10 +11,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<title>Product Income History</title>
 <link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
 {%include "income/productIncome/productIncomeMessages.html"%}
 
 <div class="Navigation">
+    {%if start_initial and end_initial%}
+    <text>{{start_initial}}&nbsp;<span style="color:#5D6166;">to</span>&nbsp;{{end_initial}}</text>
+    {%endif%}
     <button type="button" onclick="openRange()">
         <i class="material-icons" style="font-size:18;">calendar_month</i>
     </button>
@@ -45,7 +49,8 @@
             <tr>
                 <th class="cth1">Category</th>
                 <th class="cth2">Total</th>
-                <th class="cth3">Perc(%)</th>
+                <th class="cth3">Qnt</th>
+                <th class="cth4">Perc(%)</th>
             </tr>
         </thead>
         <tbody>
@@ -53,6 +58,7 @@
                 <tr>
                     <td class="cth1">{{a.Name}}</td>
                     <td class="cth2">{{b.Amount}}</td>
+                    <td class="cth3">{{b.Quantity}}</td>
                     <td class="cth3">{{b.Percentage}}%</td>
                 </tr>
             {%endfor%}
@@ -81,7 +87,7 @@
         </thead>
         <tbody>
         {%for i in all_transactions%}
-            <tr>
+            <tr onclick="window.location.href='/edit_product_income_transaction/{{i.id}}/';">
                 <td class="sth1">{{i.Date.date}}</td>
                 <td class="sth2">{{i.Product.Name}}</td>
                 <td class="sth3">{{i.Quantity}}</td>
@@ -98,7 +104,7 @@
 
 <div class="container3">
     <div class="tableTitle">
-        <text style="filter: drop-shadow(1px 1px 20px 50px red);">Customers</text>
+        <text style="filter: drop-shadow(1px 1px 20px 50px red);">Product Performance</text>
         <button type="button" onclick="openExpandedPerformanceTable()">
             <i class="material-icons" style="font-size:18px;">zoom_out_map</i>
         </button>
@@ -108,7 +114,8 @@
             <tr>
                 <th class="cth1">Product</th>
                 <th class="cth2">Total</th>
-                <th class="cth3">Perc(%)</th>
+                <th class="cth3">Qnt</th>
+                <th class="cth4">Perc(%)</th>
             </tr>
         </thead>
         <tbody>
@@ -116,7 +123,8 @@
             <tr>
                 <td class="cth1">{{b.Name}}</td>
                 <td class="cth2">{{b.Amount}}</td>
-                <td class="cth3">{{b.Percentage}}%</td>
+                <td class="cth3">{{b.Quantity}}</td>
+                <td class="cth4">{{b.Percentage}}%</td>
             </tr>
         {%endfor%}
         </tbody>
@@ -126,9 +134,9 @@
 <form method="post" id="range" class="range">
     {%csrf_token%}
     <label for="start">Start</label>
-    <input type="date" id="start" name="start" required >
+    <input type="date" id="start" name="start" {%if start_initial%} value="{{start_initial}}" {%else%} required {%endif%}>
     <label for="end">End</label>
-    <input type="date" id="end" name="end" required >
+    <input type="date" id="end" name="end" {%if end_initial%} value="{{end_initial}}" {%else%} required {%endif%}>
     <button type="submit" name="filter" onclick="closeRange()">
         <i class="material-icons" style="font-size:18px;">filter_alt</i>
         filter
@@ -155,7 +163,7 @@
         </thead>
         <tbody>
         {%for i in all_transactions%}
-            <tr>
+            <tr onclick="window.location.href='/edit_product_income_transaction/{{i.id}}/';" class="clickable">
                 <td class="eth1">{{i.Date.date}}</td>
                 <td class="eth2">{{i.Product.Name}}</td>
                 <td class="eth3">{{i.Product.Brand}}</td>
@@ -166,7 +174,7 @@
                 {% else %}
                     <td style="color:red" class="eth6">{{i.Amount}}</td>
                 {% endif %}
-            </tr>
+            </tr >
         {%endfor%}
         </tbody>
     </table>

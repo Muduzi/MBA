@@ -1,0 +1,69 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/productIncome/editProductIncomeTransaction.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--link for Google icons-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<title>Edit Transaction</title>
+
+<div class="Navigation">
+    {%if back_url%}
+        <button type="button" onclick="window.location.href='{{back_url}}';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%else%}
+        <button type="button" onclick="window.location.href='/product_income/';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%endif%}
+</div>
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
+
+
+<form method="post">
+    {%csrf_token%}
+        <text class="info"><span class="title">Date:</span>&nbsp;&nbsp;{{prod_income.Date.date}}</text>
+        <text class="info"><span class="title">Name:</span>&nbsp;&nbsp;{{prod_income.Product.Name}}</text>
+        <text class="info"><span class="title">Brand:</span>&nbsp;&nbsp;{{prod_income.Product.Brand}}</text>
+        <text class="info"><span class="title">Size:</span>&nbsp;&nbsp;{{prod_income.Product.Size}}</text>
+        <text class="info"><span class="title">ExpiryDate:</span>&nbsp;&nbsp;
+            {%if prod_income.Product.ExpiryDate%}
+                {{prod_income.Product.ExpiryDate}}
+            {%endif%}
+        </text>
+        <text class="info"><span class="title">Unit Price:</span>&nbsp;&nbsp;{{prod_info.SPrice}}</text>
+    <text class="info"><span class="title">PMode:</span>&nbsp;&nbsp;{{prod_income.PMode}}</text>
+    {%if prod_income.PMode == 'Credit'%}
+        <text class="info"><span class="title">Quantity:</span>&nbsp;&nbsp;{{prod_income.Quantity}}</text>
+    {%else%}
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" value="{{prod_income.Quantity}}">
+    {%endif%}
+    {%if prod_income.Discount%}
+        <text class="info"><span class="title">Discount:</span>&nbsp;&nbsp;Yes</text>
+        {%if prod_income.PMode != 'Credit'%}
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" name="amount" value="{{prod_income.Amount}}">
+        {%else%}
+            <text class="info"><span class="title">Total:</span>&nbsp;&nbsp;{{prod_income.Amount}}</text>
+        {%endif%}
+    {%else%}
+        <text class="info"><span class="title">Discount:</span>&nbsp;&nbsp;No </text>
+        <text class="info"><span class="title">Total:</span>&nbsp;&nbsp;{{prod_income.Amount}}</text>
+    {%endif%}
+    <div class="but">
+        {%if prod_income.PMode != 'Credit'%}
+            <button type = 'submit' name="save">Save</button>
+        {%endif%}
+        <button type = 'submit' name="delete">Delete</button>
+    </div>
+</form>

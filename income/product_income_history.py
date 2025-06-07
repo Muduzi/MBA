@@ -9,9 +9,10 @@ from django.contrib.auth.models import User
 from django.db.models import Sum, Q
 from User.models import Employee
 from django.contrib import messages
-from django.core.cache import cache
 from celery import shared_task
 from income.service_income_history import get_tax_years
+from django.core.cache import cache
+from .invoice import date_initial
 
 
 def product_income_per_group_history(buss, start, end):
@@ -137,7 +138,7 @@ def product_income_annual_history(buss, start, end):
         if not credit:
             credit = 0
 
-        income_year_range[start_.year] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
+        income_year_range[start_.date()] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
 
     all_transactions = ProductIncome.objects.filter(Business__id=buss, Date__range=(start, end))
     total = all_transactions.aggregate(Sum('Amount'))
@@ -168,6 +169,8 @@ def product_income_history(request):
     products = {}
     income_record = {}
     all_transactions = {}
+    start_initial = None
+    end_initial = None
 
     try:
         user_object = request.user
@@ -176,6 +179,7 @@ def product_income_history(request):
 
         start = cache.get(f'{buss}_{user_object.id}_product_income_history_start')
         end = cache.get(f'{buss}_{user_object.id}_product_income_history_end')
+
         if start and end:
             difference = abs((start - end)).days
 
@@ -188,6 +192,9 @@ def product_income_history(request):
 
                 tax_years, start_, end_ = get_tax_years(buss, start, end)
                 categories, products = product_income_per_group_history(buss, start_, end_)
+
+            start_initial = date_initial(start)
+            end_initial = date_initial(end)
 
         if 'filter' in request.POST:
             start = request.POST.get('start')
@@ -213,6 +220,9 @@ def product_income_history(request):
                 tax_years, start_, end_ = get_tax_years(buss, start, end)
                 categories, products = product_income_per_group_history(buss, start_, end_)
 
+            start_initial = date_initial(start)
+            end_initial = date_initial(end)
+
     except Employee.DoesNotExist:
         return HttpResponse("Failed to process your profile please try refreshing your browser or contact developer if"
                             "the problem persists")
@@ -224,11 +234,8 @@ def product_income_history(request):
         'categories': categories,
         'products': products,
         'income_record': income_record,
-        'all_transactions': all_transactions
+        'all_transactions': all_transactions,
+        'start_initial': start_initial,
+        'end_initial': end_initial
     }
     return render(request, 'income/productIncome/productIncomeHistory.html', context)
-
-
-def product_income_history1(request):
-    return render(request, "income/productIncome/productIncomeHistory1.html", context={})
-

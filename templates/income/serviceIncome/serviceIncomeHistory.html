@@ -15,6 +15,9 @@
 {%include "income/serviceIncome/serviceIncomeMessages.html"%}
 
 <div class="Navigation">
+    {%if start_initial and end_initial%}
+        <text>{{start_initial}}&nbsp;<span style="color:#5D6166;">to</span>&nbsp;{{end_initial}}</text>
+    {%endif%}
     <button type="button" onclick="openRange()">
         <i class="material-icons" style="font-size:18;">calendar_month</i>
     </button>
@@ -138,7 +141,7 @@
         </thead>
         <tbody>
             {%for i in all_transactions%}
-                <tr>
+                <tr  onclick="window.location.href='/edit_service_income_transaction/{{i.id}}/';">
                     <td class="ith1">{{i.Date.date}}</td>
                     {%if i.Package%}
                         <td class="ith2">{{i.Package.Name}}</td>
@@ -185,9 +188,9 @@
 <form method="post" id="range" class="range">
     {%csrf_token%}
     <label for="start">Start</label>
-    <input type="date" id="start" name="start" required >
+    <input type="date" id="start" name="start" {%if start_initial%} value="{{start_initial}}" {%else%} required {%endif%}>
     <label for="end">End</label>
-    <input type="date" id="end" name="end" required >
+    <input type="date" id="end" name="end" {%if end_initial%} value="{{end_initial}}" {%else%} required {%endif%}>
     <button type="submit" name="filter" onclick="closeRange()">
         <i class="material-icons" style="font-size:18px;">filter_alt</i>
         filter
@@ -214,7 +217,7 @@
         </thead>
         <tbody>
         {%for i in all_transactions%}
-            <tr>
+            <tr onclick="window.location.href='/edit_service_income_transaction/{{i.id}}/';">
                 <td class="eth1">{{i.Date.date}}</td>
                 {%if i.Package%}
                     <td class="eth2">{{i.Package.Name}}</td>

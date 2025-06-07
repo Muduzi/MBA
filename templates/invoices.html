@@ -47,9 +47,15 @@
     <button type="button" class="nav3" onclick="window.location.href='/product_income/';">
         product income
     </button>
-    <button type="button" class="nav3" onclick="window.history.back()">
-        <i class="material-icons" style="font-size:19px;">arrow_forward</i>
-    </button>
+    {%if back_url%}
+        <button type="button" onclick="window.location.href='{{back_url}}';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%else%}
+        <button type="button" class="nav3" onclick="window.history.back()">
+            <i class="material-icons" style="font-size:19px;">arrow_forward</i>
+        </button>
+    {%endif%}
 </div>
 
 <div class="container">

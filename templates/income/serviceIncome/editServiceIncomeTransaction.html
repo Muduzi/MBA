@@ -1,0 +1,75 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/income/serviceIncome/editServiceIncomeTransaction.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--link for Google icons-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<title>Edit Transaction</title>
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='{{back_url}}';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/serviceIncome/serviceIncomeMessages.html"%}
+
+
+<form method="post">
+    {%csrf_token%}
+    <text class="info"><span class="title">Date:</span>&nbsp;&nbsp;{{serv_income.Date.date}}</text>
+    {%if serv_income.Package%}
+        <text class="info" onclick="window.location.href='/package/{{serv_income.Package.id}}/';">
+            <span class="title">Name(package):</span>&nbsp;&nbsp;
+            {{serv_income.Package.Name}}
+        </text>
+        <text class="info"><span class="title">Category:</span>&nbsp;&nbsp;{{serv_income.Package.Category.Name}}</text>
+    {%elif serv_income.Service%}
+        <text class="info" onclick="window.location.href='/service/{{serv_income.Service.id}}/';">
+            <span class="title">Name(service):</span>&nbsp;&nbsp;
+            {{serv_income.Service.Name}}
+        </text>
+        <text class="info"><span class="title">Category:</span>&nbsp;&nbsp;{{serv_income.Service.Category.Name}}</text>
+    {%endif%}
+    <text class="info"><span class="title">Customer:</span>&nbsp;&nbsp;{{serv_income.Customer.Name}}</text>
+    <text class="info"><span class="title">PMode:</span>&nbsp;&nbsp;{{serv_income.PMode}}</text>
+    <text class="info"><span class="title">Unit Price:</span>&nbsp;&nbsp;
+        {%if serv_income.Package%}
+            {{serv_income.Package.Price}}
+        {%elif serv_income.Service%}
+            {{serv_income.Service.Price}}
+        {%endif%}
+    </text>
+    {%if serv_income.PMode == 'Credit'%}
+        <text class="info"><span class="title">Quantity:</span>&nbsp;&nbsp;{{serv_income.Quantity}}</text>
+    {%else%}
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" name="quantity" value="{{serv_income.Quantity}}">
+    {%endif%}
+    {%if serv_income.Discount%}
+        <text class="info"><span class="title">Discount:</span>&nbsp;&nbsp;Yes</text>
+        {%if serv_income.PMode != 'Credit'%}
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" name="amount" value="{{serv_income.Amount}}">
+        {%else%}
+            <text class="info"><span class="title">Total:</span>&nbsp;&nbsp;{{serv_income.Amount}}</text>
+        {%endif%}
+    {%else%}
+        <text class="info"><span class="title">Discount:</span>&nbsp;&nbsp;No </text>
+        <text class="info"><span class="title">Total:</span>&nbsp;&nbsp;{{serv_income.Amount}}</text>
+    {%endif%}
+    <div class="but">
+        {%if serv_income.PMode != 'Credit'%}
+            <button type = 'submit' name="save">Save</button>
+        {%endif%}
+        <button type = 'submit' name="delete">Delete</button>
+    </div>
+</form>

@@ -13,6 +13,7 @@ import time
 from django.core.cache import cache
 from celery import shared_task
 from income.service_income_history import get_tax_years
+from income.service_income_history import date_initial
 
 
 def expenses_daily_history(buss, year_month):
@@ -79,7 +80,7 @@ def expenses_daily_history(buss, year_month):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_this_month[a.id] = {'Name':  a.Name, 'Type': expenses[0].Type, 'Quantity': quantity, 'Amount': amount,
+        expenses_this_month[a.id] = {'Name':  a.Name, 'Type': a.Type, 'Quantity': quantity, 'Amount': amount,
                                      'Percentage': percentage}
 
     expenses = Expense.objects.filter(Business__id=buss, ExpenseAccount__isnull=True, Date__range=(start, end))
@@ -144,7 +145,7 @@ def expenses_annual_history(buss, start, end):
         if not credit:
             credit = 0
 
-        monthly_expense_records[start.month] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
+        monthly_expense_records[start_.date()] = {'Amount': amount, 'Cash': cash, 'Credit': credit}
 
     all_transactions = Expense.objects.filter(Business__id=buss, Date__range=(start, end))
     total = all_transactions.aggregate(Sum('Price'))
@@ -179,7 +180,7 @@ def expenses_annual_history(buss, start, end):
             percentage = round((amount / total) * 100)
         except ZeroDivisionError:
             percentage = 0
-        expenses_year_range[a.id] = {'Name': a.Name, 'Type': expenses[0].Type, 'Quantity': quantity, 'Amount': amount,
+        expenses_year_range[a.id] = {'Name': a.Name, 'Type': a.Type, 'Quantity': quantity, 'Amount': amount,
                                      'Percentage': percentage}
 
     expenses = Expense.objects.filter(Business__id=buss, ExpenseAccount__isnull=True, Date__range=(start, end))
@@ -223,6 +224,8 @@ def expense_history(request):
     suppliers = {}
     expense_record = {}
     all_transactions = {}
+    start_initial = None
+    end_initial = None
 
     try:
         user_object = request.user
@@ -239,6 +242,9 @@ def expense_history(request):
 
             elif difference > 31:
                 total, cash, credit, totals, suppliers, expense_record, all_transactions = expenses_annual_history(buss, start, end)
+
+            start_initial = date_initial(start)
+            end_initial = date_initial(end)
 
         if 'filter' in request.POST:
             start = request.POST.get('start')
@@ -260,6 +266,9 @@ def expense_history(request):
             elif difference > 31:
                 total, cash, credit, totals, suppliers, expense_record, all_transactions = expenses_annual_history(buss, start, end)
 
+            start_initial = date_initial(start)
+            end_initial = date_initial(end)
+
     except Employee.DoesNotExist:
         return HttpResponse('You are not affiliated to any business, please register your business'
                             ' or ask your employer to register you to their business')
@@ -271,6 +280,8 @@ def expense_history(request):
         'totals': totals,
         'suppliers': suppliers,
         'expense_record': expense_record,
-        'all_transactions':  all_transactions
+        'all_transactions':  all_transactions,
+        'start_initial': start_initial,
+        'end_initial': end_initial
     }
-    return render(request, 'expense/expenseHistory.html', context)
+    return render(request, 'expense/expensesHistory.html', context)

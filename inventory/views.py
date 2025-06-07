@@ -155,6 +155,11 @@ def inventory_view(request, id=0, r=''):
         check = Employee.objects.get(User=request.user.id)
         buss = check.Business.id
 
+        back_url = cache.get(f"{buss}-{check.id}-inventory_view_http_referer")
+        if not back_url:
+            cache.set(f"{buss}-{check.id}-inventory_view_http_referer", request.META.get("HTTP_REFERER"), 300)
+            back_url = cache.get(f"{buss}-{check.id}-inventory_view_http_referer")
+
         inventory_data.delay(buss)
         data = cache.get(str(buss) + 'data')
         initial = cache.get(str(buss) + 'initial')
@@ -169,8 +174,9 @@ def inventory_view(request, id=0, r=''):
         current_percentage = cache.get(str(buss) + 'current_percentage')
         current_remainder = cache.get(str(buss) + 'current_remainder')
 
-        if (not data and initial and current and cat_count and available_prod and unavailable_prod and prod_delta and
-                stock_value and stock_delta and stock_count and current_percentage and current_remainder):
+        if (not data and not initial and not current and not cat_count and not available_prod and
+                not unavailable_prod and not prod_delta and not stock_value and not stock_delta and
+                not stock_count and not current_percentage and not current_remainder):
             (data, initial, current, cat_count, available_prod, unavailable_prod, prod_delta,
              stock_value, stock_delta, stock_count, current_percentage, current_remainder) = inventory_data(buss)
 
@@ -239,7 +245,8 @@ def inventory_view(request, id=0, r=''):
         'prod_performance': prod_performance,
         'current_remainder': current_remainder,
         'product': product,
-        'product_info': product_info
+        'product_info': product_info,
+        'back_url': back_url
     }
     return render(request, 'inventory.html', context)
 

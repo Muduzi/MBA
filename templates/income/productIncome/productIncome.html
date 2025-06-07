@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<title>Product Income</title>
+
 <div class="top_nav">
     <button type="button" onclick="window.location.href='/product_sale/';">
         <i class="material-icons" style="font-size:18px">add</i>
@@ -40,7 +42,7 @@
     </thead>
     <tbody>
     {%for i in table%}
-        <tr>
+        <tr onclick="window.location.href='/edit_product_income_transaction/{{i.id}}/';">
             <td class="sth1">{{i.Date.date}}</td>
             <td class="sth2">{{i.Product.Name}}</td>
             <td class="sth3">{{i.Product.Size}}</td>

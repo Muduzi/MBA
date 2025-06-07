@@ -45,6 +45,10 @@ body{
     color:white;
     background:#5D6166;
 }
+.Navigation text{
+    color:#2B3856;
+    font-size:14px;
+}
 
 /*container1*/
 .container1{
@@ -126,6 +130,11 @@ text{
 .cth3{
     width:20%;
 }
+.cth4{
+    display:none;
+    visibility:hidden;
+}
+
 
 
 /*container2*/
@@ -159,7 +168,12 @@ text{
 .container2 table{
     height:350px;
 }
-
+.container2 table tbody tr:hover{
+    cursor:hand;
+    color:#2B3856;
+    font-weight:550;
+    background:rgba(10, 100, 10, 0.1);
+}
 .sth1{
     width:25%;
 }
@@ -217,6 +231,7 @@ tr{
     width:100%;
     height:40px;
 }
+
 td{
     display:flex;
     align-items:center;
@@ -351,6 +366,13 @@ select option:hover{
     height:93%;
 }
 
+.expandedTransactionTable table tbody tr:hover{
+    cursor:hand;
+    color:#2B3856;
+    font-weight:550;
+    background:rgba(10, 100, 10, 0.1);
+}
+
 /*transaction table*/
 .eth1{
     width:15%;
@@ -429,6 +451,10 @@ select option:hover{
     border:1px solid #EDEADE;
     border-radius:10px;
 }
+.range input:focus{
+    outline:none;
+    border:1px solid gray;
+}
 .range button{
     display:flex;
     align-items:center;
@@ -450,9 +476,11 @@ select option:hover{
     .Navigation{
         width:98%;
     }
+
     body{
         overflow-y:scroll;
     }
+
     .container1{
         min-width:95%;
         max-width:97%;
@@ -461,6 +489,21 @@ select option:hover{
     .information{
         width:320px;
         height:45%;
+    }
+
+    .cth1{
+        width:40%;
+    }
+    .cth2{
+        width:30%;
+    }
+    .cth3{
+        width:15%;
+    }
+    .cth4{
+        display:flex;
+        visibility:visible;
+        width:15%;
     }
 
     .container2{
@@ -502,6 +545,7 @@ select option:hover{
     .range{
         width:300px;
     }
+
     .container1{
         align-items:center;
         width:93%;
@@ -510,6 +554,20 @@ select option:hover{
     .information{
         width:99%;
     }
+    .cth1{
+        width:50%;
+    }
+    .cth2{
+        width:30%;
+    }
+    .cth3{
+        width:20%;
+    }
+    .cth4{
+        display:none;
+        visibility:hidden;
+    }
+
     .container2{
         align-items:center;
         min-width:90%;
@@ -530,6 +588,7 @@ select option:hover{
     .ith{
         width:25%;
     }
+
     .container3{
         align-items:center;
         width:94%;
@@ -591,6 +650,8 @@ select option:hover{
         width:10%;
     }
 }
+
+
 /* width */
 ::-webkit-scrollbar {
   width: 5px;

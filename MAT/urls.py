@@ -25,7 +25,7 @@ from home.views import *
 from User.views import (login_view, sign_up, logout_view, management, profile_form, department_view,
                         departments_view, employee_form)
 from User.business import business, business_profile, edit_business_profile, taxes
-from expenses.views import expenses_view
+from expenses.views import expenses_view, edit_expense_transaction
 from expenses.expenses_dash import expenses_dash
 from expenses.expense_history import expense_history
 from expenses.bufferexpense import buffer_expense_view, edit_buffer_expense
@@ -34,10 +34,10 @@ from expenses.Accounts import expense_accounts, expense_account
 from credits.views import credit_view, credit_form, credit_installment
 from income.views import product_income
 from debts.views import debt_view, debt_form, debt_installment
-from income.product_income import product_sale, edit_product_sale
+from income.product_income import product_sale, edit_product_sale, edit_product_income_transaction
 from income.product_income_history import product_income_history
 from income.service_income import (services, service_income, service_sale, service, package, service_category,
-                                   edit_service_sale)
+                                   edit_service_sale, edit_service_income_transaction)
 from income.service_income_history import service_income_history
 from income.setCustomer import set_customer
 from income.invoice import invoice_form, invoices_view, generate_invoice_pdf, delivery_note, invoice_view
@@ -92,6 +92,7 @@ urlpatterns = [
     path("set_supplier/", set_supplier, name="assetsVendor"),
     path("set_supplier/<int:id>/", set_supplier, name="assetsVendor"),
     path("expenses_history/", expense_history, name="expenseHistory"),
+    path("edit_expense_transaction/<int:id>/", edit_expense_transaction, name="editExpenseTransaction"),
 
     # credits
     path("credit/", credit_view, name="credit"),
@@ -114,6 +115,8 @@ urlpatterns = [
     path("delivery_note/", delivery_note, name="deliveryNote"),
     path('product_income_history/', product_income_history, name="productIncomeHistory"),
     # path('test/', test, name='test'),
+    path('edit_product_income_transaction/<int:id>/', edit_product_income_transaction,
+         name="editProductIncomeTransaction"),
 
     # service sales income
     path('service_income/', service_income, name="serviceIncome"),
@@ -127,6 +130,8 @@ urlpatterns = [
     path('service_category/<int:id>/', service_category, name="serviceCategory"),
     path('edit_service_sale/<int:id>/', edit_service_sale, name="editServiceBuffer"),
     path('service_income_history/', service_income_history, name="serviceIncomeHistory"),
+    path('edit_service_income_transaction/<int:id>/', edit_service_income_transaction,
+         name="editServiceIncomeTransaction"),
 
     # debts
     path("debt/", debt_view, name="debt"),

@@ -45,7 +45,7 @@
     </thead>
     <tbody>
     {%for i in table%}
-        <tr>
+        <tr onclick="window.location.href='/edit_service_income_transaction/{{i.id}}/';">
             <td class="sth1">{{i.Date.date}}</td>
             {%if i.Package%}
                 <td class="sth2">{{i.Package.Name}}</td>

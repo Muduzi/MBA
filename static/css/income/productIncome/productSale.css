@@ -94,7 +94,7 @@ th{
     align-items:flex-start;
     justify-content:center;
     color:#EDEADE;
-    font-size:15px;
+    font-size:16px;
     margin-left:3px;
 }
 .sth1{
@@ -139,7 +139,7 @@ td{
     display:flex;
     align-items:center;
     justify-content:flex-start;
-    font-size:14px;
+    font-size:15px;
     color:#5D6166;
 }
 
@@ -161,7 +161,7 @@ tfoot tr{
 }
 tfoot td{
     color:rgb(54, 69, 79);
-    font-size:15px;
+    font-size:16px;
 }
 
 form{
@@ -421,13 +421,13 @@ form input[type="checkbox"]{
     }
 
     table button{
-        font-size:12px;
+        font-size:14px;
     }
     th{
-        font-size:13px;
+        font-size:15px;
     }
     td{
-        font-size:13px;
+        font-size:14px;
     }
 
     .form1{
@@ -439,15 +439,15 @@ form input[type="checkbox"]{
     }
 
     form input{
-        font-size:12px;
+        font-size:13px;
     }
 
     .form1 select{
-        font-size:12px;
+        font-size:13px;
     }
 
     form textarea{
-        font-size:12px;
+        font-size:13px;
     }
 
     .but1 button{
@@ -490,15 +490,15 @@ form input[type="checkbox"]{
     }
 
     table button{
-        font-size:12px;
-    }
-
-    th{
         font-size:13px;
     }
 
+    th{
+        font-size:14px;
+    }
+
     td{
-        font-size:12px;
+        font-size:13px;
     }
 
     form{

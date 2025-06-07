@@ -20,7 +20,7 @@ body{
     justify-content:flex-end;
     gap:10px;
     position:relative;
-    width:90%;
+    width:360px;
     height:32px;
     border-radius:10px;
 }
@@ -130,9 +130,9 @@ form textarea{
     align-items:center;
     justify-content:center;
     position:relative;
-    min-width:80px;
+    min-width:70px;
     max-width:auto;
-    height:90%;
+    height:80%;
     color:rgb(54, 69, 79);
     font-size:15px;
     padding:2px;
