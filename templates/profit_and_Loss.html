@@ -12,6 +12,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="Navigation">
+    <button type="button" onclick="window.location.href='/profit_and_loss_time_series/';">
+        <i class="material-icons" style="font-size:18px">search</i>
+    </button>
     <button type="button" onclick="window.location.href='/profit_and_loss_dash/';">
         <i class="material-icons" style="font-size:18px">show_chart</i>
     </button>
@@ -32,14 +35,14 @@
     <thead>
         <tr>
             <th class="account_th"></th>
-            <th class="amount_th">Total</th>
+            <th class="amount_th"></th>
         </tr>
     </thead>
     <tbody>
         <!--Product Income-->
         <tr>
             <td class="account_title">Income</td>
-            <td class="amount_title"></td>
+            <td class="amount_title" style="font-weight:600;">Total</td>
         </tr>
         <tr>
             <td class="button_td" style="font-weight:600;">
@@ -210,7 +213,7 @@
                             {%endfor%}
                         {%else%}
                             <tr>
-                                <td style="color:rgb(54, 69, 79); font-size:14px; width:100%;">No records to show</td>
+                                <td class="nrw" style="color:rgb(54, 69, 79); font-size:14px;">No records to show</td>
                             </tr>
                         {%endif%}
                         <tr>
@@ -309,9 +312,9 @@
         <!-- Profit Margin -->
         <tr>
             <td class="account_subTitle">Profit Margin</td>
-            {%if profit_perc > 1%}
+            {%if profit_perc > 20%}
                 <td class="amount_subTitle" style="color:green">{{profit_perc}}%</td>
-            {%elif profit_perc < 1%}
+            {%elif profit_perc < 20%}
                 <td class="amount_subTitle" style="color:red">{{profit_perc}}%</td>
             {%endif%}
         </tr>

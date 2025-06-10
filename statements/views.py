@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from django.contrib.auth.decorators import login_required
 from User.decorator import allowed_users
 from User.models import Employee, TaxSettings
-from .ProfitAndLoss import (expenses, product_revenue, service_revenue, debt_total,
+from .profitAndLoss import (expenses, product_revenue, service_revenue, debt_total,
                             totals_and_profits)
 from assets.models import Assets
 

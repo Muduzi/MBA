@@ -34,19 +34,19 @@
         </button>
         {%if allowed%}
             <button type ='submit' name="edit">
-                <i class="material-icons" style="font-size:20px;">edit</i>
+                <i class="material-icons" style="font-size:18px;">edit</i>
             </button>
             <button type="submit" name="delete">
-                <i class="material-icons" style="font-size:20px;">delete</i>
+                <i class="material-icons" style="font-size:18px;">delete</i>
             </button>
         {%endif%}
     </div>
-    {%if allowed%}
-        <button type ='button' onclick="window.location.href='/category/{{product.Category}}/';">
-            <i class="material-icons" style="font-size:20px;">arrow_forward</i>
+    {%if back_url%}
+        <button type="button" onclick="window.location.href='{{back_url}}';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
         </button>
     {%else%}
-        <button type ='button' onclick="window.history.go(-1)">
+        <button type ='button' onclick="window.location.href='/category/{{product.Category}}/';">
             <i class="material-icons" style="font-size:20px;">arrow_forward</i>
         </button>
     {%endif%}

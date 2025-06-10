@@ -182,7 +182,7 @@ body{
 }
 .name{
     color:#2B3856;
-    font-size:15px;
+    font-size:16px;
 }
 .price{
     color:rgb(54, 69, 79);
@@ -270,8 +270,8 @@ body{
     width:100%;
     height:30%;
     color:#2B3856;
-    font-size:21px;
-    font-weight:550;
+    font-size:19px;
+    font-weight:540;
 }
 .description_content{
     width:100%;
@@ -665,7 +665,7 @@ td{
     }
 
     .name{
-        font-size:13px;
+        font-size:14px;
     }
     .price{
         font-size:18px;
@@ -678,7 +678,7 @@ td{
         font-size:15px;
     }
     td{
-        font-size:13px;
+        font-size:14px;
     }
 
     .contact{
@@ -750,6 +750,7 @@ td{
         height:95%;
     }
     .comment_input{
+        width:95%;
         height:60px;
         bottom:0px;
         border-radius:0px;

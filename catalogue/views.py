@@ -781,6 +781,7 @@ def view_product(request, id=0):
     allowed = False
     reply_to_comment = None
     user_id = 0
+    back_url = None
     if request.user.is_anonymous:
         registration_form = True
     else:
@@ -797,6 +798,12 @@ def view_product(request, id=0):
                 pass
         except User.DoesNotExist:
             pass
+
+        back_url = cache.get(f"{request.user.id}-{id}-edit_product_income_transaction_http_referer")
+        if not back_url:
+            cache.set(f"{request.user.id}-{id}-edit_product_income_transaction_http_referer",
+                      request.META.get("HTTP_REFERER"), 300)
+            back_url = cache.get(f"{request.user.id}-{id}-edit_product_income_transaction_http_referer")
 
     get_product.delay(id, user_id)
     product = cache.get('product' + str(id))
@@ -972,7 +979,8 @@ def view_product(request, id=0):
         'product': product,
         'allowed': allowed,
         'registration_form': registration_form,
-        "reply_to_comment": reply_to_comment
+        "reply_to_comment": reply_to_comment,
+        'back_url': back_url
     }
     return render(request, 'catalogue/viewProduct.html', context)
 

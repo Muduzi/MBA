@@ -26,6 +26,7 @@ from income.invoice import date_initial
 
 
 def login_view(request):
+
     if request.method == 'POST':
         if 'login' in request.POST:
             name = request.POST.get('username')

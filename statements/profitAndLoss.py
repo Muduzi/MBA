@@ -13,6 +13,7 @@ from calendar import monthrange
 from datetime import datetime, timedelta, timezone
 from assets.models import Assets, Shareholders
 from User.models import CoreSettings, CashAccount, TaxYear, TaxAccount, TaxAccountThisYear
+from dateutil.relativedelta import relativedelta
 
 
 def get_tax_year(buss):
@@ -335,7 +336,7 @@ def pay_out(buss, net_profit):
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)'])
 def profit_and_loss(request):
     total_annual_depreciation = 0
-
+    today = datetime.now().date()
     try:
         user_object = request.user
         check = Employee.objects.get(User=user_object.id)
@@ -355,7 +356,8 @@ def profit_and_loss(request):
         # annual depreciation is recorded as expense that reduces net-income
         if assets.exists():
             for a in assets:
-                total_annual_depreciation += a.AnnualDepreciation
+                if (a.Date.date - today) < (a.Date + relativedelta(years=a.UsefulLife)):
+                    total_annual_depreciation += a.AnnualDepreciation
 
         total_expense += total_annual_depreciation
 

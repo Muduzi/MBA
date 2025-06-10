@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from User.decorator import allowed_users
 from User.models import Employee
 from calendar import monthrange
-from statements.ProfitAndLoss import get_tax_year
+from statements.profitAndLoss import get_tax_year
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from celery import shared_task
@@ -372,7 +372,7 @@ def service_income_dash(request):
         income_this_month = cache.get(str(buss_id) + 's_d_r_t_m-income_this_month')
 
         if not total_m and not cash_m and not credit_m and not income_this_month:
-            return redirect('/service_dash/')
+            total_m, cash_m, credit_m, income_this_month = services_daily_records_this_month(buss_id)
 
         service_income_per_group_this_month.delay(buss_id)
         categories_m = cache.get(str(buss_id) + 's_i_p_g_t_m-categories_m')
@@ -381,7 +381,7 @@ def service_income_dash(request):
         customers_m = cache.get(str(buss_id) + 's_i_p_g_t_m-customers_m')
 
         if not categories_m and not services_m and not packages_m:
-            return redirect('/service_dash/')
+            categories_m, services_m, packages_m, customers_m = service_income_per_group_this_month(buss_id)
 
         service_monthly_records_this_year.delay(buss_id)
         total_y = cache.get(str(buss_id) + 's_m_r_t_y-total')
@@ -390,7 +390,7 @@ def service_income_dash(request):
         income_this_year = cache.get(str(buss_id) + 's_m_r_t_y-income_this_year')
 
         if not total_y and not cash_y and not credit_y and not income_this_year:
-            return redirect('/service_dash/')
+            total_y, cash_y, credit_y, income_this_year = service_monthly_records_this_year(buss_id)
 
         service_income_per_group_this_year.delay(buss_id)
         categories_y = cache.get(str(buss_id) + 's_i_p_g_t_y-categories_y')
@@ -399,7 +399,7 @@ def service_income_dash(request):
         customers_y = cache.get(str(buss_id) + 's_i_p_g_t_y-customers_y')
 
         if not categories_m and not services_m and not packages_m:
-            return redirect('/service_dash/')
+            categories_m, services_m, packages_m, customers_m = service_income_per_group_this_year(buss_id)
 
         if request.method == 'POST':
             if 'general_content' in request.POST:

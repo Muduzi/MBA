@@ -12,7 +12,7 @@ from calendar import monthrange
 from assets.models import Shareholders
 from .models import (CoreSettings, CashAccount, TaxSettings, TaxYear, TaxAccount, TaxAccountThisYear, TaxInstallments,
                      Salary, Allowance, EmployeeIncentives, BusinessDashContent)
-from statements.ProfitAndLoss import (get_tax_year, expenses, product_revenue, service_revenue, debt_total,
+from statements.profitAndLoss import (get_tax_year, expenses, product_revenue, service_revenue, debt_total,
                                       totals_and_profits, pay_out)
 from statements.views1 import balance_stats
 from itertools import chain

@@ -48,11 +48,12 @@ from inventory.replenish import replenish
 from statements.views1 import profit_and_loss_dash, balance_sheet
 from statements.views import profit_and_loss_dash_range
 from statements.doubleEntries import double_entry
+from statements.profitAndLossTimeSeries import profit_and_loss_time_series
 from assets.views import assets_view, asset_form
 from catalogue.views import (catalogue_view, market_view, category, add_category, add_product, edit_product,
                              view_product, view_buss_type_products)
 from management.views import *
-from statements.ProfitAndLoss import profit_and_loss
+from statements.profitAndLoss import profit_and_loss
 
 urlpatterns = [
     # login&logout
@@ -150,6 +151,7 @@ urlpatterns = [
     path("balance_sheet/", balance_sheet, name="balanceSheet"),
     path("double_entry/", double_entry, name="double_Entry"),
     path("profit_and_loss/", profit_and_loss, name="profit_and_loss"),
+    path("profit_and_loss_time_series/", profit_and_loss_time_series, name="profit_and_loss_time_series"),
 
     # Asset urls
     path("assets/", assets_view, name="assets"),

@@ -28,7 +28,7 @@ body{
     align-items:center;
     justify-content:center;
     width:auto;
-    height:80%;
+    height:70%;
     color:rgb(54, 69, 79);
     padding:5px;
     background:transparent;
@@ -49,8 +49,8 @@ form{
     column-gap:10px;
     flex-wrap:wrap;
     position:relative;
-    width:80%;
-    height:150%;
+    width:850px;
+    height:1000px;
     padding-left:5px;
     padding-right:5px;
     padding-top:10px;
@@ -62,7 +62,7 @@ form{
     flex-direction:column;
     align-items:flex-start;
     justify-content:space-around;
-    width:40%;
+    width:400px;
     height:65%;
     padding-left:5px;
     padding-right:5px;
@@ -102,14 +102,19 @@ label{
     font-size:15px;
 }
 
-select{
+form select{
     width:auto;
-    height:35px;
+    height:32px;
     color:rgb(54, 69, 79);
     background:#F9F6EE;
     border:hidden;
     border-radius:10px;
 }
+form select:focus{
+    outline:none;
+    border:1px solid gray;
+}
+
 input[type=checkbox]{
     width:auto;
     height:auto;
@@ -119,13 +124,17 @@ input[type=checkbox]{
 
 form input{
     width:100%;
-    height:35px;
+    height:32px;
     font-size:14px;
     color:#5D6166;
     padding:3px;
     background:#F9F6EE;
     border:1px solid #EDEADE;
     border-radius:10px;
+}
+form input:focus{
+    outline:none;
+    border:1px solid gray;
 }
 
 form textarea{
@@ -138,14 +147,17 @@ form textarea{
     border:1px solid #EDEADE;
     border-radius:10px;
 }
-
+form textarea:focus{
+    outline:none;
+    border:1px solid gray;
+}
 
 .inputs2{
     display:flex;
     flex-direction:column;
     align-items:flex-start;
     justify-content:space-around;
-    width:40%;
+    width:400px;
     height:92%;
     padding:5px;
     border-radius:10px;
@@ -180,15 +192,23 @@ form textarea{
     }
 
     .Navigation{
-        width:96%;
+        width:400px;
     }
     form{
-        width:95%;
-        height:800px;
+        width:400px;
+        height:1550px;
+    }
+    .inputs1{
+        width:98%;
+        height:40%;
+    }
+    .inputs2{
+        width:98%;
+        height:55%;
     }
 
     label{
-        font-size:13px;
+        font-size:14px;
     }
     form input{
         font-size:13px;
@@ -203,39 +223,6 @@ form textarea{
     }
 }
 
-@media(max-width:768px){
-    body{
-        height:auto;
-    }
-
-    .Navigation{
-        width:80%;
-    }
-    form{
-        width:60%;
-        height:1500px;
-        padding-left:5;
-        padding-right:5px;
-        padding-top:5px;
-        padding-bottom:5px;
-    }
-
-    input{
-        width:90%;
-    }
-
-    .inputs1{
-        width:95%;
-        height:37%;
-        padding:5px;
-    }
-    .inputs2{
-        width:95%;
-        height:55%;
-        padding:5px;
-    }
-
-}
 
 @media(max-width:460px){
     body{
@@ -243,7 +230,7 @@ form textarea{
     }
 
     .Navigation{
-        width:99%;
+        width:97%;
     }
     form{
         width:95%;

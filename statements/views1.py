@@ -12,7 +12,7 @@ from User.models import Employee, Business, CashAccount
 from debts.models import Debt
 from assets.models import Assets
 from User.models import CoreSettings, TaxSettings, TaxAccount, TaxAccountThisYear, TaxInstallments
-from .ProfitAndLoss import (get_tax_year, expenses, product_revenue, service_revenue, debt_total,
+from .profitAndLoss import (get_tax_year, expenses, product_revenue, service_revenue, debt_total,
                             totals_and_profits)
 from expenses.models import Expense, ExpenseAccount
 

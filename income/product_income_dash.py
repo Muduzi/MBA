@@ -7,7 +7,7 @@ from django.db.models import Sum, Q
 from django.contrib.auth.decorators import login_required
 from User.decorator import allowed_users
 from User.models import Employee
-from statements.ProfitAndLoss import get_tax_year
+from statements.profitAndLoss import get_tax_year
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from celery import shared_task
