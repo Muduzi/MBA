@@ -32,3 +32,59 @@ class Subscription(models.Model):
               ('Inactive', 'Inactive'),
               ('Pending', 'Pending')]
     Status = models.CharField(null=False, choices=status, max_length=9, default='Inactive')
+
+
+# Taxes
+
+# Value added tax
+
+class ValueAddedTax(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Name = models.CharField(null=False, blank=True, max_length=50, default='VAT')
+    Status = models.BooleanField(null=False, blank=True, default=True)
+    Threshold = models.IntegerField(null=False, blank=False, default=0)
+    Rate = models.IntegerField(null=False, blank=False, default=16.5)
+
+
+class IncomeTax(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Name = models.CharField(null=False, blank=True, max_length=50, default='PAYE')
+    Notes = models.CharField(null=True, blank=True, max_length=200, default='')
+    Status = models.BooleanField(null=False, blank=True, default=True)
+
+
+class IncomeTaxThreshold(models.Model):
+    Tax = models.ForeignKey(IncomeTax, on_delete=models.CASCADE, null=False)
+    Threshold = models.IntegerField(null=False, blank=False, default=0)
+    Percentage = models.IntegerField(null=False, blank=False, default=0)
+
+
+# pay as you earn tax
+class PayAsYouEarn(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Name = models.CharField(null=False, blank=True, max_length=50, default='PAYE')
+    Notes = models.CharField(null=True, blank=True, max_length=200, default='')
+    Status = models.BooleanField(null=False, blank=True, default=True)
+
+
+class PayAsYouEarnThreshold(models.Model):
+    Tax = models.ForeignKey(PayAsYouEarn, on_delete=models.CASCADE, null=False)
+    Threshold = models.IntegerField(null=False, blank=False, default=0)
+    Percentage = models.IntegerField(null=False, blank=False, default=0)
+
+
+# Presumptive tax
+class PresumptiveTax(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Name = models.CharField(null=False, blank=True, max_length=50, default='Presumptive')
+    Notes = models.CharField(null=True, blank=True, max_length=200, default='')
+    Status = models.BooleanField(null=False, blank=True, default=True)
+
+
+class PresumptiveTaxThreshold(models.Model):
+    Tax = models.ForeignKey(PresumptiveTax, on_delete=models.CASCADE, null=False)
+    From = models.IntegerField(null=False, blank=False, default=0)
+    To = models.IntegerField(null=False, blank=False, default=0)
+    Amount = models.IntegerField(null=False, blank=False, default=0)
+
+

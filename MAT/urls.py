@@ -166,6 +166,11 @@ urlpatterns = [
     path("subscriptionSettings/", subscription_settings, name="subscriptionSettings"),
     path("editPlan/<int:id>", edit_plan, name="editPlan"),
     path("transactionInformation/<str:trans_type>/<int:trans_id>/", transaction_info, name="transactionInformation"),
+    path('tax_and_tax_thresholds/', tax_and_tax_thresholds, name="tax_and_tax_thresholds"),
+    path('pay_as_you_earn/', pay_as_you_earn, name="PayAsYouEarn"),
+    path('income_tax/', income_tax_view, name="IncomeTax"),
+    path('presumptive/', presumptive, name="presumptiveTax"),
+    path('value_added_tax/', value_added_tax, name="value_added_tax"),
 
     # catalogue
     path("market/", market_view, name="market"),

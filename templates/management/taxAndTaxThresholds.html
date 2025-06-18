@@ -1,0 +1,57 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/taxAndTaxThresholds.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<title>Taxes And Thresholds</title>
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/tax_and_thresholds/';">
+        <i class="material-icons" style="font-size:18px">add</i>
+    </button>
+     <button type="button" onclick="window.location.href='/manager/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="th1">Tax</th>
+            <th class="th2">Notes</th>
+            <th class="th3">Thresholds</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr onclick="window.location.href='/value_added_tax';">
+            <td class="th1">{{vat.Name}}</td>
+            <td class="th2"></td>
+            <td class="th3">1</td>
+        </tr>
+        <tr onclick="window.location.href='/income_tax';">
+            <td class="th1">{{income_tax.Name}}</td>
+            <td class="th2">{{income_tax.Notes}}</td>
+            <td class="th3">{{income_tax_count}}</td>
+        </tr>
+        <tr onclick="window.location.href='/pay_as_you_earn';">
+            <td class="th1">{{paye_tax.Name}}</td>
+            <td class="th2">{{paye_tax.Notes}}</td>
+            <td class="th3">{{paye_count}}</td>
+        </tr>
+        <tr onclick="window.location.href='/presumptive';">
+            <td class="th1">{{presumptive_tax.Name}}</td>
+            <td class="th2">{{presumptive_tax.Notes}}</td>
+            <td class="th3">{{presumptive_count}}</td>
+        </tr>
+    </tbody>
+</table>

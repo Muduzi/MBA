@@ -45,12 +45,19 @@ def profit_and_loss_dash(request):
 
         paid_for += total_annual_depreciation
 
-        product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
-        service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
+        product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax =\
+            product_revenue(buss, tax_settings, start, end)
+
+        service_income, total_service_income, total_service_vat, total_service_presumptive_tax =\
+            service_revenue(buss, tax_settings, start, end)
+
         total_debt = debt_total(buss, start, end)
-        total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
-            totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
-                               total_service_income, cog, total_expense))
+
+        (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+         net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand) = \
+            totals_and_profits(buss.id, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                               total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
+                               total_service_income, cog, total_expense)
 
     except Employee.DoesNotExist:
         return HttpResponse("Failed to process your profile please try refreshing your browser or contact developer if"
@@ -176,12 +183,20 @@ def balance_stats(buss):
 
     (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
      total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
-    product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
-    service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
+
+    product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax = \
+        product_revenue(buss, tax_settings, start, end)
+
+    service_income, total_service_income, total_service_vat, total_service_presumptive_tax = (
+        service_revenue(buss, tax_settings, start, end))
+
     total_debt = debt_total(buss, start, end)
-    total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
-        totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
-                           total_service_income, cog, total_expense))
+
+    (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+     net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand) = \
+        totals_and_profits(buss.id, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                           total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
+                           total_service_income, cog, total_expense)
 
     # inventory
     inventory_value = InventoryProductInfo.objects.filter(Business=buss).aggregate(Sum('CurrentValue'))

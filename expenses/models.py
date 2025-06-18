@@ -1,5 +1,5 @@
 from django.db import models
-from User.models import User, Business, Employee, Department
+from User.models import User, Business, Salary
 from credits.models import Credit, Supplier
 # Create your models here.
 
@@ -34,6 +34,7 @@ class Expense(models.Model):
     Business = models.ForeignKey(Business, on_delete=models.CASCADE, blank=True, null=True)
     Supplier = models.ForeignKey(Supplier, on_delete=models.DO_NOTHING, blank=True, null=True)
     Credit = models.ForeignKey(Credit, on_delete=models.DO_NOTHING, blank=True, null=True)
+    Salary = models.ForeignKey(Salary, on_delete=models.CASCADE, blank=True, null=True)
     Cashier = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=False, null=True)
     ExpenseAccount = models.ForeignKey(ExpenseAccount, on_delete=models.DO_NOTHING, null=True, blank=True)
     Date = models.DateTimeField(auto_now=True)

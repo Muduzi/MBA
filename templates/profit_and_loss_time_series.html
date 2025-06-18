@@ -78,7 +78,16 @@
                             <td>Total VAT</td>
                         </tr>
                         <tr class="margin">
+                            <td>Total PRESUMPTIVE</td>
+                        </tr>
+                        <tr class="margin">
                             <td>NetProfit</td>
+                        </tr>
+                        <tr class="margin">
+                            <td>Total Income Tax</td>
+                        </tr>
+                        <tr class="margin">
+                            <td>Profit After Income Tax</td>
                         </tr>
                         <tr class="margin">
                             <td>Profit Margin</td>
@@ -148,7 +157,17 @@
                                 <td><!--Total VAT:-->{{data.total_vat}}</td>
                             </tr>
                             <tr class="margin">
+                                <td><!--Total PRESUMPTIVE:-->{{data.total_presumptive_tax}}</td>
+                            </tr>
+
+                            <tr class="margin">
                                 <td><!--NetProfit:-->{{data.net_profit}}</td>
+                            </tr>
+                            <tr class="margin">
+                                <td><!--Total Income Tax:-->{{data.income_tax}}</td>
+                            </tr>
+                            <tr class="margin">
+                                <td><!--Profit after Income Tax-->{{data.profit_after_income_tax}}</td>
                             </tr>
                             <tr class="margin">
                                 {%if data.profit_perc > 20%}
@@ -216,17 +235,10 @@
                                 <td class="amount_section">Amount</td>
                             </tr>
                             {%for key, value in focus_on.product_income.items%}
-                                {%if key == "VAT"%}
-                                    <tr>
-                                        <td class="account_section_total">{{value.Name}}</td>
-                                        <td class="amount_section_total">{{value.revenue}}</td>
-                                    </tr>
-                                {%else%}
-                                    <tr>
-                                        <td class="account" style="margin-left:50px;">{{value.Name}}</td>
-                                        <td class="amount">{{value.revenue}}</td>
-                                    </tr>
-                                {%endif%}
+                                <tr>
+                                    <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                    <td class="amount">{{value.revenue}}</td>
+                                </tr>
                             {%endfor%}
                             <tr>
                                 <td class="account_section_total">Revenue</td>
@@ -259,17 +271,10 @@
                                 <td class="amount_section">Amount</td>
                             </tr>
                             {%for key, value in focus_on.service_income.items%}
-                                {%if key == "VAT"%}
-                                    <tr>
-                                        <td class="account_section_total">{{value.Name}}</td>
-                                        <td class="amount_section_total">{{value.Amount}}</td>
-                                    </tr>
-                                {%else%}
-                                    <tr>
-                                        <td class="account" style="margin-left:50px;">{{value.Name}}</td>
-                                        <td class="amount">{{value.Amount}}</td>
-                                    </tr>
-                                {%endif%}
+                                <tr>
+                                    <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                    <td class="amount">{{value.Amount}}</td>
+                                </tr>
                             {%endfor%}
                             <tr>
                                 <td class="account_section_total">Revenue</td>
@@ -307,13 +312,10 @@
                                 <td class="amount_section">Amount</td>
                             </tr>
                             {%for key, value in focus_on.product_income.items%}
-                                {%if key == "VAT"%}
-                                {%else%}
-                                    <tr>
-                                        <td class="account" style="margin-left:50px;">{{value.Name}}</td>
-                                        <td class="amount">{{value.cog}}</td>
-                                    </tr>
-                                {%endif%}
+                                <tr>
+                                    <td class="account" style="margin-left:50px;">{{value.Name}}</td>
+                                    <td class="amount">{{value.cog}}</td>
+                                </tr>
                             {%endfor%}
                         </tbody>
                     </table>
@@ -450,18 +452,45 @@
                 <td class="separator"></td>
             </tr>
             <!-- VAT -->
-            <tr>
-                <td class="account_subTitle">Total VAT</td>
-                <td class="amount_subTitle">{{focus_on.total_vat}}</td>
-            </tr>
-            <tr>
-                <td class="separator"></td>
-            </tr>
+            {%if focus_on.total_vat%}
+                <tr>
+                    <td class="account_subTitle">Total VAT</td>
+                    <td class="amount_subTitle">{{focus_on.total_vat}}</td>
+                </tr>
+                <tr>
+                    <td class="separator"></td>
+                </tr>
+            {%elif focus_on.total_presumptive_tax%}
+                <tr>
+                    <td class="account_subTitle">Total Presumptive Tax</td>
+                    <td class="amount_subTitle">{{focus_on.total_presumptive_tax}}</td>
+                </tr>
+                <tr>
+                    <td class="separator"></td>
+                </tr>
+            {%endif%}
             <!-- Net Profit -->
             <tr class="stage_account">
                 <td class="account_subTitle">Net Profit</td>
                 <td class="amount_subTitle">{{focus_on.net_profit}}</td>
             </tr>
+            <!-- Income Tax -->
+            {%if focus_on.income_tax%}
+                <tr>
+                    <td class="separator"></td>
+                </tr>
+                <tr>
+                    <td class="account_subTitle">Income Tax</td>
+                    <td class="amount_subTitle">{{focus_on.income_tax}}</td>
+                </tr>
+                <tr>
+                    <td class="account_subTitle">Profit after Income Tax</td>
+                    <td class="amount_subTitle">{{focus_on.profit_after_income_tax}}</td>
+                </tr>
+                <tr>
+                    <td class="separator"></td>
+                </tr>
+            {%endif%}
             <!-- Profit Margin -->
             <tr>
                 <td class="account_subTitle">Profit Margin</td>

@@ -4,14 +4,6 @@ from django.contrib.auth.models import User
 from expenses.models import Expense
 
 
-class Shareholders(models.Model):
-    Business = models.ForeignKey(Business, on_delete=models.CASCADE, blank=True, null=True)
-    User = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    Date = models.DateTimeField(auto_now=True)
-    Value = models.IntegerField(blank=False, null=False, default=0)
-    Shares = models.IntegerField(blank=False, null=False, default=0)
-
-
 class Assets(models.Model):
     Business = models.ForeignKey(Business, on_delete=models.CASCADE, blank=True, null=True)
     TaxYear = models.ForeignKey(TaxYear, on_delete=models.CASCADE, blank=True, null=True)

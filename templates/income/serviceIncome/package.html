@@ -63,7 +63,7 @@
                 <td class="sth3">
                     <form method="post" class="delete">
                         {%csrf_token%}
-                        <button name="remove" value="{{s.id}}">
+                        <button type="submit" name="remove" value="{{s.id}}">
                             <i class="material-icons" style="font-size:15px">delete</i>
                         </button>
                     </form>

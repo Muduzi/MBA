@@ -15,14 +15,14 @@ class Profile(models.Model):
     Gender = models.CharField(null=True, choices=Options, max_length=8, default='Female')
     DOB = models.DateField(null=True)
     Photo = models.ImageField(null=True, upload_to='profile', width_field=None, height_field=None)
-    About = models.TextField(null=True, max_length=130)
+    About = models.TextField(null=True, blank=True, max_length=130)
     Contact1 = models.CharField(null=True, max_length=15)
     Contact2 = models.CharField(blank=True, null=True, max_length=15)
     City = models.CharField(null=True, max_length=50)
     Country = models.CharField(null=True, max_length=50)
-    Instagram = models.CharField(null=True, max_length=100)
-    Facebook = models.CharField(null=True, max_length=100)
-    Linkedin = models.CharField(null=True, max_length=100)
+    Instagram = models.CharField(null=True, blank=True, max_length=100)
+    Facebook = models.CharField(null=True, blank=True, max_length=100)
+    Linkedin = models.CharField(null=True, blank=True, max_length=100)
     options = [
         ('Business', 'Business'),
         ('Work', 'Work'),

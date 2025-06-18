@@ -11,9 +11,11 @@ from User.decorator import allowed_users
 from User.models import Employee
 from calendar import monthrange
 from datetime import datetime, timedelta, timezone
-from assets.models import Assets, Shareholders
-from User.models import CoreSettings, CashAccount, TaxYear, TaxAccount, TaxAccountThisYear
+from assets.models import Assets
+from User.models import CashAccount, TaxYear
+from management.views import presumptive_tax_calculator, income_tax_calculator
 from dateutil.relativedelta import relativedelta
+from management.views import total_salary_and_paye
 
 
 def get_tax_year(buss):
@@ -75,12 +77,10 @@ def expenses(buss, start, end):
             total_credit = credit
 
     if total_expense:
-        print('TE==============================================', total_expense)
         if total_expense < total_credit:
             paid_for = 0
         else:
             paid_for = total_expense - total_credit
-            print('paid_for==============================================', paid_for)
 
     # income record per inventory item
     prod = InventoryProduct.objects.filter(Business=buss)
@@ -154,6 +154,7 @@ def product_revenue(buss, tax_settings,  start, end):
     product_income = {}
     cog = 0
     total_product_vat = 0
+    total_product_presumptive_tax = 0
 
     # product income
     prod_income = ProductIncome.objects.filter(Business=buss, Date__range=(start, end))
@@ -163,11 +164,14 @@ def product_revenue(buss, tax_settings,  start, end):
         total_product_income = 0
     total_product_income = round(total_product_income)
 
-    if tax_settings.ShowEstimates and tax_settings.IncludeVAT:
-        try:
-            total_product_vat = round((total_product_income * tax_settings.VATRate) / 100)
-        except ZeroDivisionError:
-            pass
+    if tax_settings.ShowEstimates:
+        if tax_settings.IncludeVAT:
+            try:
+                total_product_vat = round((total_product_income * tax_settings.VATRate) / 100)
+            except ZeroDivisionError:
+                pass
+        elif tax_settings.IncludePresumptiveTax:
+            total_product_presumptive_tax = presumptive_tax_calculator(total_product_income)
 
     """income record per inventory item"""
     prod = InventoryProduct.objects.filter(Business=buss)
@@ -188,11 +192,12 @@ def product_revenue(buss, tax_settings,  start, end):
         cog += prod_info.BPrice * quantity
 
         product_income[p.id] = {'Name': p.Name, 'cog': prod_info.BPrice * quantity, 'revenue': total}
-    return product_income, total_product_income, cog, total_product_vat
+    return product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax
 
 
 def service_revenue(buss, tax_settings, start, end):
     total_service_vat = 0
+    total_service_presumptive_tax = 0
     service_income = {}
 
     # all income
@@ -222,14 +227,18 @@ def service_revenue(buss, tax_settings, start, end):
         total_service_income = 0
     total_service_income = round(total_service_income)
 
-    if tax_settings.ShowEstimates and tax_settings.IncludeVAT:
-        try:
-            total_service_vat = round((total_service_income * tax_settings.VATRate) / 100)
-        except ZeroDivisionError:
-            pass
+    if tax_settings.ShowEstimates:
+        if tax_settings.IncludeVAT:
+            try:
+                total_service_vat = round((total_service_income * tax_settings.VATRate) / 100)
+                total_service_presumptive_tax = 0
+            except ZeroDivisionError:
+                pass
+        elif tax_settings.IncludePresumptiveTax:
+            total_service_presumptive_tax = presumptive_tax_calculator(total_service_income)
+            total_service_vat = 0
 
-    service_income['VAT'] = {'Name': 'Service VAT', 'Amount': total_service_vat}
-    return service_income, total_service_income, total_service_vat
+    return service_income, total_service_income, total_service_vat, total_service_presumptive_tax
 
 
 def debt_total(buss, start, end):
@@ -254,13 +263,16 @@ def debt_total(buss, start, end):
     return total_debt
 
 
-def totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
+def totals_and_profits(buss_id, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                       total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
                        total_service_income, cog, total_expense):
 
     income_in_hand = 0
-    revenue_after_vat = 0
-
-    total_vat = total_service_vat + total_product_vat
+    revenue_after_tax = 0
+    total_vat = 0
+    total_presumptive_tax = 0
+    income_tax = 0
+    profit_after_income_tax = 0
 
     total_sales = total_product_income + total_service_income
 
@@ -271,17 +283,34 @@ def totals_and_profits(tax_settings, total_debt, total_service_vat, total_produc
     if not total_expense:
         total_expense = 0
 
-    op = total_sales - total_expense
+    # operational profit
+    op = gp - total_expense
 
-    if tax_settings.IncludeVAT:
-        net_profit = (gp - total_expense - total_vat)
+    # Revenue after vat
+    if tax_settings.ShowEstimates:
+        if tax_settings.IncludeVAT:
+            total_vat = total_service_vat + total_product_vat
+            revenue_after_tax = op - total_vat
+
+        elif tax_settings.IncludePresumptiveTax:
+            total_presumptive_tax = total_product_presumptive_tax + total_service_presumptive_tax
+            revenue_after_tax = op - total_presumptive_tax
     else:
-        net_profit = gp - total_expense
+        revenue_after_tax = op
+
+    # net profit and profit percentage(margin)
+    net_profit = (revenue_after_tax - total_expense)
 
     try:
         profit_perc = round(net_profit / total_sales * 100)
     except ZeroDivisionError:
         profit_perc = 0
+
+    # profit after tax(income tax)
+    # income tax is paid on profits if annual turnover exceeds 12,500,000
+    if tax_settings.IncludeIncomeTax:
+        income_tax = income_tax_calculator(net_profit)
+        profit_after_income_tax = net_profit - income_tax
 
     # cash in hand
     if total_debt:
@@ -289,47 +318,26 @@ def totals_and_profits(tax_settings, total_debt, total_service_vat, total_produc
     else:
         income_in_hand = total_sales
 
-    # Revenue after vat
-    if tax_settings.ShowEstimates and tax_settings.IncludeVAT:
-        revenue_after_vat = total_sales - total_vat
-
-    return total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand
+    return (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+            net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand)
 
 
+# this app works on the assumption that the business is under sore proprietorship
 def pay_out(buss, net_profit):
     pay_out_ratio = 0
-    retained_earnings = 0
-    total = 0
-    pay_out_percentage = 0
-    dividends = {}
     cash_account = CashAccount.objects.get(Business=buss)
-    if cash_account.TotalShares:
-        total_shares = cash_account.TotalShares
-    else:
-        total_shares = 0
-    shareholders = Shareholders.objects.filter(Business=buss)
 
     if cash_account.PayoutRatio:
         pay_out_ratio = cash_account.PayoutRatio/100
 
     try:
-        dividends_per_share = round(((net_profit * pay_out_ratio) / total_shares), 1)
-
+        total_dividends = round((net_profit * pay_out_ratio), 2)
     except ZeroDivisionError:
-        dividends_per_share = 0
+        total_dividends = 0
 
-    total_dividends = round(dividends_per_share * total_shares)
     retained_earnings = net_profit - total_dividends
 
-    for sh in shareholders:
-        try:
-            pay_out_percentage = (sh.Shares / total_shares) * 100
-        except ZeroDivisionError:
-            pay_out_percentage = 0
-        dividends[sh] = {'shares': sh.Shares, 'pay_out_percentage': pay_out_percentage,
-                         'total_dividends': total_dividends * (pay_out_percentage/100)}
-
-    return total_dividends, dividends, retained_earnings
+    return total_dividends, retained_earnings
 
 
 @login_required(login_url="/login/")
@@ -363,13 +371,21 @@ def profit_and_loss(request):
 
         paid_for += total_annual_depreciation
 
-        product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
-        service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
+        product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax =\
+            product_revenue(buss, tax_settings, start, end)
+
+        service_income, total_service_income, total_service_vat, total_service_presumptive_tax =\
+            service_revenue(buss, tax_settings, start, end)
+
         total_debt = debt_total(buss, start, end)
-        total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
-            totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
-                               total_service_income, cog, total_expense))
-        total_dividends, dividends, retained_earnings = pay_out(buss, net_profit)
+
+        (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+         net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand) = \
+            totals_and_profits(buss.id, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                               total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
+                               total_service_income, cog, total_expense)
+
+        total_dividends, retained_earnings = pay_out(buss, net_profit)
 
     except Employee.DoesNotExist:
         return HttpResponse("Failed to process your profile please try refreshing your browser or contact developer if"
@@ -381,7 +397,8 @@ def profit_and_loss(request):
         'total_service_income': total_service_income,
         'total_sales': total_sales,
         'total_vat': total_vat,
-        'revenue_after_vat': revenue_after_vat,
+        'total_presumptive_tax': total_presumptive_tax,
+        'revenue_after_tax': revenue_after_tax,
         'income_in_hand': income_in_hand,
         'paid_for': paid_for,
         'oe': operational_expense,
@@ -398,6 +415,8 @@ def profit_and_loss(request):
         'gp': gp,
         'op': op,
         'net_profit': net_profit,
-        'profit_perc': profit_perc,
+        'income_tax': income_tax,
+        'profit_after_income_tax': profit_after_income_tax,
+        'profit_perc': profit_perc
     }
     return render(request, 'profit_and_Loss.html', context)

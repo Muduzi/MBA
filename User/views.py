@@ -11,9 +11,8 @@ from User.decorator import allowed_users
 from django.db.models import Sum, Q
 from datetime import datetime, timezone
 from calendar import monthrange
-from assets.models import Shareholders
 from User.models import CashAccount
-from expenses.models import Expense
+from expenses.models import Expense, ExpenseAccount
 from .business import income_tax_calculater
 from User.models import TaxSettings, TaxAccount, TaxAccountThisYear, TaxYear
 from .business import get_tax_year
@@ -21,7 +20,7 @@ from itertools import chain
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from income.invoice import date_initial
-
+from management.views import pay_as_you_earn_calculator
 # Create your views here.
 
 
@@ -125,7 +124,7 @@ def profile_form(request):
             contact2 = request.POST.get('contact2')
             instagram = request.POST.get('instagram')
             facebook = request.POST.get('facebook')
-            twitter = request.POST.get('twitter')
+            linkedin = request.POST.get('linkedin')
             city = request.POST.get('city')
             country = request.POST.get('country')
 
@@ -133,40 +132,71 @@ def profile_form(request):
                 if user_obj.username != username:
                     user_obj.username = username
                     user_obj.save()
+            elif not username and user_obj.username:
+                messages.error(request, 'username field can not be blank')
 
             if dob:
                 if prof.DOB != dob:
                     prof.DOB = dob
+            elif not dob and prof.DOB:
+                messages.error(request, 'date of birth field can not be blank')
+
             if gender:
                 if prof.Gender != gender:
                     prof.Gender = gender
+            elif not gender and prof.Gender:
+                messages.error(request, 'Gender field can not be blank')
+
             if photo:
                 if prof.Photo != photo:
                     prof.Photo = photo
+            elif not photo and prof.Photo:
+                messages.error(request, 'photo field can not be blank')
+
             if about:
                 if prof.About != about:
                     prof.About = about
+            elif not about and prof.About:
+                prof.About = None
+
             if contact1:
                 if prof.Contact1 != contact1:
                     prof.Contact1 = contact1
+            elif not contact1 and prof.Contact1:
+                messages.error(request, 'contact1 field can not be blank')
+
             if contact2:
                 if prof.Contact2 != contact2:
                     prof.Contact2 = contact2
+            elif not contact2 and prof.Contact2:
+                prof.Contact2 = None
+
             if city:
                 if prof.City != city:
                     prof.City = city
+
             if country:
                 if prof.Country != country:
                     prof.Country = country
+
             if instagram:
                 if prof.Instagram != instagram:
                     prof.Instagram = instagram
+            elif not instagram and prof.Instagram:
+                prof.Instagram = None
+
             if facebook:
                 if prof.Facebook != facebook:
                     prof.Facebook = facebook
-            if twitter:
-                if prof.Twitter != twitter:
-                    prof.Twitter = twitter
+            elif not facebook and prof.Facebook:
+                prof.Facebook = None
+
+            if linkedin:
+                if prof.Linkedin != linkedin:
+                    prof.Linkedin = linkedin
+            elif not linkedin and prof.Linkedin:
+                prof.Linkedin = None
+
             prof.save()
 
     except Profile.DoesNotExist:
@@ -197,11 +227,7 @@ def departments_view(request):
             print('emp_count', employees_count)
             for d in dep_table:
                 number = Employee.objects.filter(Business=buss, Department=d).count()
-                departments[d.id] = {}
-                departments[d.id]['Name'] = d.Name
-                departments[d.id]['Head'] = d.Head
-                departments[d.id]['Description'] = d.Description
-                departments[d.id]['count'] = number
+                departments[d.id] = {'Name': d.Name, 'Head': d.Head, 'Description': d.Description, 'count':  number}
                 number = 0
 
         if 'save' in request.POST:
@@ -325,17 +351,29 @@ def department_view(request, id=0):
                     else:
                         for i in employees:
                             try:
-                                Salary(TaxAccountThisYear=paye_account_this_year, Employee=i, Amount=i.Salary).save()
+                                salary = Salary(TaxAccountThisYear=paye_account_this_year, Employee=i, Amount=i.Salary)
+                                salary.save()
 
                                 cash_account.Value -= total_salaries
                                 cash_account.save()
 
-                                note = 'Depart of' + department.Name+f' Salary '
-                                e = Expense(Business=buss, Cashier=request.user, Name='Salary', Price=total_salaries,
-                                            Type="Payroll", Quantity=1, PMode='Cash', Notes=note)
+                                note = f'Salary paid to {i.User.get_full_name()}, {department.Name} department'
+
+                                try:
+                                    expense_account = ExpenseAccount.objects.get(Business=buss, Name='Salaries')
+                                except ExpenseAccount.DoesNotExist():
+                                    expense_account = ExpenseAccount(Business=buss, Cashier=request.user,
+                                                                     Name='Salaries', Type='Payroll',
+                                                                     Interval='Monthly', AutoRecord=False,
+                                                                     Notes='')
+                                    expense_account.save()
+
+                                e = Expense(Business=buss, Cashier=request.user, ExpenseAccount=expense_account,
+                                            Salary=salary, Name='Salary', Price=total_salaries, Type="Payroll",
+                                            Quantity=1, PMode='Cash', Notes=note)
                                 e.save()
 
-                                messages.success(request, 'Salary payment record made')
+                                messages.success(request, 'Salary payment record made successfully')
                             except Exception as e:
                                 messages.error(request, f'{e}')
 
@@ -495,7 +533,7 @@ def employee_form(request, purpose='', id=0, ID=0):
                             employee.save()
                         except Exception as e:
                             messages.error(request, f'{e}')
-                        paye = income_tax_calculater(salary)
+                        paye = pay_as_you_earn_calculator(Salary)
                         messages.success(request, 'employee profile successfully made')
                         if paye != 0:
                             time.sleep(3)

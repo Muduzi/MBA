@@ -43,15 +43,9 @@
     <button type="button" onclick="window.location.href='/add_inventory/';">
         <i class="material-icons" style="font-size:18px">add</i>&nbsp;product
     </button>
-    {%if back_url%}
-        <button type="button" onclick="window.location.href='{{back_url}}';">
-            <i class="material-icons" style="font-size:18px">arrow_forward</i>
-        </button>
-    {%else%}
-        <button type="button" onclick="window.location.href='/management/';">
-            <i class="material-icons" style="font-size:18px">arrow_forward</i>
-        </button>
-    {%endif%}
+    <button type="button" onclick="window.location.href='/management/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
 </div>
 
 <form method="post" id="popup">

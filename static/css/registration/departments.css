@@ -138,6 +138,12 @@ tbody{
 tbody tr{
     height:30px;
 }
+tbody tr:hover{
+    cursor:hand;
+    color:#2B3856;
+    font-weight:550;
+    background:rgba(10, 100, 10, 0.1);
+}
 tr{
     display:flex;
     align-items:center;

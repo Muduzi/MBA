@@ -343,7 +343,8 @@ def add_inventory(request, id=0):
                                                     CurrentQuantity=quantity, InitialValue=total, CurrentValue=total,
                                                     ReorderPerc=reorder, Code=code)
                     inv_info.save()
-                    initial.delete()
+                    if initial:
+                        initial.delete()
                     if draft_count > 1:
                         return redirect('/add_inventory/')
                     else:
@@ -351,8 +352,11 @@ def add_inventory(request, id=0):
 
             if 'this_draft' in request.POST:
                 choice = request.POST.get("selected_draft")
-                choice = int(choice)
-                initial = InventoryDraft.objects.get(pk=choice)
+                if choice:
+                    choice = int(choice)
+                    initial = InventoryDraft.objects.get(pk=choice)
+                else:
+                    messages.error(request, 'please select an item')
 
     except Employee.DoesNotExist:
         return HttpResponse("Failed to process your profile please try refreshing your browser or contact developer if"

@@ -11,24 +11,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-{%if messages%}
-    {%for message in messages%}
-        <div class="messages" id="mssg">
-            <button type="button"  class="close" onclick="closeMssg()">
-                <i class="material-icons" style="font-size:20px; border:hidden;">close</i>
-            </button>
-            {%if 'info' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:blue; border:hidden;">info</i>{{message}}</text>
-            {%elif 'warning' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:black; border:hidden; ">warning</i>{{message}}</text>
-            {%elif 'error' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:red; border:hidden;">error</i>{{message}}</text>
-            {%elif 'success' in message.tags%}
-                <text class="message"><i class="material-icons" style="font-size:20px; color:green; border:hidden;">check</i>{{message}}</text>
-            {%endif%}
-        </div>
-    {%endfor%}
-{%endif%}
+<title>Taxes</title>
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
 
 <div class="Navigation">
     <button type="button" onclick="openTaxAccountForm()">
@@ -122,21 +108,33 @@
 
 <form method="post" id="taxForm">
     {%csrf_token%}
-    <label>Show Tax estimates</label>
-    <input type="checkbox" name="show_estimate" {%if tax_settings.ShowEstimates%} checked {%endif%}>
-    <label>Include VAT in statement calculations</label>
-    <input type="checkbox" name="include_vat" {%if tax_settings.IncludeVAT%} checked {%endif%}>
-    <label>Include PAYE in statement calculations</label>
-    <input type="checkbox" name="include_paye"  {%if tax_settings.IncludePAYE%} checked {%endif%}>
-    <label>Include PRESUMPTIVE TAX in statement calculations</label>
-    <input type="checkbox" name="include_presumptive_tax"  {%if tax_settings.IncludePresumptiveTax%} checked {%endif%}>
-    <label>Include INCOME TAX in statement calculations</label>
-    <input type="checkbox" name="include_income_tax"  {%if tax_settings.IncludeIncomeTax%} checked {%endif%}>
+    <div class="input_container">
+        <input type="checkbox" name="show_estimate" {%if tax_settings.ShowEstimates%} checked {%endif%}>
+        &nbsp;&nbsp;<label>Tax Estimates</label>
+    </div>
+    <div class="input_container">
+        <input type="checkbox" name="include_presumptive_tax"  {%if tax_settings.IncludePresumptiveTax%} checked {%endif%}>
+        &nbsp;&nbsp;<label>Presumptive Tax </label>
+    </div>
+    <div class="input_container">
+        <input type="checkbox" name="include_vat" {%if tax_settings.IncludeVAT%} checked {%endif%}>
+        &nbsp;&nbsp;<label>Value Added Tax</label>
+    </div>
+    <div class="input_container">
+        <input type="checkbox" name="include_income_tax"  {%if tax_settings.IncludeIncomeTax%} checked {%endif%}>
+        &nbsp;&nbsp;<label>Income Tax</label>
+    </div>
+    <div class="input_container">
+        <input type="checkbox" name="include_paye"  {%if tax_settings.IncludePAYE%} checked {%endif%}>
+        &nbsp;&nbsp;<label>Pay As You Earn Tax</label>
+    </div>
+    <!--
     <label for="slider">VAT rate: <span id="VatRate"></span>%</label>
     <input type="range" id="slider" name="vat_rate" {%if tax_settings.VATRate%} value="{{tax_settings.VATRate}}"{%else%}value="16.5" {%endif%} placeholder="select reorder percentage">
+    -->
     <div class="but">
-        <button type = 'submit' class = 'save' name="tax_settings">Save</button>
-        <button type = 'button' class = 'cancel' onclick="closeTaxForm()">Cancel</button>
+        <button type = 'submit' class = 'save' name="tax_settings">save</button>
+        <button type = 'button' class = 'cancel' onclick="closeTaxForm()">cancel</button>
     </div>
 </form>
 

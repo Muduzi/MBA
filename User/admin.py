@@ -18,3 +18,4 @@ admin.site.register(TaxSettings)
 admin.site.register(CoreSettings)
 admin.site.register(CashAccount)
 admin.site.register(BusinessDashContent)
+

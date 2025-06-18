@@ -1,7 +1,7 @@
 from django.shortcuts import (render, redirect, HttpResponse)
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from User.models import Profile, Department, Business, Employee
+from User.models import Profile, Department, Business, Employee, EmployeeAllowance, Allowance
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -9,19 +9,20 @@ from User.decorator import allowed_users
 from django.db.models import Sum, Q
 from datetime import datetime, timedelta, timezone
 from calendar import monthrange
-from assets.models import Shareholders
 from .models import (CoreSettings, CashAccount, TaxSettings, TaxYear, TaxAccount, TaxAccountThisYear, TaxInstallments,
                      Salary, Allowance, EmployeeIncentives, BusinessDashContent)
 from statements.profitAndLoss import (get_tax_year, expenses, product_revenue, service_revenue, debt_total,
                                       totals_and_profits, pay_out)
-from statements.views1 import balance_stats
-from itertools import chain
 from income.product_income_dash import product_monthly_records_this_year, product_daily_records_this_month
 from income.service_income_dash import service_monthly_records_this_year, services_daily_records_this_month
+from expenses.models import ExpenseAccount
 from expenses.expenses_dash import monthly_expenses_this_year, daily_expenses_this_month
 from income.invoice import get_invoices
 from django.core.cache import cache
 from celery import shared_task
+from management.models import PayAsYouEarn, PayAsYouEarnThreshold
+from management.views import (pay_as_you_earn_calculator, presumptive_tax_calculator, income_tax_calculator,
+                              total_salary_and_paye)
 
 
 def find_user(search_item):
@@ -58,14 +59,10 @@ def business(request):
         buss = Business.objects.get(Owner=request.user.id)
         buss_id = buss.id
 
-        owners_share = Shareholders.objects.get(User=buss.Owner)
-
         try:
             core_settings = CoreSettings.objects.get(Business__id=buss_id)
         except CoreSettings.DoesNotExist:
-            if owners_share:
-                value = owners_share.Capital
-            core_settings = CoreSettings(Business=buss, Value=value)
+            core_settings = CoreSettings(Business=buss, Value=0)
             core_settings.save()
 
         try:
@@ -76,7 +73,7 @@ def business(request):
         try:
             cash_account = CashAccount.objects.get(Business__id=buss_id)
         except CashAccount.DoesNotExist:
-            cash_account = CashAccount(Business=buss, Value=0, TotalShares=100, PayoutRatio=20)
+            cash_account = CashAccount(Business=buss, Value=0, PayoutRatio=20)
             cash_account.save()
         pay_out_ratio_remainder = 100 - cash_account.PayoutRatio
 
@@ -116,13 +113,22 @@ def business(request):
 
             (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
              total_payroll_expense, total_discount, discounts) = expenses(buss_id, start, end)
-            product_income, total_product_income, cog, total_product_vat = product_revenue(buss_id, tax_settings, start, end)
-            service_income, total_service_income, total_service_vat = service_revenue(buss_id, tax_settings, start, end)
+
+            product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax = (
+                product_revenue(buss_id, tax_settings, start, end))
+
+            service_income, total_service_income, total_service_vat, total_service_presumptive_tax = (
+                service_revenue(buss_id, tax_settings, start, end))
+
             total_debt = debt_total(buss_id, start, end)
-            total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
-                totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
-                                   total_service_income, cog, total_expense))
-            total_dividends, dividends, retained_earnings = pay_out(buss_id, net_profit)
+
+            (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+                net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand) =\
+                totals_and_profits(buss_id, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                                   total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
+                                   total_service_income, cog, total_expense)
+
+            total_dividends, retained_earnings = pay_out(buss_id, net_profit)
 
             # income_expense graph(business overview)
             #  this year
@@ -314,9 +320,6 @@ def business(request):
             cash_account.PayoutRatio = pay_out_ratio
             cash_account.save()
 
-            owners_share.Value += amount
-            owners_share.save()
-
             return redirect('/business/')
 
         if 'search' in request.POST:
@@ -433,48 +436,69 @@ def edit_business_profile(request):
             if photo:
                 if ini.Photo != photo:
                     ini.Photo = photo
+
             if name:
                 if ini.Name != name:
                     ini.Name = name
+
             if type:
                 if ini.Type != type:
                     ini.Type = type
+
             if about:
                 if ini.About != about:
                     ini.About = about
+
             if email:
                 if ini.Email != email:
                     ini.Email = email
+
             if postbox:
                 if ini.PostBox != postbox:
                     ini.PostBox = postbox
+
             if address:
                 if ini.Address != address:
                     ini.Address = address
+
             if contact1:
                 if ini.Contact1 != contact1:
                     ini.Contact1 = contact1
+
             if contact2:
                 if ini.Contact2 != contact2:
                     ini.Contact2 = contact2
+
             if city:
                 if ini.City != city:
                     ini.City = city
+
             if country:
                 if ini.Country != country:
                     ini.Country = country
+
             if zipcode:
                 if ini.ZipCode != zipcode:
                     ini.ZipCode = zipcode
+
             if instagram:
                 if ini.Instagram != instagram:
                     ini.Instagram = instagram
+            elif not instagram and ini.Instagram:
+                ini.Instagram = None
+
             if facebook:
                 if ini.Facebook != facebook:
                     ini.Facebook = facebook
+            elif not facebook and ini.Facebook:
+                ini.Facebook = None
+
             if linkedin:
                 if ini.Linkedin != linkedin:
                     ini.Linkedin = linkedin
+            elif not linkedin and ini.Linkedin:
+                ini.Linkedin = None
+
             ini.save()
 
             return redirect('/business_profile/')
@@ -483,6 +507,7 @@ def edit_business_profile(request):
             'bus_types': bus_types
         }
     except Business.DoesNotExist:
+
         group = Group.objects.get(name='Business(Owner)')
         if request.method == 'POST':
             (photo, name, Type, about, address, email, contact1, contact2, address, postbox, city,
@@ -509,8 +534,7 @@ def edit_business_profile(request):
                 buss.save()
                 TaxSettings(Business=buss, VATRate=16.5).save()
                 CoreSettings(Business=buss, Capital=0).save()
-                CashAccount(Business=buss, Value=0, TotalShares=100, PayoutRatio=20).save()
-                Shareholders(Business=buss, User=request.user, Date=datetime.now(), Value=0).save()
+                CashAccount(Business=buss, Value=0, PayoutRatio=20).save()
                 TaxAccount(Business=buss, Name='VAT', Interval='Annually', Notes='').save()
                 TaxAccount(Business=buss, Name='PAYE', Interval='Annually', Notes='').save()
                 TaxAccount(Business=buss, Name='PRESUMPTIVE', Interval='Quarterly', Notes='').save()
@@ -518,7 +542,8 @@ def edit_business_profile(request):
                 dep = Department(Business=buss, Name='Executive', Description='Decision making and Planning')
                 dep.save()
                 Employee(User=request.user, Business=buss, Department=dep, Duty=dep.Description, AccessLevel=group).save()
-
+                ExpenseAccount(Business=buss, Cashier=request.user, Name='Salaries', Type='Payroll', Interval='Monthly',
+                               AutoRecord=False, Notes='').save()
                 return redirect('/business/')
 
         context = {
@@ -561,46 +586,6 @@ def presumptive_tax_calculater(total_sales):
     return presumptive_tax
 
 
-def total_salary_and_paye(tax_settings, start, end):
-    total_paye = 0
-
-    salaries = Salary.objects.filter(Date__range=(start, end))
-    total_salary = salaries.aggregate(Sum('Amount'))
-    total_salary = total_salary['Amount__sum']
-    if not total_salary:
-        total_salary = 0
-
-    allowances = Allowance.objects.filter(Date__range=(start, end))
-    total_allowances = allowances.aggregate(Sum('Amount'))
-    total_allowances = total_allowances['Amount__sum']
-    if not total_allowances:
-        total_allowances = 0
-
-    incentives = EmployeeIncentives.objects.filter(Date__range=(start, end))
-    total_incentives = incentives.aggregate(Sum('Amount'))
-    total_incentives = total_incentives['Amount__sum']
-    if not total_incentives:
-        total_incentives = 0
-    if tax_settings.ShowEstimates and tax_settings.IncludePAYE:
-        if salaries:
-            for s in salaries:
-                paye = income_tax_calculater(s.Amount)
-                total_paye += paye
-
-        if allowances:
-            for a in allowances:
-                paye = income_tax_calculater(a.Amount)
-                total_paye += paye
-
-        if incentives:
-            for i in incentives:
-                paye = income_tax_calculater(i.Amount)
-                total_paye += paye
-
-    total_payments_to_employees = total_salary + total_allowances + total_incentives
-    return total_paye, total_payments_to_employees
-
-
 def make_installment(tax_year, year_account, amount):
     try:
         TaxInstallments(TaxAccountThisYear=year_account, Amount=amount).save()
@@ -611,36 +596,8 @@ def make_installment(tax_year, year_account, amount):
         return f'unable to make the installment because of {e}'
 
 
-def check_income_threshold(buss, total_sales):
-    try:
-        tax_settings = TaxSettings.objects.get(Business=buss)
-        if tax_settings.ShowEstimates:
-            if total_sales > 12500000 and tax_settings.IncludePresumptiveTax and not tax_settings.IncludeIncomeTax:
-                tax_settings.IncludePresumptiveTax = False
-                tax_settings.IncludeIncomeTax = True
-                tax_settings.save()
-
-            elif total_sales > 12500000 and tax_settings.IncludePresumptiveTax and tax_settings.IncludeIncomeTax:
-                tax_settings.IncludePresumptiveTax = False
-                tax_settings.save()
-
-            elif total_sales <= 12500000 and not tax_settings.IncludePresumptiveTax and tax_settings.IncludeIncomeTax:
-                tax_settings.IncludePresumptiveTax = True
-                tax_settings.IncludeIncomeTax = False
-                tax_settings.save()
-
-            elif total_sales <= 12500000 and tax_settings.IncludePresumptiveTax and tax_settings.IncludeIncomeTax:
-                tax_settings.IncludeIncomeTax = False
-                tax_settings.save()
-
-        if tax_settings.IncludeIncomeTax:
-            return 'income_tax'
-        elif tax_settings.IncludePresumptiveTax:
-            return 'presumptive_tax'
-
-    except TaxSettings.DoesNotExist:
-        TaxSettings(VATRate=16.5, ShowEstimates=False, IncludeVAT=False, IncludePAYE=False, IncludePresumptiveTax=False,
-                    IncludeIncomeTax=False).save()
+def check_threshold(total_sales):
+    return
 
 
 def taxes(request):
@@ -663,6 +620,7 @@ def taxes(request):
         core_settings = CoreSettings.objects.get(Business=buss)
         tax_settings = TaxSettings.objects.get(Business=buss)
         tax_accounts = TaxAccount.objects.filter(Business=buss)
+
         if tax_accounts:
             tax_account_count = tax_accounts.count()
         else:
@@ -676,27 +634,55 @@ def taxes(request):
 
             (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
              total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
-            product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
-            service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
+
+            product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax =\
+                product_revenue(buss, tax_settings, start, end)
+
+            service_income, total_service_income, total_service_vat, total_service_presumptive_tax = (
+                service_revenue(buss, tax_settings, start, end))
+
             total_debt = debt_total(buss, start, end)
-            total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
-                totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
-                                   total_service_income, cog, total_expense))
-            total_paye, total_payments_to_employees = total_salary_and_paye(tax_settings, this_tax_year.TaxYearStart,
-                                                                            this_tax_year.TaxYearEnd)
 
-            check_result = check_income_threshold(buss, total_sales)
-            if check_result == 'presumptive_tax' and tax_settings.IncludePresumptiveTax:
-                presumptive_tax = presumptive_tax_calculater(total_sales)
+            (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+             net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand) = \
+                totals_and_profits(buss.id, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                                   total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
+                                   total_service_income, cog, total_expense)
+
+            if tax_settings.ShowEstimates:
+                if total_sales > 12500000 and tax_settings.IncludePresumptiveTax:
+                    tax_settings.IncludePresumptiveTax = False
+                    tax_settings.IncludeIncomeTax = True
+                    tax_settings.save()
+
+                if total_sales <= 12500000 and tax_settings.IncludeVAT:
+                    tax_settings.IncludePresumptiveTax = True
+                    tax_settings.IncludeVAT = False
+                    tax_settings.IncludeIncomeTax = False
+                    tax_settings.save()
+
+                elif total_sales >= 25000000 and (tax_settings.IncludePresumptiveTax or tax_settings.IncludeIncomeTax):
+                    tax_settings.IncludeVAT = True
+                    tax_settings.save()
+
+            # presumptive tax is paid on annual turnover if it is below 12,500,000
+            if tax_settings.IncludePresumptiveTax:
+                presumptive_tax = presumptive_tax_calculator(total_sales)
                 total_tax += presumptive_tax
-            elif check_result == 'income_tax' and tax_settings.IncludeIncomeTax:
-                income_tax = income_tax_calculater(total_sales)
-                total_tax += income_tax
 
+            # income tax is paid on profit if annual turnover exceeds 12,500,000
+            # it is a final tax, no need for income tax
+            if tax_settings.IncludeIncomeTax:
+                income_tax = income_tax_calculator(net_profit)
+
+            # vat is paid on annual turnover(revenue generated) if the turnover exceeds 25,000,000
+            # you are also required to pay income tax
             if tax_settings.IncludeVAT:
                 total_tax += total_vat
 
+            # pay as you earn is paid on salaries, allowances and other taxable earnings
             if tax_settings.IncludePAYE:
+                total_paye, total_payments_to_employees = total_salary_and_paye(buss.id, start, end)
                 total_tax += total_paye
 
             balance = total_tax - paid
@@ -707,7 +693,7 @@ def taxes(request):
                     if a.Name == 'VAT':
                         if total_vat:
                             try:
-                                vat_account_this_year = TaxAccountThisYear.objects.get(TaxAccount=a,
+                                vat_account_this_year = TaxAccountThisYear.objects.get(TaxAccount__id=a.id,
                                                                                        TaxYear=this_tax_year)
                                 if vat_account_this_year.AccumulatedTotal != total_vat:
                                     vat_account_this_year.AccumulatedTotal = total_vat
@@ -719,7 +705,7 @@ def taxes(request):
 
                     if a.Name == 'PAYE':
                         try:
-                            paye_account_this_year = TaxAccountThisYear.objects.get(TaxAccount=a, TaxYear=this_tax_year)
+                            paye_account_this_year = TaxAccountThisYear.objects.get(TaxAccount__id=a.id, TaxYear=this_tax_year)
                             if paye_account_this_year.AccumulatedTotal != total_paye:
                                 paye_account_this_year.AccumulatedTotal = total_paye
                                 paye_account_this_year.save()
@@ -730,7 +716,7 @@ def taxes(request):
 
                     if a.Name == 'INCOME':
                         try:
-                            income_account_this_year = TaxAccountThisYear.objects.get(TaxAccount=a,
+                            income_account_this_year = TaxAccountThisYear.objects.get(TaxAccount__id=a.id,
                                                                                       TaxYear=this_tax_year)
                             if income_account_this_year.AccumulatedTotal != income_tax:
                                 income_account_this_year.AccumulatedTotal = income_tax
@@ -754,7 +740,7 @@ def taxes(request):
 
                 for a in tax_accounts:
                     try:
-                        account_this_year = TaxAccountThisYear.objects.get(TaxAccount=a, TaxYear=this_tax_year)
+                        account_this_year = TaxAccountThisYear.objects.get(TaxAccount__id=a.id, TaxYear=this_tax_year)
                         account_installments = TaxInstallments.objects.filter(TaxAccountThisYear=account_this_year)
 
                         if account_installments:
@@ -770,10 +756,7 @@ def taxes(request):
 
                     except TaxAccountThisYear.DoesNotExist:
                         TaxAccountThisYear(TaxAccount=a, TaxYear=this_tax_year, AccumulatedTotal=0).save()
-                        taxes_this_year[a] = {}
-                        taxes_this_year[a]['Total'] = None
-                        taxes_this_year[a]['Paid'] = None
-                        taxes_this_year[a]['Balance'] = None
+                        taxes_this_year[a] = {'Total': None, 'Paid': None, 'Balance': None}
 
             if 'tax_settings' in request.POST:
                 show_estimate = request.POST.get('show_estimate')
@@ -782,6 +765,11 @@ def taxes(request):
                 include_presumptive_tax = request.POST.get('include_presumptive_tax')
                 include_income_tax = request.POST.get('include_income_tax')
                 vat_rate = request.POST.get('vat_rate')
+
+                # evaluate these switches
+                # remove them and replace with better ones if  needed or just remove them
+                # check if changes are mirrored in the statements
+                # continue to error messages view
 
                 if show_estimate != 'on' and tax_settings.ShowEstimates:
                     tax_settings.ShowEstimates = False
@@ -795,6 +783,7 @@ def taxes(request):
                     change += 1
                 elif include_vat == 'on' and not tax_settings.IncludeVAT:
                     tax_settings.IncludeVAT = True
+                    tax_settings.IncludeIncomeTax = True
                     change += 1
 
                 if include_paye != 'on' and tax_settings.IncludePAYE:
@@ -820,7 +809,6 @@ def taxes(request):
                     tax_settings.IncludeIncomeTax = True
                     if tax_settings.IncludePresumptiveTax:
                         tax_settings.IncludePresumptiveTax = False
-                    check_income_threshold(buss, total_sales)
                     change += 1
                 if vat_rate:
                     if vat_rate != tax_settings.VATRate:
@@ -932,32 +920,3 @@ def taxes(request):
         'tax_account_count': tax_account_count
     }
     return render(request, 'registration/taxes.html', context)
-
-
-"""if 'add_shareholder' in request.POST:
-    search_item = request.POST.get('search')
-    user_id = request.POST.get('user_id')
-    amount = request.POST.get('amount')
-    amount = int(amount)
-
-    book_value = total_assets
-
-    shares = (amount / core_settings.Capital) * 1000
-
-    if search_item:
-        search_result = find_user(search_item)
-        if not search_result:
-            messages.error(request, 'This User does not Exist')
-
-    elif user_id:
-        try:
-            new_shareholder = User.objects.get(Business=buss, pk=user_id)
-
-            sh = Shareholders(Business=buss, User=new_shareholder, date=datetime.now(), Value=amount)
-            sh.save()
-            cash_account.Value += int(amount)
-            cash_account.save()
-            return redirect('/business/')
-        except User.DoesNotExist:
-            messages.error(request, "This user does not exist")
-"""

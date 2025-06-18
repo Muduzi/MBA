@@ -56,12 +56,8 @@
     </thead>
     <tbody>
     {%for key, value in departments.items%}
-        <tr>
-            <td class="dth1">
-                <button type="submit" name="department" onclick="window.location.href='/department/{{key}}/';">
-                    {{value.Name}}
-                </button>
-            </td>
+        <tr onclick="window.location.href='/department/{{key}}/';">
+            <td class="dth1">{{value.Name}}</td>
             <td class="dth2">{{value.Head}}</td>
             <td class="dth3">{{value.Description}}</td>
             <td class="dth4">{{value.count}}</td>

@@ -25,16 +25,12 @@
     </thead>
     <tbody>
         {%for i in data%}
-        <tr>
-            <td class="sth1">
-                <button type="button" class="edit" onclick="window.location.href='/edit_buffer_expense/{{i.id}}/';">
-                    {{i.Name}}
-                </button>
-            </td>
-            <td class="sth2">{{i.Type}}</td>
-            <td class="sth3">{{i.Quantity}}</td>
-            <td class="sth4">{{i.Price}}</td>
-        </tr>
+            <tr onclick="window.location.href='/edit_buffer_expense/{{i.id}}/';">
+                <td class="sth1">{{i.Name}}</td>
+                <td class="sth2">{{i.Type}}</td>
+                <td class="sth3">{{i.Quantity}}</td>
+                <td class="sth4">{{i.Price}}</td>
+            </tr>
         {%endfor%}
     </tbody>
     <tfoot>

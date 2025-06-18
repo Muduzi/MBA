@@ -164,15 +164,18 @@ def product_sale(request):
                 search_result = search_product(buss, search_name)
                 if type(search_result) == str:
                     messages.error(request, f"{search_result}")
-                    return redirect('/')
+                    search_result = None
 
             if 'save selected product' in request.POST:
                 selected_product = request.POST.get("selected product")
                 quantity = request.POST.get("quantity")
-                result = process_selected_product(request, buss, int(selected_product), int(quantity))
-                search_result = None
-                if result != 'success':
-                    messages.success(request, f'{result}')
+                if selected_product:
+                    result = process_selected_product(request, buss, int(selected_product), int(quantity))
+                    search_result = None
+                    if result != 'success':
+                        messages.success(request, f'{result}')
+                else:
+                    messages.error(request, 'please select a product')
 
             if 'finalise' in request.POST:
                 paid = request.POST.get('amount')

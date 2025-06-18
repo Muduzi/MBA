@@ -1,0 +1,42 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/valueAddedTax.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<title>Pay As You Earn</title>
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
+
+<div class="Navigation">
+    <button type="button" onclick="window.location.href='/tax_and_tax_thresholds';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<form method="post" class="taxForm">
+    {%csrf_token%}
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" {%if vat%} value="{{vat.Name}}" {%else%} required {%endif%}>
+    <label for="threshold">Threshold</label>
+    <input type="number" id="threshold" name="threshold" {%if vat%} value="{{vat.Threshold}}" {%else%} required {%endif%}>
+    <label for="percentage">Rate</label>
+    <input type="number" id="percentage" name="rate" {%if vat%} value="{{vat.Rate}}" {%else%} required {%endif%}>
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes">{%if paye.Notes%} {{paye.Notes}} {%endif%}</textarea>
+    <div class="but">
+        <button type = 'submit' name="save_or_edit_tax">save</button>
+        <button type="submit" name="delete">
+            <i class="material-icons" style="font-size:18px;">delete</i>
+        </button>
+    </div>
+</form>
+
+

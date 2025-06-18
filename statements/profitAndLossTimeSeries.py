@@ -39,29 +39,33 @@ def get_profit_and_loss_time_series(buss, tax_settings, assets,  start, end):
 
         paid_for += total_annual_depreciation
 
-        product_income, total_product_income, cog, total_product_vat = product_revenue(buss, tax_settings, start, end)
+        product_income, total_product_income, cog, total_product_vat, total_product_presumptive_tax = \
+            product_revenue(buss, tax_settings, start, end)
 
-        service_income, total_service_income, total_service_vat = service_revenue(buss, tax_settings, start, end)
+        service_income, total_service_income, total_service_vat, total_service_presumptive_tax = (
+            service_revenue(buss, tax_settings, start, end))
+
         total_debt = debt_total(buss, start, end)
 
-        total_sales, total_vat, gp, op, net_profit, profit_perc, revenue_after_vat, income_in_hand = (
-            totals_and_profits(tax_settings, total_debt, total_service_vat, total_product_vat, total_product_income,
-                               total_service_income, cog, total_expense))
+        (total_sales, total_vat, total_presumptive_tax, gp, op, revenue_after_tax,
+         net_profit, income_tax, profit_after_income_tax, profit_perc, income_in_hand) = \
+            totals_and_profits(buss, start, end, tax_settings, total_debt, total_service_vat, total_product_vat,
+                               total_product_presumptive_tax, total_service_presumptive_tax, total_product_income,
+                               total_service_income, cog, total_expense)
 
-        total_dividends, dividends, retained_earnings = pay_out(buss, net_profit)
+        total_dividends, retained_earnings = pay_out(buss, net_profit)
 
         time_series[f'{start_.date()} to {end_.date()}'] = {
-            'product_income': product_income, 'start': start_, 'end': end_,
-            'total_product_income': total_product_income, 'service_income': service_income,
-            'total_service_income': total_service_income, 'total_sales': total_sales, 'total_vat': total_vat,
-            'revenue_after_vat': revenue_after_vat, 'income_in_hand': income_in_hand, 'paid_for': paid_for,
+            'product_income': product_income, 'total_product_income': total_product_income,
+            'service_income': service_income, 'total_service_income': total_service_income, 'total_sales': total_sales,
+            'total_vat': total_vat, 'total_presumptive_tax': total_presumptive_tax,
+            'revenue_after_tax': revenue_after_tax, 'income_in_hand': income_in_hand, 'paid_for': paid_for,
             'oe': operational_expense, 'pe': payroll_expense, 'total_expense': total_expense,
             'oe_total': total_operational_expense, 'pe_total': total_payroll_expense,
             'total_annual_depreciation': total_annual_depreciation, 'total_discount': total_discount,
             'discounts': discounts, 'total_debt': total_debt, 'total_credit': total_credit, 'cog': cog, 'gp': gp,
-            'op': op,
-            'net_profit': net_profit,
-            'profit_perc': profit_perc
+            'op': op, 'net_profit': net_profit, 'income_tax': income_tax,
+            'profit_after_income_tax': profit_after_income_tax, 'profit_perc': profit_perc
         }
 
     return time_series

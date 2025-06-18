@@ -8,17 +8,32 @@ from User.models import Employee
 import time
 
 
+def get_expense_accounts(buss):
+    accounts = {}
+
+    accounts_obj = ExpenseAccount.objects.filter(Business=buss)
+
+    for a in accounts_obj:
+        expenses_ = Expense.objects.filter(Business=buss, ExpenseAccount=a)
+        a_total = expenses_.aggregate(Sum('Price'))
+        a_total = a_total['Price__sum']
+        if not a_total:
+            a_total = 0
+        accounts[a] = a_total
+
+    return accounts
+
+
 @login_required(login_url="/login/")
 @allowed_users(allowed_roles=['Business(Owner)', 'Business(Manager)', 'Business(Worker)'])
 def expense_accounts(request):
     b_id = 0
     accounts = {}
+
     try:
         user_obj = request.user
         check = Employee.objects.get(User=user_obj.id)
         buss = check.Business
-
-        accounts_obj = ExpenseAccount.objects.filter(Business=buss)
 
         expenses = Expense.objects.filter(Business=buss, ExpenseAccount__isnull=False)
 
@@ -27,13 +42,7 @@ def expense_accounts(request):
         if not total:
             total = 0
 
-        for a in accounts_obj:
-            expenses_ = Expense.objects.filter(Business=buss, ExpenseAccount=a)
-            a_total = expenses_.aggregate(Sum('Price'))
-            a_total = a_total['Price__sum']
-            if not a_total:
-                a_total = 0
-            accounts[a] = a_total
+        accounts = get_expense_accounts(buss)
 
         if request.method == 'POST':
             if 'save_account' in request.POST:
@@ -49,6 +58,9 @@ def expense_accounts(request):
                     auto = False
                 ExpenseAccount(Business=buss, Cashier=user_obj, Name=name, Type=a_type, Interval=interval,
                                AutoRecord=auto, Notes=notes).save()
+
+                accounts = get_expense_accounts(buss)
+
                 messages.success(request, 'Expense Account created successfully')
 
     except Employee.DoesNotExist:
