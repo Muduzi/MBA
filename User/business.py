@@ -288,6 +288,7 @@ def business(request):
             pay_out_ratio_remainder = 100 - pay_out_ratio
 
             core_settings.Capital += amount
+            core_settings.save()
 
             if start_business_year and not core_settings.StartBusinessYear:
                 core_settings.StartBusinessYear = start_business_year
@@ -552,7 +553,7 @@ def edit_business_profile(request):
     return render(request, 'registration/editBusinessProfile.html', context)
 
 
-def income_tax_calculater(amount):
+"""def income_tax_calculater(amount):
     balance = amount
 
     balance -= 150000
@@ -569,10 +570,10 @@ def income_tax_calculater(amount):
     else:
         income_tax = 0
 
-    return income_tax
+    return income_tax"""
 
 
-def presumptive_tax_calculater(total_sales):
+"""def presumptive_tax_calculater(total_sales):
     presumptive_tax = 0
     if total_sales < 4000000:
         pass
@@ -583,7 +584,7 @@ def presumptive_tax_calculater(total_sales):
     elif 10000000 < total_sales <= 12500000:
         presumptive_tax = 225000
 
-    return presumptive_tax
+    return presumptive_tax"""
 
 
 def make_installment(tax_year, year_account, amount):
@@ -594,10 +595,6 @@ def make_installment(tax_year, year_account, amount):
         return 'success'
     except Exception as e:
         return f'unable to make the installment because of {e}'
-
-
-def check_threshold(total_sales):
-    return
 
 
 def taxes(request):

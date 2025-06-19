@@ -19,8 +19,8 @@ body{
     justify-content:flex-end;
     gap:10px;
     position:relative;
-    width:80%;
-    height:32px;
+    width:840px;
+    height:30px;
     border-radius:10px;
 }
 .Navigation button{
@@ -28,7 +28,7 @@ body{
     align-items:center;
     justify-content:center;
     width:auto;
-    height:70%;
+    height:80%;
     color:rgb(54, 69, 79);
     padding:5px;
     background:transparent;
@@ -82,7 +82,7 @@ form{
 }
 .profile_photo label{
     display:block;
-    width:30%;
+    width:35%;
     height:80%;
     background:#F9F6EE;
     border-radius:50%;

@@ -910,24 +910,25 @@ def pay_as_you_earn_calculator(amount):
     paye = PayAsYouEarn.objects.get(Status=True)
     thresholds = PayAsYouEarnThreshold.objects.filter(Tax__id=paye.id)
 
-    if len(thresholds) > 1:
-        if amount > thresholds[0].Threshold:
-            balance = amount - thresholds[0].Threshold
+    if thresholds:
+        if len(thresholds) > 1:
+            if amount > thresholds[0].Threshold:
+                balance = amount - thresholds[0].Threshold
 
-            last_threshold = thresholds[len(thresholds) - 1]
+                last_threshold = thresholds[len(thresholds) - 1]
 
-            for t in thresholds[1:]:
-                if balance > t.Threshold:
-                    if t != last_threshold:
-                        tax_deduction = t.Threshold * (t.Percentage / 100)
-                        income_tax += tax_deduction
-                        balance -= tax_deduction
-                    else:
-                        income_tax += balance * (t.Percentage * 100)
+                for t in thresholds[1:]:
+                    if balance > t.Threshold:
+                        if t != last_threshold:
+                            tax_deduction = t.Threshold * (t.Percentage / 100)
+                            income_tax += tax_deduction
+                            balance -= tax_deduction
+                        else:
+                            income_tax += balance * (t.Percentage / 100)
+            else:
+                income_tax = 0
         else:
-            income_tax = 0
-    else:
-        income_tax += amount * (thresholds[0].Percentage * 100)
+            income_tax += amount * (thresholds[0].Percentage / 100)
 
     return income_tax
 
@@ -978,17 +979,25 @@ def income_tax_calculator(amount):
     paye = IncomeTax.objects.get(Status=True)
     thresholds = IncomeTaxThreshold.objects.filter(Tax__id=paye.id)
 
-    last_threshold = thresholds[len(thresholds)-1]
-    if amount > thresholds[0].PayeThreshold:
-        for t in thresholds:
-            if t != last_threshold:
-                tax_deduction = t.PayeThreshold * (t.Percentage / 100)
-                income_tax += tax_deduction
-                balance -= tax_deduction
+    if thresholds:
+        if len(thresholds) > 1:
+            if amount > thresholds[0].Threshold:
+                balance = amount - thresholds[0].Threshold
+
+                last_threshold = thresholds[len(thresholds) - 1]
+
+                for t in thresholds[1:]:
+                    if balance > t.Threshold:
+                        if t != last_threshold:
+                            tax_deduction = t.Threshold * (t.Percentage / 100)
+                            income_tax += tax_deduction
+                            balance -= tax_deduction
+                        else:
+                            income_tax += balance * (t.Percentage / 100)
             else:
-                income_tax += balance * (t.Percentage*100)
-    else:
-        income_tax = 0
+                income_tax = 0
+        else:
+            income_tax += amount * (thresholds[0].Percentage / 100)
 
     return income_tax
 

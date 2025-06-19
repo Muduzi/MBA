@@ -13,7 +13,6 @@ from datetime import datetime, timezone
 from calendar import monthrange
 from User.models import CashAccount
 from expenses.models import Expense, ExpenseAccount
-from .business import income_tax_calculater
 from User.models import TaxSettings, TaxAccount, TaxAccountThisYear, TaxYear
 from .business import get_tax_year
 from itertools import chain

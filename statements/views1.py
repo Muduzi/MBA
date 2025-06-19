@@ -69,6 +69,8 @@ def profit_and_loss_dash(request):
         'service_income': service_income,
         'total_service_income': total_service_income,
         'total_sales': total_sales,
+        'total_presumptive_tax': total_presumptive_tax,
+        'revenue_after_tax': revenue_after_tax,
         'total_vat': total_vat,
         'cog': cog,
         'gp': gp,

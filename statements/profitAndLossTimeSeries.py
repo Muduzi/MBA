@@ -82,8 +82,8 @@ def profit_and_loss_time_series(request):
         tax_settings = TaxSettings.objects.get(Business__id=buss)
         assets = Assets.objects.filter(Business__id=buss)
 
-        start = cache.get(f'{buss}_{user_object.id}_service_income_history_start')
-        end = cache.get(f'{buss}_{user_object.id}_service_income_history_end')
+        start = cache.get(f'{buss}_{user_object.id}_profit_and_loss_time_series_start')
+        end = cache.get(f'{buss}_{user_object.id}_profit_and_loss_time_series_end')
 
         if start and end:
             time_series = get_profit_and_loss_time_series(buss, tax_settings, assets, start, end)
@@ -106,11 +106,10 @@ def profit_and_loss_time_series(request):
                 start = datetime.strptime(start, date_format).replace(tzinfo=timezone.utc)
                 end = datetime.strptime(end, date_format).replace(tzinfo=timezone.utc)
 
-                cache.set(f'{buss}_{user_object.id}_service_income_history_start', start, 300)
-                cache.set(f'{buss}_{user_object.id}_service_income_history_end', end, 300)
+                cache.set(f'{buss}_{user_object.id}_profit_and_loss_time_series_start', start, 300)
+                cache.set(f'{buss}_{user_object.id}_profit_and_loss_time_series_end', end, 300)
 
                 time_series = get_profit_and_loss_time_series(buss, tax_settings, assets, start, end)
-                messages.success(request, "good")
 
             if 'focus_on' in request.POST:
                 key = request.POST.get('focus_on')

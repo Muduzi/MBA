@@ -38,17 +38,10 @@
         </tr>
         {%if product_income%}
             {%for a,b in product_income.items%}
-                {%if a == "VAT"%}
-                    <tr>
-                        <td class="account_section_total">{{b.Name}}</td>
-                        <td class="amount_section_total">{{b.revenue}}</td>
-                    </tr>
-                {%else%}
-                    <tr>
-                        <td class="section1">{{b.Name}}</td>
-                        <td class="section2">{{b.revenue}}</td>
-                    </tr>
-                {%endif%}
+                <tr>
+                    <td class="section1">{{b.Name}}</td>
+                    <td class="section2">{{b.revenue}}</td>
+                </tr>
             {%endfor%}
             <tr>
                 <td class="account_section_total">Total</td>
@@ -64,23 +57,16 @@
             <td class="section2">Amount</td>
         </tr>
         {%if service_income%}
-            {%for a,b in service_income.items%}
-                {%if a == "VAT"%}
-                    <tr>
-                        <td class="account_section_total">{{b.Name|slice:"20"}}</td>
-                        <td class="amount_section_total">{{b.Amount}}</td>
-                    </tr>
-                {%else%}
-                    <tr>
-                        <td class="section1">
-                            {{b.Name|slice:"30"}}
-                            {%if b.Name|length > 25%}
-                                ....
-                            {%endif%}
-                        </td>
-                        <td class="section2">{{b.Amount}}</td>
-                    </tr>
-                {%endif%}
+            {%for a,b in service_income.items%} }
+                <tr>
+                    <td class="section1">
+                        {{b.Name|slice:"30"}}
+                        {%if b.Name|length > 30%}
+                            ....
+                        {%endif%}
+                    </td>
+                    <td class="section2">{{b.Amount}}</td>
+                </tr>
             {%endfor%}
             <tr>
                 <td class="account_section_total">Total</td>
@@ -108,10 +94,6 @@
                 <text>
                     <span class="detail_title">Revenue(R)</span>
                     <span class="detail_content">: {{total_sales}}</span>
-                </text>
-                <text>
-                    <span class="detail_title">Tax(VAT)</span>
-                    <span class="detail_content">: {{total_vat}}</span>
                 </text>
                 <text>
                     <span class="detail_title">Cost of Goods</span>
@@ -149,14 +131,17 @@
                     <span class="detail_title">Gross Profit</span>
                     <span class="detail_content">: {{gp}}</span>
                 </text>
-                <text>
-                    <span class="detail_title">Expense(Credit)</span>
-                    <span class="detail_content">: {{total_credit}}</span>
-                </text>
-                <text>
-                    <span class="detail_title">Total Expenses</span>
-                    <span class="detail_content">: {{total_expense}}</span>
-                </text>
+                {%if total_vat%}
+                    <text>
+                        <span class="detail_title">Total VAT</span>
+                        <span class="detail_content">: {{total_vat}}</span>
+                    </text>
+                {%else%}
+                    <text>
+                        <span class="detail_title">Total Presumptive Tax</span>
+                        <span class="detail_content">: {{total_presumptive_tax}}</span>
+                    </text>
+                {%endif%}
             </div>
             <div class="state2">
                 <text>
@@ -168,8 +153,8 @@
         <div class="detail">
             <div class="state1">
                 <text>
-                    <span class="detail_title">Credit</span>
-                    <span class="detail_content">: {{total_credit}}</span>
+                    <span class="detail_title">Revenue(R)</span>
+                    <span class="detail_content">: {{total_sales}}</span>
                 </text>
                 <text>
                     <span class="detail_title">Debt</span>
@@ -276,9 +261,9 @@
 <form method="post" id="range">
     {%csrf_token%}
     <label for="start">Start</label>
-    <input type="date" id="start" name="start" required >
+    <input type="date" id="start" name="start" {%if start%} value="{{start}}" {%else%} required {%endif%} >
     <label for="end">End</label>
-    <input type="date" id="end" name="end" required >
+    <input type="date" id="end" name="end" {%if end%} value="{{end}}" {%else%} required {%endif%} >
     <button type="submit" name="filter" onclick="closeRange()">
         <i class="material-icons" style="font-size:20; font-size:20px;">search</i>
         filter

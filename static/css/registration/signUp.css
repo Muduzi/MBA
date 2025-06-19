@@ -21,7 +21,7 @@ h1{
     align-self:center;
     position:relative;
     width:90px;
-    height:auto;
+    height:60px;
     padding:10px;
     margin-left:30px;
     color:rgb(54, 69, 79);
@@ -33,10 +33,11 @@ h1{
 
 form{
     display:flex;
-    flex-direction:column;
-    align-items:flex-start;
-    justify-content:space-evenly;
+    flex-wrap:wrap;
+    align-items:space-evenly;
+    justify-content:flex-start;
     position:relative;
+    column-gap:5%;
     width:350px;
     height:550px;
     border-radius:10px;
@@ -53,25 +54,35 @@ form label{
 
 form input{
     width:100%;
-    height:35px;
+    height:32px;
     font-size:14px;
     color:#5D6166;
     background:#F9F6EE;
     border:1px solid #EDEADE;
     border-radius:10px;
 }
-.duo_input{
+form input:focus{
+    outline:none;
+    border:1px solid gray;
+}
+.input_container{
     display:flex;
-    align-items:center;
+    flex-direction:column;
+    align-items:flex-start;
     justify-content:space-between;
     position:relative;
-    width:100%;
-    height:auto;
-}
-.duo_input input{
-    width:45%;
+    width:47.5%;
+    height:65px;
 }
 
+.but{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    width:100%;
+    height:30px;
+}
 form button{
     display:flex;
     align-items:center;
@@ -79,7 +90,7 @@ form button{
     align-self:center;
     position:relative;
     width:90px;
-    height:30px;
+    height:80%;
     color:rgb(54, 69, 79);
     font-size:15px;
     background:transparent;
@@ -97,12 +108,16 @@ form button:hover{
     }
 
     h1{
-        font-size:20px;
-        width:40px;
+        font-size:25px;
+        width:75px;
+        height:35px
     }
 
     form label{
         font-size:14px;
+    }
+    .input_container{
+        height:72px;
     }
     form input{
         font-size:13px;
@@ -123,6 +138,6 @@ form button:hover{
         height:20%;
     }
     form{
-        width:90%;
+        width:95%;
     }
 }

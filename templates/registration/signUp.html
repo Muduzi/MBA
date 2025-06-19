@@ -1,7 +1,6 @@
 {%load static%}
 <link rel="stylesheet" type="text/css" href="{% static 'css/registration/signUp.css'%}" xmlns="http://www.w3.org/1999/html">
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--Javascript-->
@@ -15,6 +14,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
+<link rel="stylesheet" type="text/css" href="{% static 'css/catalogue/catalogueMessages.css'%}" xmlns="http://www.w3.org/1999/html">
 {%include 'catalogue/catalogueMessages.html'%}
 
 
@@ -22,9 +22,13 @@
 
 <form method="post" class="signup" id="signup">
     {%csrf_token%}
-    <div class="duo_input">
-        <input type="text" id="first name" name="first name" required minlength="4" maxlength="15" placeholder="first name">
-        <input type="text" id="last name" name="last name" required minlength="4" maxlength="15" placeholder="last name">
+    <div class="input_container">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" name="first name" required minlength="4" maxlength="15" placeholder="first name">
+    </div>
+    <div class="input_container">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" name="last name" required minlength="4" maxlength="15" placeholder="last name">
     </div>
     <label for="username">Username</label>
     <input type="text" id="username" name="username" required minlength="4" maxlength="15" placeholder="username">
@@ -40,7 +44,9 @@
         <i class="material-icons" style="font-size:18px;">key</i>
     </label>
     <input type="password" id="password2" name="password2" required minlength="5" maxlength="15" placeholder="repeat password">
-    <button type="submit" name="signup">SignUp</button>
+    <div class="but">
+        <button type="submit" name="signup">SignUp</button>
+    </div>
 </form>
 
 <script>

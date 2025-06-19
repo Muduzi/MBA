@@ -167,7 +167,7 @@ def product_revenue(buss, tax_settings,  start, end):
     if tax_settings.ShowEstimates:
         if tax_settings.IncludeVAT:
             try:
-                total_product_vat = round((total_product_income * tax_settings.VATRate) / 100)
+                total_product_vat = round(total_product_income * (tax_settings.VATRate / 100))
             except ZeroDivisionError:
                 pass
         elif tax_settings.IncludePresumptiveTax:
@@ -230,7 +230,7 @@ def service_revenue(buss, tax_settings, start, end):
     if tax_settings.ShowEstimates:
         if tax_settings.IncludeVAT:
             try:
-                total_service_vat = round((total_service_income * tax_settings.VATRate) / 100)
+                total_service_vat = round(total_service_income * (tax_settings.VATRate / 100))
                 total_service_presumptive_tax = 0
             except ZeroDivisionError:
                 pass

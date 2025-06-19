@@ -39,17 +39,10 @@
         </tr>
         {%if product_income%}
             {%for a,b in product_income.items%}
-                {%if a == "VAT"%}
-                    <tr>
-                        <td class="account_section_total">{{b.Name}}</td>
-                        <td class="amount_section_total">{{b.revenue}}</td>
-                    </tr>
-                {%else%}
-                    <tr>
-                        <td class="section1">{{b.Name}}</td>
-                        <td class="section2">{{b.revenue}}</td>
-                    </tr>
-                {%endif%}
+                <tr>
+                    <td class="section1">{{b.Name}}</td>
+                    <td class="section2">{{b.revenue}}</td>
+                </tr>
             {%endfor%}
             <tr>
                 <td class="account_section_total">Total</td>
@@ -66,22 +59,15 @@
         </tr>
         {%if service_income%}
             {%for a,b in service_income.items%}
-                {%if a == "VAT"%}
-                    <tr>
-                        <td class="account_section_total">{{b.Name|slice:"20"}}</td>
-                        <td class="amount_section_total">{{b.Amount}}</td>
-                    </tr>
-                {%else%}
-                    <tr>
-                        <td class="section1">
-                            {{b.Name|slice:"30"}}
-                            {%if b.Name|length > 25%}
-                                ....
-                            {%endif%}
-                        </td>
-                        <td class="section2">{{b.Amount}}</td>
-                    </tr>
-                {%endif%}
+                <tr>
+                    <td class="section1">
+                        {{b.Name|slice:"30"}}
+                        {%if b.Name|length > 30%}
+                            ....
+                        {%endif%}
+                    </td>
+                    <td class="section2">{{b.Amount}}</td>
+                </tr>
             {%endfor%}
             <tr>
                 <td class="account_section_total">Total</td>
@@ -145,10 +131,17 @@
                     <span class="detail_title">Gross Profit</span>
                     <span class="detail_content">: {{gp}}</span>
                 </text>
-                <text>
-                    <span class="detail_title">Total VAT</span>
-                    <span class="detail_content">: {{total_vat}}</span>
-                </text>
+                {%if total_vat%}
+                    <text>
+                        <span class="detail_title">Total VAT</span>
+                        <span class="detail_content">: {{total_vat}}</span>
+                    </text>
+                {%else%}
+                    <text>
+                        <span class="detail_title">Total Presumptive Tax</span>
+                        <span class="detail_content">: {{total_presumptive_tax}}</span>
+                    </text>
+                {%endif%}
             </div>
             <div class="state2">
                 <text>

@@ -108,6 +108,11 @@ input{
     border:1px solid #EDEADE;
     border-radius:10px;
 }
+input:focus{
+    outline:none;
+    border:1px solid gray;
+}
+
 form select{
     width:100%;
     height:auto;

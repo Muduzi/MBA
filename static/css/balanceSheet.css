@@ -300,3 +300,25 @@ td button{
         font-size:13px;
     }
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

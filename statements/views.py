@@ -6,6 +6,7 @@ from User.models import Employee, TaxSettings
 from .profitAndLoss import (expenses, product_revenue, service_revenue, debt_total,
                             totals_and_profits)
 from assets.models import Assets
+from django.core.cache import cache
 
 
 # for the filter statement
@@ -21,6 +22,8 @@ def profit_and_loss_dash_range(request):
     net_profit = 0
     profit_perc = 0
     total_sales = 0
+    revenue_after_tax = 0
+    total_presumptive_tax = 0
     total_product_income = 0
     service_income = {}
     total_service_income = 0
@@ -34,10 +37,21 @@ def profit_and_loss_dash_range(request):
     total_credit = 0
     total_vat = 0
     total_annual_depreciation = 0
+    start = None
+    end = None
+
     try:
         check = Employee.objects.get(User=request.user.id)
         buss = check.Business
         tax_settings = TaxSettings.objects.get(Business=buss)
+
+        start = cache.get(f'{buss}_{request.user.id}_profit_and_loss_dash_range_start')
+        end = cache.get(f'{buss}_{request.user.id}_profit_and_loss_dash_range_end')
+
+        if start and end:
+            (total_expense, total_credit, paid_for, operational_expense, payroll_expense, total_operational_expense,
+             total_payroll_expense, total_discount, discounts) = expenses(buss, start, end)
+
         if request.method == 'POST':
             if 'filter' in request.POST:
                 start = request.POST.get('start')
@@ -52,6 +66,12 @@ def profit_and_loss_dash_range(request):
                 date_format = '%Y-%m-%d'
                 start_ = datetime.strptime(start, date_format)
                 start_ = start_.replace(tzinfo=timezone.utc)
+
+                end_ = datetime.strptime(end, date_format)
+                end_ = start_.replace(tzinfo=timezone.utc)
+
+                cache.set(f'{buss}_{request.user.id}_profit_and_loss_dash_range_start', start_, 300)
+                cache.set(f'{buss}_{request.user.id}_profit_and_loss_dash_range_end', end_, 300)
 
                 # annual depreciation is recorded as expense that reduces net-income
 
@@ -86,6 +106,8 @@ def profit_and_loss_dash_range(request):
         'service_income': service_income,
         'total_service_income': total_service_income,
         'total_sales': total_sales,
+        'total_presumptive_tax': total_presumptive_tax,
+        'revenue_after_tax': revenue_after_tax,
         'total_vat': total_vat,
         'cog': cog,
         'gp': gp,
@@ -101,7 +123,9 @@ def profit_and_loss_dash_range(request):
         'oe_total': total_operational_expense,
         'pe_total': total_payroll_expense,
         'total_debt': total_debt,
-        'total_credit': total_credit
+        'total_credit': total_credit,
+        'start': start,
+        'end': end
     }
     return render(request, 'profit_and_loss_dash_range.html', context)
 

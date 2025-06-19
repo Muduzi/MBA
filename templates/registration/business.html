@@ -54,9 +54,9 @@
     <input id="businessYear" type="date" name="start_business_year"
            {% if core_settings.StartBusinessYear %} disabled value="{{start_date}}" {%endif%}>
     <label for="capital">Add Capital</label>
-    <input type="text" id="capital" name="Amount" {% if not core_settings.Capital %} required {%endif%} placeholder="Value">
+    <input type="text" id="capital" name="Amount" {% if not core_settings.Capital %} required {%else%} value="{{core_settings.Capital}}" {%endif%} placeholder="Value">
     <label for="payoutRatio">PayoutRatio</label>
-    <input type="text" id="payoutRatio" name="pay_out_ratio" required placeholder="Value">
+    <input type="text" id="payoutRatio" name="pay_out_ratio" {% if not cash_account.PayoutRatio %} required {%else%} value="{{cash_account.PayoutRatio}}" {%endif%} placeholder="Value">
     <div class="but">
         <button type = 'submit' class = 'save' name="add_capital" onclick="openCapitalForm();">Save</button>
         <button type = 'button' class = 'cancel' onclick="closeCapitalForm();">Cancel</button>
