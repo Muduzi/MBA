@@ -139,11 +139,11 @@ def edit_expense_transaction(request, id=0):
         check = Employee.objects.get(User=request.user.id)
         buss = check.Business
 
-        back_url = cache.get(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer")
+        back_url = cache.get(f"{buss.id}-{check.id}-edit_expense_transaction_http_referer")
         if not back_url:
-            cache.set(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer",
+            cache.set(f"{buss.id}-{check.id}-edit_expense_transaction_http_referer",
                       request.META.get("HTTP_REFERER"), 300)
-            back_url = cache.get(f"{buss.id}-{check.id}-edit_product_income_transaction_http_referer")
+            back_url = cache.get(f"{buss.id}-{check.id}-edit_expense_transaction_http_referer")
 
         try:
             expense = Expense.objects.get(pk=id)

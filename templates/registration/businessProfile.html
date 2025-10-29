@@ -27,9 +27,9 @@
     <div class="key_details">
         <div class="profile_photo">
             {%if ini.Photo.url != None%}
-                <img src="{{ini.Photo.url}}" id="profile-pic" onclick="window.location.href='/business_profile/';">
+                <img src="{{ini.Photo.url}}" id="profile-pic" onclick="window.location.href='/edit_business_profile/';">
             {%else%}
-                <img src="{%static '/appdefaults/add-photo4.png'%}" onclick="window.location.href='/business_profile/';">
+                <img src="{%static '/appdefaults/add-photo4.png'%}" onclick="window.location.href='/edit_business_profile/';">
             {%endif%}
         </div>
         <text><i class="material-icons" style="font-size:18px;">store</i>{{ini.Name}}</text>

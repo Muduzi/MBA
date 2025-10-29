@@ -21,7 +21,7 @@ body{
     justify-content:flex-end;
     gap:10px;
     position:relative;
-    width:90%;
+    width:380px;
     height:32px;
     border-radius:10px;
 }

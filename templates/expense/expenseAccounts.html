@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<title>Expense Accounts</title>
+
 <link rel="stylesheet" type="text/css" href="{%static 'css/expense/expenseMessages.css'%}" xmlns="http://www.w3.org/1999/html">
 {%include "expense/expenseMessages.html"%}
 
@@ -26,6 +28,27 @@
 <text class="title">Accounts</text>
 <div class="accounts">
     {%for account, total in accounts.items%}
+        <div class="account" onclick="window.location.href='/expense_account/{{account.id}}/';">
+            <text style="font-size:16px; color:rgb(54, 69, 79);">{{account.Name}}</text>
+            <text style="font-size:16px;">Total &nbsp; : K{{total}}</text>
+            <text class="service_count" style="font-size:12px;">Interval &nbsp;: {{account.Interval}}</text>
+        </div>
+    {%endfor%}
+     {%for account, total in accounts.items%}
+        <div class="account" onclick="window.location.href='/expense_account/{{account.id}}/';">
+            <text style="font-size:16px; color:rgb(54, 69, 79);">{{account.Name}}</text>
+            <text style="font-size:16px;">Total &nbsp; : K{{total}}</text>
+            <text class="service_count" style="font-size:12px;">Interval &nbsp;: {{account.Interval}}</text>
+        </div>
+    {%endfor%}
+     {%for account, total in accounts.items%}
+        <div class="account" onclick="window.location.href='/expense_account/{{account.id}}/';">
+            <text style="font-size:16px; color:rgb(54, 69, 79);">{{account.Name}}</text>
+            <text style="font-size:16px;">Total &nbsp; : K{{total}}</text>
+            <text class="service_count" style="font-size:12px;">Interval &nbsp;: {{account.Interval}}</text>
+        </div>
+    {%endfor%}
+     {%for account, total in accounts.items%}
         <div class="account" onclick="window.location.href='/expense_account/{{account.id}}/';">
             <text style="font-size:16px; color:rgb(54, 69, 79);">{{account.Name}}</text>
             <text style="font-size:16px;">Total &nbsp; : K{{total}}</text>

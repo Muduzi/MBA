@@ -156,7 +156,7 @@ def profile_form(request):
                 if prof.About != about:
                     prof.About = about
             elif not about and prof.About:
-                prof.About = None
+                prof.About = ''
 
             if contact1:
                 if prof.Contact1 != contact1:

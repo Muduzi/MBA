@@ -23,7 +23,7 @@ from celery import shared_task
 from management.models import PayAsYouEarn, PayAsYouEarnThreshold
 from management.views import (pay_as_you_earn_calculator, presumptive_tax_calculator, income_tax_calculator,
                               total_salary_and_paye)
-
+from django_countries import countries
 
 def find_user(search_item):
     search_result = User.objects.filter(username__contains=search_item)
@@ -394,10 +394,12 @@ def business_profile(request, id=0):
 def form_data(request):
     photo = request.FILES.get('photo')
     name = request.POST.get('name')
-    type = request.POST.get('type')
+    b_type = request.POST.get('type')
     about = request.POST.get('about')
     email = request.POST.get('email')
+    country_code1 = request.POST.get('country_code1')
     contact1 = request.POST.get('contact1')
+    country_code2 = request.POST.get('country_code2')
     contact2 = request.POST.get('contact2')
     address = request.POST.get('address')
     postbox = request.POST.get('postbox')
@@ -415,8 +417,8 @@ def form_data(request):
     else:
         contact2 = None
 
-    return (photo, name, type, about, address, email, contact1, contact2, address, postbox, city,
-            country, zipcode, instagram, facebook, linkedin)
+    return (photo, name, b_type, about, address, email, country_code1, contact1, country_code2, contact2, address,
+            postbox, city, country, zipcode, instagram, facebook, linkedin)
 
 
 @login_required(login_url="/login/")
@@ -431,8 +433,8 @@ def edit_business_profile(request):
         ini = Business.objects.get(Owner=request.user.id)
 
         if request.method == 'POST':
-            (photo, name, type, about, address, email, contact1, contact2, address, postbox, city,
-             country, zipcode, instagram, facebook, linkedin) = form_data(request)
+            (photo, name, b_type, about, address, email, country_code1, contact1, country_code2, contact2, address,
+             postbox, city, country, zipcode, instagram, facebook, linkedin) = form_data(request)
 
             if photo:
                 if ini.Photo != photo:
@@ -442,9 +444,9 @@ def edit_business_profile(request):
                 if ini.Name != name:
                     ini.Name = name
 
-            if type:
-                if ini.Type != type:
-                    ini.Type = type
+            if b_type:
+                if ini.Type != b_type:
+                    ini.Type = b_type
 
             if about:
                 if ini.About != about:
@@ -462,9 +464,17 @@ def edit_business_profile(request):
                 if ini.Address != address:
                     ini.Address = address
 
+            if country_code1:
+                if ini.CountryCode1 != country_code1:
+                    ini.CountryCode1 = country_code1
+
             if contact1:
                 if ini.Contact1 != contact1:
                     ini.Contact1 = contact1
+
+            if country_code2:
+                if ini.CountryCode2 != country_code2:
+                    ini.CountryCode2 = country_code2
 
             if contact2:
                 if ini.Contact2 != contact2:
@@ -511,25 +521,27 @@ def edit_business_profile(request):
 
         group = Group.objects.get(name='Business(Owner)')
         if request.method == 'POST':
-            (photo, name, Type, about, address, email, contact1, contact2, address, postbox, city,
-             country, zipcode, instagram, facebook, linkedin) = form_data(request)
+            (photo, name, b_type, about, address, email, country_code1, contact1, country_code2, contact2, address,
+             postbox, city, country, zipcode, instagram, facebook, linkedin) = form_data(request)
 
-            ini = {'Photo': photo, 'Name': name, 'Type': Type, 'About': about, 'Address': address, 'Email ': email,
-                   'Contact1': contact1, 'Contact2': contact2, 'PostBox': postbox, 'City': city, 'Country': country,
-                   'ZipCode': zipcode, 'Instagram': instagram, 'Facebook': facebook, 'Linkedin': linkedin}
+            ini = {'Photo': photo, 'Name': name, 'Type': b_type, 'About': about, 'Address': address, 'Email ': email,
+                   'countryCode1': country_code1, 'Contact1': contact1, 'CountryCode2': country_code2,
+                   'Contact2': contact2, 'PostBox': postbox, 'City': city, 'Country': country, 'ZipCode': zipcode,
+                   'Instagram': instagram, 'Facebook': facebook, 'Linkedin': linkedin}
 
             try:
                 Business.objects.get(Name=name)
                 messages.error(request, f'A user by the name {name} already exists, please chose a different name')
 
                 context = {
+                    'countries': countries,
                     'ini': ini
                 }
             except Business.DoesNotExist:
-                buss = Business(Owner=request.user, Photo=photo, Name=name, Type=Type, About=about, Email=email,
-                                Contact1=contact1, Contact2=contact2, Address=address, PostBox=postbox,
-                                City=city, Country=country, ZipCode=zipcode, Instagram=instagram,
-                                Facebook=facebook, Linkedin=linkedin)
+                buss = Business(Owner=request.user, Photo=photo, Name=name, Type=type, About=about, Email=email,
+                                CountryCode1=country_code1, Contact1=contact1, CountryCode2=country_code2,
+                                Contact2=contact2, Address=address, PostBox=postbox, City=city, Country=country,
+                                ZipCode=zipcode, Instagram=instagram, Facebook=facebook, Linkedin=linkedin)
 
                 request.user.groups.add(group)
                 buss.save()
@@ -545,9 +557,10 @@ def edit_business_profile(request):
                 Employee(User=request.user, Business=buss, Department=dep, Duty=dep.Description, AccessLevel=group).save()
                 ExpenseAccount(Business=buss, Cashier=request.user, Name='Salaries', Type='Payroll', Interval='Monthly',
                                AutoRecord=False, Notes='').save()
-                return redirect('/business/')
+                return redirect(f'/terms_and_conditions/{buss.id}/')
 
         context = {
+            'countries': countries,
             'bus_types': bus_types
         }
     return render(request, 'registration/editBusinessProfile.html', context)

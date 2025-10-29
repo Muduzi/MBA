@@ -1,0 +1,83 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/expense/supplier.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<title>Supplier</title>
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
+
+<div class="Navigation">
+     <button type="button" onclick="window.location.href='/suppliers/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<table class="mainTable">
+    <thead>
+        <tr>
+            <th class="mth1">Name</th>
+            <th class="mth2">Email</th>
+            <th class="mth3">Contact</th>
+            <th class="mth4">Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for key, value in supplier.items%}
+            <tr>
+                <td class="mth1">{{value.Name}}</td>
+                <td class="mth2">{{value.Email}}</td>
+                <td class="mth3">{{value.Contact}}</td>
+                <td class="mth4">{{value.Notes}}</td>
+            </tr>
+            <tr>
+                <td style="font-size:16px; font-weight:550; width:100%;">Transactions</td>
+            </tr>
+            <tr style="height:auto;">
+                <td style="width:100%;">
+                    <table id="{{key}}" class="transactions">
+                        <thead>
+                            <tr>
+                                <th class="tth1">Date</th>
+                                <th class="tth2">Name</th>
+                                <th class="tth3">Qnt</th>
+                                <th class="tth3">PMode</th>
+                                <th class="tth4">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for v in value.Transactions%}
+                                <tr onclick="window.location.href='/edit_expense_transaction/{{v.id}}/';">
+                                    <td class="tth1">{{v.Date.date}}</td>
+                                    <td class="tth2">{{v.Name}}</td>
+                                    <td class="tth3">{{v.Quantity}}</td>
+                                    <td class="tth3">{{v.PMode}}</td>
+                                    <td class="tth4">{{v.Price}}</td>
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+
+<script>
+    document.addEventListener('click',  (event) => {
+        if(event.target.tagName === 'BUTTON'){
+
+        }
+    });
+
+</script>

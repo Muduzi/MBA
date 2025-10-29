@@ -1,0 +1,138 @@
+body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:100vw;
+    height:100vh;
+    margin:0;
+    background:#EDEADE;
+    overflow:hidden;
+}
+
+.main{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    width:60%;
+    height:90%;
+    padding-left:5px;
+    padding-right:5px;
+    border-radius:10px;
+}
+
+.terms_and_conditions{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:space-evenly;
+    width:90%;
+    height:92%;
+    overflow-y:scroll;
+    border-radius:10px;
+
+    h1{
+        color:#2B3856;
+        font-size:20px;
+        margin-left:5px;
+    }
+    h2{
+        color:#2B3856;
+        font-size:17px;
+        margin-left:5px;
+    }
+    h3{
+        color:#2B3856;
+        font-size:17px;
+        margin-left:5px;
+    }
+    text{
+        color:rgba(54, 69, 79, 0.8);
+        margin-left:5px;
+    }
+    p{
+        color:rgba(54, 69, 79, 0.8);
+        text-align: justify;
+        padding:5px;
+        margin-top:1px;
+        margin-bottom:1px;
+        b{
+            color:#2B3856;
+        }
+    }
+
+    li{
+        color:rgba(54, 69, 79, 0.8);
+        text-align: justify;
+    }
+}
+
+
+.agree_disagree_form{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    position:relative;
+    column-gap:10px;
+    width:90%;
+    height:8%;
+    border-radius:10px;
+
+    text{
+        color:#2B3856;
+    }
+    button{
+        width:50px;
+        padding:5px;
+        color:#2B3856;
+        background:transparent;
+        border:1px solid gray;
+        border-radius:10px;
+    }
+    button:hover{
+        color:white;
+        background:#2B3856;
+        border:hidden;
+    }
+    button:focus{
+        color:white;
+        background:#2B3856;
+        border:hidden;
+    }
+
+}
+
+
+@media(max-width:430px){
+    .main{
+        width:100%;
+        height:95%;
+    }
+
+    .terms_and_conditions{
+        width:97%;
+    }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F9F6EE;
+  border-radius:0px 10px 10px 0px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(54, 69, 79, 0.5);
+  border-radius:10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 69, 79, 0.8);
+}

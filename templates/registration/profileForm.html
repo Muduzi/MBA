@@ -28,7 +28,7 @@
                     <img src="{% static '/appdefaults/add-photo3.png' %}" alt="add image" class="rounded-circle">
                 {%endif%}
             </label>
-            <input type="file" id="profilePic" name="photo" value="{{profile.photo}}" multiple class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
+            <input type="file" id="profilePic" name="photo" value="{{profile.photo}}" class="form-control-file" accept="image/jpeg, image/png, image/jpg, image/vnd.sealedmedia.softseal.jpg">
         </div>
         <label for="username">Username</label>
         <input type="text" id="username" name="username" {%if user.username%} value="{{user.username}}" {%else%} placeholder="username" {%endif%} required maxlength="14">
@@ -52,7 +52,7 @@
     </div>
     <div class="container">
         <label for="about">About</label>
-        <textarea id="about" name="about" required placeholder="About" maxlength="130">{{user.profile.About}}</textarea>
+        <textarea id="about" name="about" placeholder="About" maxlength="130">{%if user.profile.About%}{{user.profile.About}}{%endif%}</textarea>
         <label for="contact1">Contact1</label>
         <input type="text" id="contact1" name="contact1" required maxlength="14" {%if profile.Contact1%} value="{{profile.Contact1}}" {%else%}  placeholder="phone number1" {%endif%}>
         <label for="contact2">Contact2</label>

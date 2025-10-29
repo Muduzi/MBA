@@ -17,22 +17,24 @@
 {%include 'registration/registrationMessages.html'%}
 
 
-<h1>MAT</h1>
-
 <form method="post" id="login" class="login">
     {%csrf_token%}
-    <label for="username">
-        <i class="material-icons" style="font-size:18px;">person</i>
-    </label>
-    <input type="text" id="username" name="username" required minlength="2" maxlength="30" placeholder="username">
-    <label for="password">
-        <i class="material-icons" style="font-size:18px;">key</i>
-    </label>
-    <input type="password" id="password" name="password" required minlength="5" maxlength="15" placeholder="password">
-    <button type="submit" name="login" class="ok">Login</button>
-    <div class="instruction">
-        <text>Don't have an account?</text><button type="button" onclick="window.location.href='/sign_up/';">Signup</button>
+    <h1>MAT</h1>
+    <div class="inputs">
+        <label for="username">
+            <i class="material-icons" style="font-size:18px;">person</i>
+        </label>
+        <input type="text" id="username" name="username" required minlength="2" maxlength="30" placeholder="username">
+        <label for="password">
+            <i class="material-icons" style="font-size:18px;">key</i>
+        </label>
+        <input type="password" id="password" name="password" required minlength="5" maxlength="15" placeholder="password">
+        <button type="submit" name="login" class="ok">Login</button>
+        <div class="instruction">
+            <text>Don't have an account?</text><button type="button" onclick="window.location.href='/sign_up/';">Signup</button>
+        </div>
     </div>
+
 </form>
 
 <script>

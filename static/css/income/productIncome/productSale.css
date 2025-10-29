@@ -311,7 +311,7 @@ form select option:checked{
 .add_with_code{
     display:flex;
     visibility:visible;
-    height:35%;
+    height:250px;
 }
 
 .finalise{
@@ -430,40 +430,17 @@ form input[type="checkbox"]{
         font-size:14px;
     }
 
-    .form1{
-        height:60%;
-    }
-
     form label{
         font-size:13px;
     }
 
     form input{
-        font-size:13px;
-    }
-
-    .form1 select{
+        height:40px;
         font-size:13px;
     }
 
     form textarea{
         font-size:13px;
-    }
-
-    .but1 button{
-        width:25%;
-    }
-
-    .form2{
-        height:90%;
-    }
-
-    .form2 select{
-        font-size:12px;
-    }
-
-    .form3{
-        height:60%;
     }
 
     .invoice p {
@@ -503,35 +480,6 @@ form input[type="checkbox"]{
 
     form{
         width:90%;
-    }
-
-    .but1 button{
-        width:25%;
-    }
-
-    .form1{
-        height:230px;
-    }
-
-    .but1{
-        height:16%;
-    }
-
-    .form2{
-        top:20%;
-        height:350px;
-    }
-
-    .but2{
-        height:9%;
-    }
-
-    .form3{
-        height:230px;
-    }
-
-    .but3{
-        height:13%;
     }
 
     .invoice{

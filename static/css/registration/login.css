@@ -11,144 +11,168 @@ body{
     overflow:hidden;
 }
 
-h1{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:center;
-    align-self:center;
-    position:relative;
-    width:90px;
-    height:auto;
-    padding:10px;
-    margin-left:30px;
-    color:#2B3856;
-    font-weight:500;
-    border-left:1px solid rgb(54, 69, 79);
-    border-right:1px solid rgb(54, 69, 79);
-    border-radius:50%;
-}
+
 
 .login{
     display:flex;
     flex-direction:column;
-    align-items:flex-start;
-    justify-content:space-around;
+    align-items:center;
+    justify-content:space-between;
     position:relative;
     width:350px;
-    height:280px;
+    height:480px;
     border-radius:10px;
     padding-left:10px;
     padding-right:10px;
     padding-top:15px;
     padding-bottom:15px;
-}
 
-.login text{
-    display:flex;
-    align-self:center;
-    position:relative;
-    width:auto;
-    font-size:14px;
-    color:#5D6166;
-    font-weight:500;
-}
-
-.login label{
-    color:rgb(54, 69, 79);
-    font-size:15px;
-}
-
-.login input{
-    width:100%;
-    height:35px;
-    font-size:14px;
-    color:#5D6166;
-    background:#F9F6EE;
-    border:1px solid #EDEADE;
-    border-radius:10px;
-}
-.login input:focus{
-    outline:none;
-    border:1px solid gray;
-}
-
-.login button{
-    display:flex;
-    align-items:center;
-    justify-content:space-around;
-    align-self:center;
-    position:relative;
-    width:110px;
-    height:30px;
-    color:rgb(54, 69, 79);
-    font-size:15px;
-    background:transparent;
-    border:1px solid #5D6166;
-    border-radius:10px;
-}
-.login button:hover{
-    color:white;
-    background:#5D6166;
-}
-
-.instruction{
-    display:flex;
-    align-items:center;
-    justify-content:flex-start;
-    position:relative;
-    column-gap:10px;
-    width:100%;
-    height:10%;
-}
-.instruction button{
-    display:flex;
-    align-items:center;
-    justify-content:space-evenly;
-    width:auto;
-    height:auto;
-    color:#2B3856;
-    font-size:16px;
-    background:transparent;
-    border:hidden;
-    padding:0px;
-    border-bottom:1px solid #2B3856;
-    border-radius:0px;
-}
-.instruction button:hover{
-    opacity:100%;
-    color:purple;
-    background:transparent;
-}
-
-@media(max-width:768px){
     h1{
-        font-size:20px;
-        width:40px;
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        justify-content:center;
+        position:relative;
+        width:90px;
+        height:60px;
+        padding:10px;
+        color:rgb(54, 69, 79);
+        font-weight:500;
+        margin:0;
+        border-left:1px solid rgb(54, 69, 79);
+        border-right:1px solid rgb(54, 69, 79);
+        border-radius:50%;
     }
 
-    .login label{
-        font-size:14px;
-    }
-    .login input{
-        font-size:13px;
+    .inputs{
+        display:flex;
+        flex-direction:column;
+        align-items:flex-start;
+        justify-content:space-around;
+        position:relative;
+        width:100%;
+        height:280px;
     }
 
-    .login button{
+    text{
+        display:flex;
+        align-self:center;
+        position:relative;
+        width:auto;
         font-size:14px;
+        color:#5D6166;
+        font-weight:500;
+    }
+
+    label{
+        color:rgb(54, 69, 79);
+        font-size:15px;
+    }
+
+    input{
+        width:100%;
+        height:35px;
+        font-size:14px;
+        color:#5D6166;
+        background:#F9F6EE;
+        border:1px solid #EDEADE;
+        border-radius:10px;
+    }
+    input:focus{
+        outline:none;
+        border:1px solid gray;
+    }
+
+    button{
+        display:flex;
+        align-items:center;
+        justify-content:space-around;
+        align-self:center;
+        position:relative;
+        width:110px;
+        height:30px;
+        color:rgb(54, 69, 79);
+        font-size:15px;
+        background:transparent;
+        border:1px solid #5D6166;
+        border-radius:10px;
+    }
+    button:hover{
+        color:white;
+        background:#5D6166;
     }
 
     .instruction{
-        font-size:14px;
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+        position:relative;
+        column-gap:10px;
+        width:100%;
+        height:10%;
     }
-
     .instruction button{
-        font-size:14px;
+        display:flex;
+        align-items:center;
+        justify-content:space-evenly;
+        width:auto;
+        height:auto;
+        color:#2B3856;
+        font-size:15px;
+        background:transparent;
+        border:hidden;
+        padding:0px;
+        border-bottom:1px solid #2B3856;
+        border-radius:0px;
+    }
+    .instruction button:hover{
+        opacity:100%;
+        color:purple;
+        background:transparent;
+    }
+}
+
+
+
+@media(max-width:768px){
+    .login{
+        height:500px;
+
+        h1{
+            font-size:25px;
+            width:75px;
+            height:35px
+        }
+
+        .inputs{
+            height:300px;
+        }
+
+        label{
+            font-size:14px;
+        }
+
+        input{
+            font-size:13px;
+            height:40px;
+        }
+
+        button{
+            height:38px;
+            font-size:14px;
+        }
+
+        .instruction{
+            font-size:14px;
+        }
+
+        .instruction button{
+            font-size:14px;
+        }
     }
 }
 @media(max-width:430px){
     .login{
         width:90%;
     }
-
 }

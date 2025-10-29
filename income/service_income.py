@@ -385,7 +385,7 @@ def service(request, id=0):
                 else:
                     messages.info(request, 'No changes to save')
             if 'delete service' in request.POST:
-                messages.warning(request, 'Do you really want to delete this service?')
+                messages.success(request, 'Do you really want to delete this service?')
             if 'confirm' in request.POST:
                 data.delete()
                 return redirect('/services/')

@@ -1,0 +1,130 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/management/termsAndConditions.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<div class="main">
+    <div class="terms_and_conditions">
+        <h1>Terms and Conditions</h1>
+        <P>
+            This website is provided and managed by Muduzi Tech.
+            Before using the website please make sure that you read
+            the terms and conditions of use and agree to the those
+            terms. Take note that Muduzi Tech retains the right to
+            make adjustments to the terms without prior notice to
+            users. Make sure to read the latest version of the terms
+            and conditions that will be provided on the website.
+        </P>
+        <p>
+            Please read these terms and conditions carefully before
+            using the MAT web application provided by Muduzi Tech.
+            Your access to usage of this app is tied to your
+            acceptance of and compliance  to the Terms and
+            Conditions laid forth.
+        </p>
+        <h2>Introduction</h2>
+        <p>
+            <b>MAT</b> is a Software as a Service web application targeting
+            small businesses that provides accounting functionalities
+            including but not limited to book keeping, financial tracking,
+            reporting, invoicing  as well as advertising through personal
+            business catalogues where users  can create, manage, and
+            promote their business listings or catalogues to other users
+            or the public.
+        </p>
+        <h2>User Accounts and Responsibilities</h2>
+        <p>
+            To access certain features of Service, you must register for
+            an account. You agree to provide accurate, current, and
+            incomplete information during registration and to update such
+            information to keep it accurate, current, and complete.
+        </p>
+        <p>
+            You are responsible for safeguarding your password and for any
+            activities or actions that occur under your account. You agree
+            not to disclose your password to any third party. You must
+            notify us immediately upon becoming aware of any breach of
+            security or unauthorized use of your account.
+        </p>
+        <h2>Subscriptions and Fees</h2>
+        <p>
+            The service is available on a subscription basis. We offer
+            various plans, including free trials for new users for a
+            period of 14 days. Subscription are billed in advance on a
+            recurring basis(monthly, annually, depending on your selection.
+        </p>
+        <p>
+            All fees are non-refundable, except as required by law. We
+            reserve the right to change pricing at any time, with notice
+            provided via email or through the service.
+        </p>
+        <h2>Advertising Functionalities</h2>
+        <p>
+            The Service allows users to create personal business catalogues,
+            which include business description, products, services, images
+            and contact information. These catalogues can be advertised or
+            made visible  to other users or the public through the platform.
+            You grant us a nonexclusive, transferable, sub-licensable,
+            royalty-free,  worldwide licence to host, use, distribute, modify,
+            run, copy, publicly perform or display, translate, and create
+            derivative works of your content in connection with the service.
+        </p>
+        <h2>User Content and Conduct</h2>
+        <p>
+            You retain ownership of your Content, but you are required to grant
+            us the license described above.
+        </p>
+        <text>You agree not to upload Content that:</text>
+        <ul>
+            <li>Could affect Muduzi Tech negatively.</li>
+            <li>Any action that could negatively affect credibility or trust of
+                Muduzi Tech.</li>
+            <li>Infringes on any third party’s intellectual property rights.</li>
+            <li>Is unlawful, harmful, threatening, abusive, defamatory, or
+                otherwise objectionable.</li>
+            <li>Contains viruses or other malicious code.</li>
+            <li>Violates privacy or publicity rights.</li>
+            <li>Promotes illegal activities or false advertising.</li>
+        </ul>
+        <h3>Requirements</h3>
+        <ol>
+            <li>Use valid information when signing up.</li>
+            <li>Use names that are on your national ID.</li>
+            <li>An existing store(shop) that is registered  under your name.
+            <li>Use valid phone numbers in-order for customers to easily reach
+            you; your second contact2 should be your whatsapp number.</li>
+            <li>Valid email address. Your email will be used to send notifications;
+                information about your subscription, updates, new features  etc.</li>
+        </ol>
+        <h3>Prohibitions</h3>
+        <ol>
+            <li>Any actions that could affect Muduzi Tech negatively.</li>
+            <li>Posting of nudity or any content that could violate public order and
+                morality.</li>
+            <li>Using false names or other peoples names, email or any other important
+                information when registering</li>
+            <li>Any action that could negatively affect credibility or trust of Muduzi Tech.</li>
+        </ol>
+        <p>
+            <b>Note:</b> of content on this website is absolutely prohibited except where
+            permitted as part of a subscription package or where download of the content
+            is allowed; duplication, adaptation, public transmission and distribution without
+            prior consent of the copyright is forbidden under copyright law. Consent should be
+            obtained in advance from Muduzi Tech. If consent has been granted, copyright should
+            be displayed as designated by Muduzi Tech.
+        </p>
+    </div>
+    <form method="post" class="agree_disagree_form">
+        {%csrf_token%}
+        <text><u>Do you agree with the terms and conditions of service?</u></text>
+        <button type="submit" name="yes">Yes</button>
+        <button type="submit" name="no">No</button>
+    </form>
+</div>

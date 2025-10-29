@@ -31,6 +31,7 @@ from expenses.expense_history import expense_history
 from expenses.bufferexpense import buffer_expense_view, edit_buffer_expense
 from expenses.setSupplier import set_supplier
 from expenses.Accounts import expense_accounts, expense_account
+from expenses.suppliers import suppliers_view, supplier_view
 from credits.views import credit_view, credit_form, credit_installment
 from income.views import product_income
 from debts.views import debt_view, debt_form, debt_installment
@@ -39,6 +40,7 @@ from income.product_income_history import product_income_history
 from income.service_income import (services, service_income, service_sale, service, package, service_category,
                                    edit_service_sale, edit_service_income_transaction)
 from income.service_income_history import service_income_history
+from income.customers import customers_view, customer_view
 from income.setCustomer import set_customer
 from income.invoice import invoice_form, invoices_view, generate_invoice_pdf, delivery_note, invoice_view
 from income.service_income_dash import service_income_dash
@@ -53,6 +55,7 @@ from assets.views import assets_view, asset_form
 from catalogue.views import (catalogue_view, market_view, category, add_category, add_product, edit_product,
                              view_product, view_buss_type_products)
 from management.views import *
+from management.terms_and_conditions import terms_and_conditions_view
 from statements.profitAndLoss import profit_and_loss
 
 urlpatterns = [
@@ -94,6 +97,8 @@ urlpatterns = [
     path("set_supplier/<int:id>/", set_supplier, name="assetsVendor"),
     path("expenses_history/", expense_history, name="expenseHistory"),
     path("edit_expense_transaction/<int:id>/", edit_expense_transaction, name="editExpenseTransaction"),
+    path("suppliers/", suppliers_view, name="suppliers"),
+    path("supplier/<int:id>/", supplier_view, name="supplier"),
 
     # credits
     path("credit/", credit_view, name="credit"),
@@ -133,6 +138,8 @@ urlpatterns = [
     path('service_income_history/', service_income_history, name="serviceIncomeHistory"),
     path('edit_service_income_transaction/<int:id>/', edit_service_income_transaction,
          name="editServiceIncomeTransaction"),
+    path("customers/", customers_view, name="customers"),
+    path("customer/<int:id>/", customer_view, name="customer"),
 
     # debts
     path("debt/", debt_view, name="debt"),
@@ -182,7 +189,8 @@ urlpatterns = [
     path("addProduct/", add_product, name="addProduct"),
     path("editProduct/<int:id>/", edit_product, name="editProduct"),
     path("viewProduct/<int:id>/", view_product, name="view_product"),
-    path("marketSection/<str:business_type>/", view_buss_type_products, name="viewBusinessTypeProducts")
-
+    path("marketSection/<str:business_type>/", view_buss_type_products, name="viewBusinessTypeProducts"),
+    path('terms_and_conditions/<int:id>/', terms_and_conditions_view, name="terms_and_conditions"),
+    path("terms_and_conditions/",  terms_and_conditions_view, name="terms_and_conditions"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

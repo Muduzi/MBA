@@ -1,0 +1,49 @@
+{%load static%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/expense/suppliers.css'%}" xmlns="http://www.w3.org/1999/html">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--Javascript-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Chart.js plugin-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"
+        integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!link for Google icons>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<title>Suppliers</title>
+
+<link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">
+{%include "income/productIncome/productIncomeMessages.html"%}
+
+<div class="Navigation">
+     <button type="button" onclick="window.location.href='/expenses/';">
+        <i class="material-icons" style="font-size:18px">arrow_forward</i>
+    </button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th class="sth1">Name</th>
+            <th class="sth2">Email</th>
+            <th class="sth3">Contact</th>
+            <th class="sth4">Freq <!--frequency/transaction count--></th>
+            <th class="sth3">Amount</th>
+            <th class="sth4">Percentage</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for key, value in suppliers.items%}
+            <tr onclick="window.location.href='/supplier/{{key}}';">
+                <td class="sth1">{{value.Name}}</td>
+                <td class="sth2">{{value.Email}}</td>
+                <td class="sth3">{{value.Contact}}</td>
+                <td class="sth4">{{value.TransactionsCount}}</td>
+                <td class="sth3">{{value.TransactionsTotal}}</td>
+                <td class="sth4">{{value.Percentage}}%</td>
+
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>

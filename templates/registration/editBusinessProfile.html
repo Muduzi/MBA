@@ -49,32 +49,83 @@
         <label for="email"><i class="material-icons" style="font-size:20px;">email</i>Email</label>
         <input type="email" id="email" name="email" required maxlength="30" {%if ini%} value="{{ini.Email}}" {%else%} placeholder="Email" {%endif%}>
         <label for="contact1"><i class="material-icons" style="font-size:20px;">call</i>Contact</label>
-        <input type="text" id="contact1" name="contact1" required maxlength="14" {%if ini.Contact1%} value="{{ini.Contact1}}" {%else%}  placeholder="phone number1" {%endif%}>
+        <div class="country_code_contact">
+            <select id="country_code1" name="country_code1">
+                {%if ini.Country_Code1%}
+                    <option value="{{ini.Country_Code1}}" selected>{{ini.Country_Code1}}</option>
+                {%endif%}
+                {%for code, name in countries%}
+                    <option value="{{code}}">{{name}}</option>
+                {%endfor%}
+            </select>
+            <input type="text" id="contact1" name="contact1" required maxlength="14" {%if ini.Contact1%} value="{{ini.Contact1}}" {%else%}  placeholder="phone number1" {%endif%}>
+        </div>
         <label for="contact2"><i class="material-icons" style="font-size:20px;">call</i>Contact</label>
-        <input type="text" id="contact2" name="contact2" maxlength="14" {%if ini.Contact2%} value="{{ini.Contact2}}" {%else%}  placeholder="phone number2" {%endif%}>
-
+        <div class="country_code_contact">
+            <select id="country_code2" name="country_code2">
+                {%if ini.Country_Code2%}
+                    <option value="{{ini.Country_Code2}}" selected>{{ini.Country_Code2}}</option>
+                {%endif%}
+                {%for code, name in countries%}
+                    <option value="{{code}}">{{name}}</option>
+                {%endfor%}
+            </select>
+            <input type="text" id="contact2" name="contact2" maxlength="14" {%if ini.Contact2%} value="{{ini.Contact2}}" {%else%}  placeholder="phone number2" {%endif%}>
+        </div>
     </div>
     <div class="inputs2">
-        <label for="about">About</label>
-        <textarea id="about" name="about"  class="textarea1" required maxlength="165" placeholder="Description or About">{%if ini%}{{ini.About}}{%else%}{%endif%}</textarea>
-        <label for="address">Physical address</label>
-        <textarea  id="address" name="address"  class="textarea2" required maxlength="165" placeholder="Physical address">{%if ini.Address%} {{ini.Address}} {%else%}{%endif%}</textarea>
-        <label for="postAddress">Post Address</label>
-        <input id="postAddress" name="postbox"  required maxlength="30" {%if ini.PostBox%} value="{{ini.PostBox}}" {%else%} placeholder="Post address" {%endif%}>
-        <label for="city">City</label>
-        <input type="text" id="city" name="city"  required maxlength="30" {%if ini%} value="{{ini.City}}" {%else%} placeholder="City" {%endif%}>
-        <label for="country">Country</label>
-        <input type="text" id="country" name="country"  required maxlength="60" {%if ini%} value="{{ini.Country}}" {%else%} placeholder="Country" {%endif%}>
-        <label for="zipcode">ZipCode</label>
-        <input type="text" id="zipcode" name="zipcode"  maxlength="30" {%if ini.ZipCode%} value="{{ini.ZipCode}}" {%else%} placeholder="ZipCode" {%endif%}>
-        <label for="instagram">Instagram</label>
-        <input type="text" id="instagram" name="instagram" {%if ini.Instagram%} value="{{ini.Instagram}}" {%else%} placeholder="Instagram Link" {%endif%}>
-        <label for="facebook">Facebook</label>
-        <input type="text" id="facebook" name="facebook" {%if ini.Facebook%} value="{{ini.Facebook}}" {%else%} placeholder="Facebook Link" {%endif%}>
-        <label for="linkedin">Linkedin</label>
-        <input type="text" id="linkedin" name="linkedin" {%if ini.Linkedin%} value="{{ini.Linkedin}}" {%else%}  placeholder="Linkedin link" {%endif%}>
+        <div class="inputs2_sub_inputs">
+            <label for="about">About</label>
+            <textarea id="about" name="about"  class="textarea1" required maxlength="165" placeholder="Description or About">{%if ini%}{{ini.About}}{%else%}{%endif%}</textarea>
+            <label for="address">Physical address</label>
+            <textarea  id="address" name="address"  class="textarea2" required maxlength="165" placeholder="Physical address">{%if ini.Address%} {{ini.Address}} {%else%}{%endif%}</textarea>
+            <label for="postAddress">Post Address</label>
+            <input id="postAddress" name="postbox"  required maxlength="30" {%if ini.PostBox%} value="{{ini.PostBox}}" {%else%} placeholder="Post address" {%endif%}>
+            <label for="city">City</label>
+            <input type="text" id="city" name="city"  required maxlength="30" {%if ini%} value="{{ini.City}}" {%else%} placeholder="City" {%endif%}>
+            <label for="country">Country</label>
+            <input type="text" id="country" name="country"  required maxlength="60" {%if ini%} value="{{ini.Country}}" {%else%} placeholder="Country" {%endif%}>
+            <label for="zipcode">ZipCode</label>
+            <input type="text" id="zipcode" name="zipcode"  maxlength="30" {%if ini.ZipCode%} value="{{ini.ZipCode}}" {%else%} placeholder="ZipCode" {%endif%}>
+        </div>
+        <div class="open_links">
+            <text>social media links</text>
+            <button type="button" id="open_sm_links" onclick="openLinksContainer()">
+                <i class="material-icons" style="font-size:25px">arrow_drop_down</i>
+            </button>
+            <button type="button" id="close_sm_links" onclick="closeLinksContainer()" class="hide">
+                <i class="material-icons" style="font-size:25px">arrow_drop_up</i>
+            </button>
+        </div>
+        <div id="sm_links" class="social_media_links">
+            <label for="instagram">Instagram</label>
+            <input type="text" id="instagram" name="instagram" {%if ini.Instagram%} value="{{ini.Instagram}}" {%else%} placeholder="Instagram Link" {%endif%}>
+            <label for="facebook">Facebook</label>
+            <input type="text" id="facebook" name="facebook" {%if ini.Facebook%} value="{{ini.Facebook}}" {%else%} placeholder="Facebook Link" {%endif%}>
+            <label for="linkedin">Linkedin</label>
+            <input type="text" id="linkedin" name="linkedin" {%if ini.Linkedin%} value="{{ini.Linkedin}}" {%else%}  placeholder="Linkedin link" {%endif%}>
+        </div>
     </div>
     <div class="but">
         <button type="submit" name="save" class="save">{%if ini%}Save{%else%}Register{%endif%}</button>
     </div>
 </form>
+
+<script>
+    smLinks = document.getElementById("sm_links");
+    openLinks = document.getElementById("open_sm_links");
+    closeLinks = document.getElementById("close_sm_links");
+
+    const openLinksContainer = () => {
+        smLinks.classList.add("open_links");
+        openLinks.classList.add("hide");
+        closeLinks.classList.add("show");
+    };
+
+    const closeLinksContainer = () => {
+        smLinks.classList.remove("open_links");
+        openLinks.classList.remove("hide");
+        closeLinks.classList.remove("show");
+    };
+
+</script>

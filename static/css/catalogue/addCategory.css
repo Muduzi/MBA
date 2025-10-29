@@ -147,6 +147,7 @@ label img{
     width:70%;
     height:70%;
     object-fit:cover;
+    cursor:hand;
 }
 input[type="file"]{
     display:none;
@@ -160,6 +161,11 @@ input[type="text"]{
     border:hidden;
     border-radius:10px;
 }
+input:focus{
+    outline:none;
+    border:1px solid #2B3856;
+}
+
 label{
     color:#2B3856;
 }

@@ -14,9 +14,15 @@
 <title>Edit Transaction</title>
 
 <div class="Navigation">
-    <button type="button" onclick="window.location.href='{{back_url}}';">
-        <i class="material-icons" style="font-size:18px">arrow_forward</i>
-    </button>
+    {%if back_url%}
+        <button type="button" onclick="window.location.href='{{back_url}}';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%else%}
+        <button type="button" onclick="window.location.href='/service_income/';">
+            <i class="material-icons" style="font-size:18px">arrow_forward</i>
+        </button>
+    {%endif%}
 </div>
 
 <link rel="stylesheet" type="text/css" href="{%static 'css/income/serviceIncome/serviceIncomeMessages.css'%}" xmlns="http://www.w3.org/1999/html">

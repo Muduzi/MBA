@@ -393,7 +393,7 @@ select option:hover{
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: transparent;
+  background: gray;
   border-radius:10px;
 }
 

@@ -56,7 +56,7 @@ def set_customer(request, id=0):
                         result = service_credit_set(buss, user_obj, data_s, customer)
 
                     elif data_s[0].PMode == 'Cash':
-                        result = service_cash_set(buss, user_obj, data_s, customer=None)
+                        result = service_cash_set(buss, user_obj, data_s, customer)
 
                 elif data_p:
                     result = product_set(buss, user_obj, data_p, customer)

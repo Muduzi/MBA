@@ -8,6 +8,11 @@ class Features(models.Model):
     Name = models.CharField(null=False, max_length=100)
 
 
+class TermAndConditionsAgreements(models.Model):
+    Date = models.DateTimeField(auto_now=True)
+    Business = models.ForeignKey(Business, on_delete=models.CASCADE, null=False)
+
+
 class SubscriptionPlan(models.Model):
     packages = [('Basic', 'Basic'),
                 ('Standard', 'Standard'),
